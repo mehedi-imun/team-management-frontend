@@ -21,28 +21,26 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
   onEditTeam,
   onCreateTeam,
 }) => {
-  const [search, setSearch] = useState("");
+   const [search, setSearch] = useState("");
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
   const [updateApprovalStatus] = useUpdateApprovalStatusMutation();
   const [deleteTeam] = useDeleteTeamMutation();
   const [bulkDeleteTeams] = useBulkDeleteTeamsMutation();
   const [updateTeamOrder] = useUpdateTeamOrderMutation();
 
-  // Fetch teams with search
-  const {
-    data: teams = [],
-    isLoading,
-    refetch,
-  } = useGetAllTeamsQuery({ search }) as {
-    data: ITeam[];
-    isLoading: boolean;
-    refetch: () => void;
-  };
+  // Build query params: only include search if not empty
+  const queryParams: { search?: string } = {};
+  if (search.trim() !== "") queryParams.search = search;
+
+  // Fetch teams
+  const { data: teams = [], isLoading, refetch } = useGetAllTeamsQuery(
+    queryParams
+  ) as { data: ITeam[]; isLoading: boolean; refetch: () => void };
 
   // Debounced search
   const handleSearch = debounce((value: string) => setSearch(value), 300);
 
-  // Tri-state approval handler
+  // Approval status handler
   const handleStatusChange = async (
     teamId: string,
     field: "managerApproved" | "directorApproved",
@@ -58,7 +56,7 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
     }
   };
 
-  // Delete single team
+  // Single & bulk delete handlers
   const handleDelete = async (teamId: string) => {
     if (!confirm("Are you sure to delete this team?")) return;
     try {
@@ -70,7 +68,6 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
     }
   };
 
-  // Bulk delete
   const handleBulkDelete = async () => {
     if (!confirm("Are you sure to delete selected teams?")) return;
     try {
@@ -83,7 +80,7 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
     }
   };
 
-  // Handle row selection
+  // Row selection
   const toggleSelectTeam = (id: string) => {
     setSelectedTeams((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -117,7 +114,7 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
     }
   };
 
-  if (isLoading) return <LoadingSpinner show={true} />;
+  if (isLoading) return <LoadingSpinner show />;
 
   return (
     <div className="container-main">
@@ -152,11 +149,11 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
                 <input
                   type="checkbox"
                   checked={
-                    selectedTeams.length === teams.length && teams.length > 0
+                    selectedTeams?.length === teams?.length && teams?.length > 0
                   }
                   onChange={(e) => {
                     if (e.target.checked)
-                      setSelectedTeams(teams.map((t) => t._id!));
+                      setSelectedTeams(teams?.map((t) => t._id!));
                     else setSelectedTeams([]);
                   }}
                 />
@@ -168,7 +165,7 @@ export const TeamListPage: React.FC<TeamListPageProps> = ({
             </tr>
           </thead>
           <tbody>
-            {teams.map((team, index) => (
+            {teams?.map((team, index) => (
               <tr
                 key={team._id}
                 draggable

@@ -2,15 +2,15 @@
 import React, { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Team } from "../types";
+import type { ITeam } from "../types";
 import { TeamMemberRow } from "../components/TeamMemberRow";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { teamSchema, type TeamFormValues } from "../lib/teamSchema";
 import { useCreateTeamMutation, useUpdateTeamMutation } from "../redux/features/team/teamApi";
 
 interface TeamFormPageProps {
-  team: Team | null;
-  onSave: (data: Team) => void;
+  team: ITeam | null;
+  onSave: (data: ITeam) => void;
   onExit: () => void;
 }
 

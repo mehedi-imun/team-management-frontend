@@ -4,36 +4,38 @@ import { TeamListPage } from "./pages/TeamListPage";
 import type { ITeam } from "./types";
 
 export const App: React.FC = () => {
-  // null = show list, otherwise show form with team
-  const [editingTeam, setEditingTeam] = useState<ITeam | null>(null);
+  // null = show form in create mode, undefined = show list
+  const [editingTeam, setEditingTeam] = useState<ITeam | null | undefined>(undefined);
 
   // Handler when user clicks "Create New Team"
   const handleCreateTeam = () => {
-    setEditingTeam(null); // form will be in "create" mode
+    setEditingTeam(null); // show form in "create" mode
   };
 
   // Handler when user clicks "Edit Team"
   const handleEditTeam = (team: ITeam) => {
-    setEditingTeam(team);
+    setEditingTeam(team); // show form in "edit" mode
   };
 
   // Handler after save or exit
   const handleFormExit = () => {
-    setEditingTeam(null); // back to list
+    setEditingTeam(undefined); // back to list
   };
 
   return (
     <div>
-      {editingTeam !== null || editingTeam === null ? (
+      {editingTeam === undefined ? (
+        // Show team list
+        <TeamListPage
+          onEditTeam={(teamId) => handleEditTeam({ _id: teamId } as ITeam)}
+          onCreateTeam={handleCreateTeam}
+        />
+      ) : (
+        // Show form (create or edit)
         <TeamFormPage
           team={editingTeam}
           onSave={handleFormExit}
           onExit={handleFormExit}
-        />
-      ) : (
-        <TeamListPage
-          onEditTeam={(teamId) => handleEditTeam({ _id: teamId } as ITeam)}
-          onCreateTeam={handleCreateTeam}
         />
       )}
     </div>

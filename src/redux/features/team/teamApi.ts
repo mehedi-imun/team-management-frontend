@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { ITeam } from "../../../types";
 import { baseApi } from "../../baseApi";
 
 // Team API slice
 export const teamApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    // Fetch all teams with optional query params (search, pagination)
-    getAllTeams: builder.query({
-      query: (params) => ({
+    getAllTeams: builder.query<ITeam[], Record<string, any> | void>({
+      query: (params: Record<string, any> = {}) => ({
         url: "/teams",
         method: "GET",
         params,
       }),
       providesTags: ["Team"],
+      transformResponse: (response: any) => response?.data || [],
     }),
 
     // Fetch single team by ID
@@ -64,7 +65,15 @@ export const teamApi = baseApi.injectEndpoints({
 
     // Update tri-state approval status
     updateApprovalStatus: builder.mutation({
-      query: ({ teamId, field, value }: { teamId: string; field: "managerApproved" | "directorApproved"; value: 0 | 1 | 2 }) => ({
+      query: ({
+        teamId,
+        field,
+        value,
+      }: {
+        teamId: string;
+        field: "managerApproved" | "directorApproved";
+        value: 0 | 1 | 2;
+      }) => ({
         url: `/teams/${teamId}/status`,
         method: "PATCH",
         data: { field, value },
@@ -84,7 +93,15 @@ export const teamApi = baseApi.injectEndpoints({
 
     // Update a team member
     updateMember: builder.mutation({
-      query: ({ teamId, memberId, data }: { teamId: string; memberId: string; data: any }) => ({
+      query: ({
+        teamId,
+        memberId,
+        data,
+      }: {
+        teamId: string;
+        memberId: string;
+        data: any;
+      }) => ({
         url: `/teams/${teamId}/members/${memberId}`,
         method: "PATCH",
         data,
