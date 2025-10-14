@@ -1,72 +1,54 @@
-import type { FormErrors, TeamMember } from "../types";
+import React from "react";
+import { type FieldErrors, type Control, Controller } from "react-hook-form";
+import type { TeamFormValues } from "../lib/teamSchema";
 
 interface TeamMemberRowProps {
   index: number;
-  member: TeamMember;
-  onMemberChange: (index: number, member: TeamMember) => void;
-  onMemberDelete: (index: number) => void;
-  errors: FormErrors;
+  control: Control<TeamFormValues>;
+  onRemove: (index: number) => void;
+  errors: FieldErrors<TeamFormValues>;
 }
 
 export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
   index,
-  member,
-  onMemberChange,
-  onMemberDelete,
+  control,
+  onRemove,
   errors,
 }) => {
-  const handleChange = (field: keyof TeamMember, value: string) => {
-    onMemberChange(index, { ...member, [field]: value });
-  };
-
-  const getErrorClass = (field: string) => {
-    return errors[`member_${index}_${field}`] ? 'is-invalid' : '';
-  };
-
   return (
     <tr>
       <td>
-        <input
-          type="text"
-          className={getErrorClass('name')}
-          placeholder="Member Name"
-          value={member.name}
-          onChange={(e) => handleChange('name', e.target.value)}
+        <Controller
+          name={`members.${index}.name`}
+          control={control}
+          render={({ field }) => <input {...field} placeholder="Member Name" />}
         />
-        {errors[`member_${index}_name`] && (
-          <span className="form-error">{errors[`member_${index}_name`]}</span>
+        {errors.members?.[index]?.name && (
+          <span className="form-error">{errors.members[index]?.name?.message}</span>
         )}
       </td>
       <td>
-        <input
-          type="text"
-          className={getErrorClass('position')}
-          placeholder="Position"
-          value={member.position}
-          onChange={(e) => handleChange('position', e.target.value)}
+        <Controller
+          name={`members.${index}.position`}
+          control={control}
+          render={({ field }) => <input {...field} placeholder="Position" />}
         />
-        {errors[`member_${index}_position`] && (
-          <span className="form-error">{errors[`member_${index}_position`]}</span>
+        {errors.members?.[index]?.position && (
+          <span className="form-error">{errors.members[index]?.position?.message}</span>
         )}
       </td>
       <td>
-        <input
-          type="email"
-          className={getErrorClass('email')}
-          placeholder="Email"
-          value={member.email}
-          onChange={(e) => handleChange('email', e.target.value)}
+        <Controller
+          name={`members.${index}.email`}
+          control={control}
+          render={({ field }) => <input {...field} placeholder="Email" />}
         />
-        {errors[`member_${index}_email`] && (
-          <span className="form-error">{errors[`member_${index}_email`]}</span>
+        {errors.members?.[index]?.email && (
+          <span className="form-error">{errors.members[index]?.email?.message}</span>
         )}
       </td>
       <td className="text-center">
-        <button
-          type="button"
-          className="btn btn-danger"
-          onClick={() => onMemberDelete(index)}
-        >
+        <button type="button" className="btn btn-danger" onClick={() => onRemove(index)}>
           🗑️ Delete
         </button>
       </td>

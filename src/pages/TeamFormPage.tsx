@@ -1,9 +1,12 @@
-import { useState } from "react";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Team } from "../types";
 import { TeamMemberRow } from "../components/TeamMemberRow";
-import type { Team, TeamMember } from "../types";
-
-import type { FormErrors } from "../types";
+import { LoadingSpinner } from "../components/LoadingSpinner";
+import { teamSchema, type TeamFormValues } from "../lib/teamSchema";
+import { useCreateTeamMutation, useUpdateTeamMutation } from "../redux/features/team/teamApi";
 
 interface TeamFormPageProps {
   team: Team | null;
@@ -11,123 +14,56 @@ interface TeamFormPageProps {
   onExit: () => void;
 }
 
-export const TeamFormPage: React.FC<TeamFormPageProps> = ({
-  team,
-  onSave,
-  onExit,
-}) => {
-  const [formData, setFormData] = useState<Team>(
-    team || {
-      _id: '',
-      name: '',
-      manager: '',
-      director: '',
-      description: '',
-      status: 0,
-      members: [{ id: '1', name: '', position: '', email: '' }],
-    }
-  );
-  const [errors, setErrors] = useState<FormErrors>({});
+export const TeamFormPage: React.FC<TeamFormPageProps> = ({ team, onSave, onExit }) => {
   const [loading, setLoading] = useState(false);
+  const [createTeam] = useCreateTeamMutation();
+  const [updateTeam] = useUpdateTeamMutation();
 
-  const handleInputChange = (
-    field: keyof Omit<Team, 'members'>,
-    value: string
-  ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev: FormErrors) => {
-        const newErrors: FormErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
-  };
-
-  const handleMemberChange = (index: number, member: TeamMember) => {
-    const newMembers = [...formData.members];
-    newMembers[index] = member;
-    setFormData((prev) => ({ ...prev, members: newMembers }));
-  };
-
-  const handleMemberDelete = (index: number) => {
-    if (window.confirm('Are you sure you want to delete this member?')) {
-      setFormData((prev) => ({
-        ...prev,
-        members: prev.members.filter((_, i) => i !== index),
-      }));
-    }
-  };
-
-  const handleAddMember = () => {
-    setFormData((prev) => ({
-      ...prev,
-      members: [
-        ...prev.members,
-        {
-          id: Date.now().toString(),
-          name: '',
-          position: '',
-          email: '',
+  // Initialize form with react-hook-form + zod validation
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<TeamFormValues>({
+    resolver: zodResolver(teamSchema),
+    defaultValues: team
+      ? { ...team, status: team.status ?? "0" }
+      : {
+          _id: "",
+          name: "",
+          manager: "",
+          director: "",
+          description: "",
+          status: "0",
+          members: [{ id: Date.now().toString(), name: "", position: "", email: "" }],
         },
-      ],
-    }));
-  };
+  });
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  // Handle dynamic team members
+  const { fields: members, append, remove } = useFieldArray<TeamFormValues, "members">({
+    control,
+    name: "members",
+  });
 
-    if (!formData.name?.trim()) {
-      newErrors.name = 'Team name is required';
-    }
-    if (!formData.manager) {
-      newErrors.manager = 'Manager is required';
-    }
-    if (!formData.director) {
-      newErrors.director = 'Director is required';
-    }
-    if (!formData.description?.trim()) {
-      newErrors.description = 'Description is required';
-    }
-    if (formData.members.length === 0) {
-      newErrors.members = 'At least one team member is required';
-    }
-
-    formData.members.forEach((member, idx) => {
-      if (!member.name?.trim()) {
-        newErrors[`member_${idx}_name`] = 'Member name is required';
-      }
-      if (!member.position?.trim()) {
-        newErrors[`member_${idx}_position`] = 'Position is required';
-      }
-      if (!member.email?.trim()) {
-        newErrors[`member_${idx}_email`] = 'Email is required';
-      } else if (!/\S+@\S+\.\S+/.test(member.email)) {
-        newErrors[`member_${idx}_email`] = 'Email is invalid';
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+  // Submit form handler
+  const onSubmit = async (data: TeamFormValues) => {
     setLoading(true);
     try {
-      // API call will be here
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert(
-        team ? 'Team updated successfully!' : 'Team created successfully!'
-      );
-      onSave(formData);
-    } catch (error) {
-      alert(`Error saving team: ${error}`);
+      if (team?._id) {
+        // Update existing team
+        await updateTeam({ _id: team._id, ...data }).unwrap();
+      } else {
+        // Create new team
+        await createTeam(data).unwrap();
+      }
+      alert("Team saved successfully!");
+      onSave({ ...data, _id: team?._id ?? "" });
+      reset(data); // reset form with saved data
+    } catch (err) {
+      console.error(err);
+      alert("Error saving team!");
     } finally {
       setLoading(false);
     }
@@ -135,31 +71,26 @@ export const TeamFormPage: React.FC<TeamFormPageProps> = ({
 
   return (
     <div className="container-main">
+      {/* Loading spinner */}
       <LoadingSpinner show={loading} />
 
-      {/* Header */}
+      {/* Page Header */}
       <div className="page-header">
-        <h1>{team ? 'Edit Team' : 'Create New Team'}</h1>
+        <h1>{team ? "Edit Team" : "Create New Team"}</h1>
       </div>
 
       {/* Form Card */}
       <div className="card">
         <div className="card-header">Team Information</div>
         <div className="card-body">
-          <form onSubmit={handleSave}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             {/* Team Name */}
             <div className="form-group">
               <label className="form-label">
                 Team Name <span className="required">*</span>
               </label>
-              <input
-                type="text"
-                className={errors.name ? 'is-invalid' : ''}
-                placeholder="Enter team name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-              />
-              {errors.name && <span className="form-error">{errors.name}</span>}
+              <input type="text" {...register("name")} />
+              {errors.name && <span className="form-error">{errors.name.message}</span>}
             </div>
 
             {/* Manager & Director */}
@@ -168,37 +99,24 @@ export const TeamFormPage: React.FC<TeamFormPageProps> = ({
                 <label className="form-label">
                   Manager <span className="required">*</span>
                 </label>
-                <select
-                  className={errors.manager ? 'is-invalid' : ''}
-                  value={formData.manager}
-                  onChange={(e) => handleInputChange('manager', e.target.value)}
-                >
+                <select {...register("manager")}>
                   <option value="">Select Manager</option>
                   <option value="manager1">John Doe</option>
                   <option value="manager2">Jane Smith</option>
                 </select>
-                {errors.manager && (
-                  <span className="form-error">{errors.manager}</span>
-                )}
+                {errors.manager && <span className="form-error">{errors.manager.message}</span>}
               </div>
+
               <div className="form-group">
                 <label className="form-label">
                   Director <span className="required">*</span>
                 </label>
-                <select
-                  className={errors.director ? 'is-invalid' : ''}
-                  value={formData.director}
-                  onChange={(e) =>
-                    handleInputChange('director', e.target.value)
-                  }
-                >
+                <select {...register("director")}>
                   <option value="">Select Director</option>
                   <option value="director1">Michael Johnson</option>
                   <option value="director2">Sarah Williams</option>
                 </select>
-                {errors.director && (
-                  <span className="form-error">{errors.director}</span>
-                )}
+                {errors.director && <span className="form-error">{errors.director.message}</span>}
               </div>
             </div>
 
@@ -207,38 +125,24 @@ export const TeamFormPage: React.FC<TeamFormPageProps> = ({
               <label className="form-label">
                 Description <span className="required">*</span>
               </label>
-              <textarea
-                className={errors.description ? 'is-invalid' : ''}
-                placeholder="Enter team description"
-                value={formData.description}
-                onChange={(e) =>
-                  handleInputChange('description', e.target.value)
-                }
-              />
-              {errors.description && (
-                <span className="form-error">{errors.description}</span>
-              )}
+              <textarea {...register("description")} />
+              {errors.description && <span className="form-error">{errors.description.message}</span>}
             </div>
 
             {/* Team Members Section */}
             <div className="form-section">
               <div className="form-section-title">
-                <span>
-                  Team Members <span className="required">*</span>
-                </span>
+                <span>Team Members</span>
                 <button
                   type="button"
                   className="btn btn-success"
-                  onClick={handleAddMember}
+                  onClick={() => append({ id: Date.now().toString(), name: "", position: "", email: "" })}
                 >
                   + Add Member
                 </button>
               </div>
 
-              {errors.members && (
-                <div className="alert alert-error">{errors.members}</div>
-              )}
-
+              {/* Members Table */}
               <div className="table-wrapper">
                 <table className="members-table">
                   <thead>
@@ -246,19 +150,16 @@ export const TeamFormPage: React.FC<TeamFormPageProps> = ({
                       <th>Name</th>
                       <th>Position</th>
                       <th>Email</th>
-                      <th style={{ width: '100px' }} className="text-center">
-                        Action
-                      </th>
+                      <th className="text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {formData.members.map((member, index) => (
+                    {members.map((member, index) => (
                       <TeamMemberRow
                         key={member.id}
                         index={index}
-                        member={member}
-                        onMemberChange={handleMemberChange}
-                        onMemberDelete={handleMemberDelete}
+                        control={control}
+                        onRemove={remove}
                         errors={errors}
                       />
                     ))}
@@ -270,14 +171,9 @@ export const TeamFormPage: React.FC<TeamFormPageProps> = ({
             {/* Form Actions */}
             <div className="form-actions">
               <button type="submit" className="btn btn-primary" disabled={loading}>
-                {loading ? 'Saving...' : 'Save'}
+                {loading ? "Saving..." : "Save"}
               </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={onExit}
-                disabled={loading}
-              >
+              <button type="button" className="btn btn-secondary" onClick={onExit} disabled={loading}>
                 Exit
               </button>
             </div>

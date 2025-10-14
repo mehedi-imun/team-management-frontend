@@ -5,17 +5,16 @@ export interface TeamMember {
   email: string;
 }
 
-export interface Team {
+export interface ITeam {
   _id: string;
   name: string;
   manager: string;
   director: string;
   description: string;
-  status: number; // 0: no action, 1: approved, -1: not approved
+  status: "0" | "1" | "-1";
   members: TeamMember[];
-  order?: number;
+  managerApproved?: "0" | "1" | "-1";
+  directorApproved?: "0" | "1" | "-1";
 }
 
-export interface FormErrors {
-  [key: string]: string;
-}
+export type FormErrors = Record<string, string>;

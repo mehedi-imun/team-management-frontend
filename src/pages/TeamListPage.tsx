@@ -1,276 +1,239 @@
+import debounce from "lodash.debounce";
 import React, { useState } from "react";
-import type { Team } from "../types";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import { StatusCheckbox } from "../components/StatusCheckbox";
+import {
+  useBulkDeleteTeamsMutation,
+  useDeleteTeamMutation,
+  useGetAllTeamsQuery,
+  useUpdateApprovalStatusMutation,
+  useUpdateTeamOrderMutation,
+} from "../redux/features/team/teamApi";
+import type { ITeam } from "../types";
+// import { ITeam } from "../types";
 
 interface TeamListPageProps {
-  onEdit: (team: Team) => void;
-  onAddNew: () => void;
+  onEditTeam: (id: string) => void;
+  onCreateTeam: () => void;
 }
 
 export const TeamListPage: React.FC<TeamListPageProps> = ({
-  onEdit,
-  onAddNew,
+  onEditTeam,
+  onCreateTeam,
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTeams, setSelectedTeams] = useState<Set<string>>(new Set());
-  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [search, setSearch] = useState("");
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  const [updateApprovalStatus] = useUpdateApprovalStatusMutation();
+  const [deleteTeam] = useDeleteTeamMutation();
+  const [bulkDeleteTeams] = useBulkDeleteTeamsMutation();
+  const [updateTeamOrder] = useUpdateTeamOrderMutation();
 
-
-  // Mock teams - replace with API call
-  React.useEffect(() => {
-    setTeams([
-      {
-        _id: "1",
-        name: "Frontend Team",
-        manager: "John Doe",
-        director: "Michael Johnson",
-        description: "UI/UX Development",
-        status: 0,
-        members: [
-          {
-            id: "u1",
-            name: "Alice Johnson",
-            position: "Lead Developer",
-            email: "alice@example.com",
-          },
-        ],
-      },
-      {
-        _id: "2",
-        name: "Backend Team",
-        manager: "Jane Smith",
-        director: "Sarah Williams",
-        description: "API Development",
-        status: 1,
-        members: [
-          {
-            id: "u2",
-            name: "Charlie Brown",
-            position: "Senior Developer",
-            email: "charlie@example.com",
-          },
-        ],
-      },
-    ]);
-  }, []);
-
-  const handleSelectTeam = (teamId: string) => {
-    const newSelected = new Set(selectedTeams);
-    if (newSelected.has(teamId)) {
-      newSelected.delete(teamId);
-    } else {
-      newSelected.add(teamId);
-    }
-    setSelectedTeams(newSelected);
+  // Fetch teams with search
+  const {
+    data: teams = [],
+    isLoading,
+    refetch,
+  } = useGetAllTeamsQuery({ search }) as {
+    data: ITeam[];
+    isLoading: boolean;
+    refetch: () => void;
   };
 
-  const handleSelectAll = () => {
-    if (selectedTeams.size === teams.length) {
-      setSelectedTeams(new Set());
-    } else {
-      setSelectedTeams(new Set(teams.map((t) => t._id)));
+  // Debounced search
+  const handleSearch = debounce((value: string) => setSearch(value), 300);
+
+  // Tri-state approval handler
+  const handleStatusChange = async (
+    teamId: string,
+    field: "managerApproved" | "directorApproved",
+    value: 0 | 1 | 2
+  ) => {
+    try {
+      await updateApprovalStatus({ teamId, field, value }).unwrap();
+      alert("Team Status Saved");
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
     }
   };
 
-  const handleToggleExpand = (teamId: string) => {
-    const newExpanded = new Set(expandedTeams);
-    if (newExpanded.has(teamId)) {
-      newExpanded.delete(teamId);
-    } else {
-      newExpanded.add(teamId);
-    }
-    setExpandedTeams(newExpanded);
-  };
-
-  const handleDeleteTeam = (teamId: string) => {
-    if (window.confirm("Are you sure you want to delete this team?")) {
-      setTeams(teams.filter((t) => t._id !== teamId));
+  // Delete single team
+  const handleDelete = async (teamId: string) => {
+    if (!confirm("Are you sure to delete this team?")) return;
+    try {
+      await deleteTeam(teamId).unwrap();
+      alert("Team deleted successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete team");
     }
   };
 
-  const handleBulkDelete = () => {
-    if (window.confirm(`Delete ${selectedTeams.size} teams?`)) {
-      setTeams(teams.filter((t) => !selectedTeams.has(t._id)));
-      setSelectedTeams(new Set());
+  // Bulk delete
+  const handleBulkDelete = async () => {
+    if (!confirm("Are you sure to delete selected teams?")) return;
+    try {
+      await bulkDeleteTeams(selectedTeams).unwrap();
+      setSelectedTeams([]);
+      alert("Selected teams deleted successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete selected teams");
     }
   };
 
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
+  // Handle row selection
+  const toggleSelectTeam = (id: string) => {
+    setSelectedTeams((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
   };
 
-  const handleDrop = (dropIndex: number) => {
-    if (draggedIndex === null || draggedIndex === dropIndex) {
-      setDraggedIndex(null);
-      return;
+  // Drag & Drop
+  const handleDragEnd = async (
+    event: React.DragEvent<HTMLTableRowElement>,
+    draggedIndex: number
+  ) => {
+    const draggedTeam = teams[draggedIndex];
+    if (!draggedTeam) return;
+
+    const target = event.currentTarget.dataset.index;
+    if (target === undefined) return;
+    const targetIndex = Number(target);
+
+    const updatedTeams = [...teams];
+    updatedTeams.splice(draggedIndex, 1);
+    updatedTeams.splice(targetIndex, 0, draggedTeam);
+
+    try {
+      await updateTeamOrder(
+        updatedTeams.map((t, idx) => ({ id: t._id!, order: idx }))
+      ).unwrap();
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update order");
     }
-    const newTeams = [...teams];
-    const dragged = newTeams[draggedIndex];
-    newTeams.splice(draggedIndex, 1);
-    newTeams.splice(dropIndex, 0, dragged);
-    setTeams(newTeams);
-    setDraggedIndex(null);
   };
 
-  const filteredTeams = teams.filter(
-    (team) =>
-      team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      team.manager.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      team.members.some((m) =>
-        m.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-  );
+  if (isLoading) return <LoadingSpinner show={true} />;
 
   return (
     <div className="container-main">
-      {/* Header */}
       <div className="page-header">
-        <h1>Team Management</h1>
-        <button className="btn btn-primary" onClick={onAddNew}>
+        <h1>Teams</h1>
+        <button className="btn btn-primary" onClick={onCreateTeam}>
           + New Team
         </button>
       </div>
 
-      {/* Toolbar */}
       <div className="toolbar">
         <div className="search-box">
-          <span>🔍</span>
           <input
             type="text"
-            placeholder="Search teams, members, or managers..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Teams..."
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
-        {selectedTeams.size > 0 && (
+
+        {selectedTeams.length > 0 && (
           <button className="btn btn-danger" onClick={handleBulkDelete}>
-            🗑️ Delete ({selectedTeams.size})
+            Delete Selected
           </button>
         )}
       </div>
 
-      {/* Table */}
-      <div className="card">
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th style={{ width: "50px" }}>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  checked={
+                    selectedTeams.length === teams.length && teams.length > 0
+                  }
+                  onChange={(e) => {
+                    if (e.target.checked)
+                      setSelectedTeams(teams.map((t) => t._id!));
+                    else setSelectedTeams([]);
+                  }}
+                />
+              </th>
+              <th>Name</th>
+              <th>Manager Approval</th>
+              <th>Director Approval</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {teams.map((team, index) => (
+              <tr
+                key={team._id}
+                draggable
+                data-index={index}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDragEnd(e, index)}
+              >
+                <td>
                   <input
                     type="checkbox"
-                    checked={
-                      selectedTeams.size === teams.length && teams.length > 0
-                    }
-                    onChange={handleSelectAll}
+                    checked={selectedTeams.includes(team._id!)}
+                    onChange={() => toggleSelectTeam(team._id!)}
                   />
-                </th>
-                <th style={{ width: "50px" }}></th>
-                <th>Team Name</th>
-                <th>Manager</th>
-                <th>Director</th>
-                <th style={{ width: "120px" }} className="text-center">
-                  Status
-                </th>
-                <th style={{ width: "180px" }} className="text-center">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTeams.map((team, index) => (
-                <React.Fragment key={team._id}>
-                  <tr
-                    draggable
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => handleDrop(index)}
-                    className={draggedIndex === index ? "dragging" : ""}
+                </td>
+                <td>{team.name}</td>
+                <td>
+                  <StatusCheckbox
+                    status={
+                      typeof team.managerApproved === "string"
+                        ? team.managerApproved === "1"
+                          ? 1
+                          : team.managerApproved === "-1"
+                          ? 2
+                          : 0
+                        : team.managerApproved ?? 0
+                    }
+                    onStatusChange={(val) =>
+                      handleStatusChange(team._id!, "managerApproved", val)
+                    }
+                  />
+                </td>
+                <td>
+                  <StatusCheckbox
+                    status={
+                      typeof team.directorApproved === "string"
+                        ? team.directorApproved === "1"
+                          ? 1
+                          : team.directorApproved === "-1"
+                          ? 2
+                          : 0
+                        : team.directorApproved ?? 0
+                    }
+                    onStatusChange={(val) =>
+                      handleStatusChange(team._id!, "directorApproved", val)
+                    }
+                  />
+                </td>
+                <td className="action-buttons">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => onEditTeam(team._id!)}
                   >
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedTeams.has(team._id)}
-                        onChange={() => handleSelectTeam(team._id)}
-                      />
-                    </td>
-                    <td className="text-center">
-                      <button
-                        className={`expand-icon ${
-                          expandedTeams.has(team._id) ? "expanded" : ""
-                        }`}
-                        onClick={() => handleToggleExpand(team._id)}
-                      >
-                        ▶
-                      </button>
-                    </td>
-                    <td className="fw-600">{team.name}</td>
-                    <td>{team.manager}</td>
-                    <td>{team.director}</td>
-                    <td className="text-center">
-                      <StatusCheckbox
-                        status={team.status}
-                        onStatusChange={async () => {}}
-                      />
-                    </td>
-                    <td className="text-center">
-                      <div className="action-buttons">
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => onEdit(team)}
-                        >
-                          ✎ Edit
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => handleDeleteTeam(team._id)}
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {expandedTeams.has(team._id) && (
-                    <tr className="detail-row show">
-                      <td colSpan={7}>
-                        <div className="detail-content">
-                          <h6>Team Members</h6>
-                          <div className="table-wrapper">
-                            <table className="detail-table">
-                              <thead>
-                                <tr>
-                                  <th>Name</th>
-                                  <th>Position</th>
-                                  <th>Email</th>
-                                  <th style={{ width: "100px" }}>Action</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {team.members.map((member) => (
-                                  <tr key={member.id}>
-                                    <td>{member.name}</td>
-                                    <td>{member.position}</td>
-                                    <td>{member.email}</td>
-                                    <td className="text-center">
-                                      <button className="btn btn-danger">
-                                        🗑️
-                                      </button>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDelete(team._id!)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

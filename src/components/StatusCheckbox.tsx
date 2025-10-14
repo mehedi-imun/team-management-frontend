@@ -1,47 +1,45 @@
-import React, { useState } from 'react';
+import React from "react";
 
 interface StatusCheckboxProps {
-  status: number;
-  onStatusChange: (status: number) => Promise<void>;
-  loading?: boolean;
+  status: 0 | 1 | 2;
+  onStatusChange: (status: 0 | 1 | 2) => void;
 }
 
-export const StatusCheckbox: React.FC<StatusCheckboxProps> = ({
-  status,
-  onStatusChange,
-  loading = false,
-}) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const statusMap: Record<"0" | "1" | "-1", { icon: string; label: string; color: string }> = {
-    "0": { icon: '⭕', label: 'No Action Taken', color: '#999' },
-    "1": { icon: '✅', label: 'Approved', color: '#28a745' },
-    "-1": { icon: '❌', label: 'Not Approved', color: '#dc3545' },
+export const StatusCheckbox: React.FC<StatusCheckboxProps> = ({ status, onStatusChange }) => {
+  const getDisplay = () => {
+    switch (status) {
+      case 0:
+        return "⚪"; // no action
+      case 1:
+        return "✔️"; // approved
+      case 2:
+        return "❌"; // not approved
+    }
   };
 
-  const current = statusMap[String(status) as "0" | "1" | "-1"] || statusMap["0"];
+  const handleClick = () => {
+    const nextStatus: 0 | 1 | 2 = status === 0 ? 1 : status === 1 ? 2 : 0;
+    onStatusChange(nextStatus);
+  };
 
-  const handleClick = async () => {
-    if (loading) return;
-    const nextStatus = status === 0 ? 1 : status === 1 ? -1 : 0;
-    await onStatusChange(nextStatus);
+  const getTooltip = () => {
+    switch (status) {
+      case 0:
+        return "No Action Taken";
+      case 1:
+        return "Approved";
+      case 2:
+        return "Not Approved";
+    }
   };
 
   return (
-    <div className="tooltip">
-      <button
-        className="status-icon"
-        onClick={handleClick}
-        disabled={loading}
-        style={{ color: current.color }}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
-        {current.icon}
-      </button>
-      {showTooltip && (
-        <span className="tooltip-text">{current.label}</span>
-      )}
-    </div>
+    <span
+      className="status-icon tooltip"
+      onClick={handleClick}
+      title={getTooltip()}
+    >
+      {getDisplay()}
+    </span>
   );
 };

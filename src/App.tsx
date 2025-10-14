@@ -1,45 +1,42 @@
 import { useState } from "react";
-import type { Team } from "./types";
-import { TeamListPage } from "./pages/TeamListPage";
 import { TeamFormPage } from "./pages/TeamFormPage";
+import { TeamListPage } from "./pages/TeamListPage";
+import type { ITeam } from "./types";
 
 export const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<'list' | 'form'>('list');
-  const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+  // null = show list, otherwise show form with team
+  const [editingTeam, setEditingTeam] = useState<ITeam | null>(null);
 
-  const handleEditTeam = (team: Team) => {
+  // Handler when user clicks "Create New Team"
+  const handleCreateTeam = () => {
+    setEditingTeam(null); // form will be in "create" mode
+  };
+
+  // Handler when user clicks "Edit Team"
+  const handleEditTeam = (team: ITeam) => {
     setEditingTeam(team);
-    setCurrentPage('form');
   };
 
-  const handleAddNew = () => {
-    setEditingTeam(null);
-    setCurrentPage('form');
-  };
-
-  const handleSaveTeam = () => {
-    setCurrentPage('list');
-    setEditingTeam(null);
-  };
-
-  const handleExitForm = () => {
-    setCurrentPage('list');
-    setEditingTeam(null);
+  // Handler after save or exit
+  const handleFormExit = () => {
+    setEditingTeam(null); // back to list
   };
 
   return (
-    <>
-     
-      {currentPage === 'list' ? (
-        <TeamListPage onEdit={handleEditTeam} onAddNew={handleAddNew} />
-      ) : (
+    <div>
+      {editingTeam !== null || editingTeam === null ? (
         <TeamFormPage
           team={editingTeam}
-          onSave={handleSaveTeam}
-          onExit={handleExitForm}
+          onSave={handleFormExit}
+          onExit={handleFormExit}
+        />
+      ) : (
+        <TeamListPage
+          onEditTeam={(teamId) => handleEditTeam({ _id: teamId } as ITeam)}
+          onCreateTeam={handleCreateTeam}
         />
       )}
-    </>
+    </div>
   );
 };
 
