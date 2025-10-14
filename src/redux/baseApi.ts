@@ -6,6 +6,7 @@ export const baseApi = createApi({
     baseUrl: "http://localhost:5000/api/v1", // your backend base URL
     prepareHeaders: (headers) => {
       // Add custom headers if needed
+      headers.set("Content-Type", "application/json");
       // headers.set("Authorization", `Bearer ${token}`);
       return headers;
     },

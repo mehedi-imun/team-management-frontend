@@ -49,7 +49,8 @@ export const TeamFormPage: React.FC<TeamFormPageProps> = ({ team, onSave, onExit
 
   // Submit form handler
   const onSubmit = async (data: TeamFormValues) => {
-    setLoading(true);
+    
+    // setLoading(true);
     try {
       if (team?._id) {
         // Update existing team

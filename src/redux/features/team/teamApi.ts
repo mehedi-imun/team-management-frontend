@@ -26,11 +26,15 @@ export const teamApi = baseApi.injectEndpoints({
 
     // Create new team
     createTeam: builder.mutation({
-      query: (data) => ({
-        url: "/teams",
-        method: "POST",
-        data,
-      }),
+      query: (data) => (
+        console.log(data),
+        {
+          url: "/teams",
+          method: "POST",
+
+          body: JSON.stringify(data),
+        }
+      ),
       invalidatesTags: ["Team"],
     }),
 
@@ -39,7 +43,8 @@ export const teamApi = baseApi.injectEndpoints({
       query: ({ id, ...data }) => ({
         url: `/teams/${id}`,
         method: "PUT",
-        data,
+
+        body: JSON.stringify(data),
       }),
       invalidatesTags: ["Team"],
     }),
