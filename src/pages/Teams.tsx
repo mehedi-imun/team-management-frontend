@@ -93,21 +93,29 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
 
   const handleStatusChange = async (
     teamId: string,
-    type: "manager" | "director",
-    status: "0" | "1" | "-1"
+    field: "managerApproved" | "directorApproved",
+    nextValue: string
   ) => {
     setLoading(true);
+
     try {
       await updateApprovalStatusApi({
         teamId,
-        field: type === "manager" ? "managerApproved" : "directorApproved",
-        value: Number(status) as 0 | 1 | 2,
+        field,
+        value: nextValue as "0" | "1" | "-1",
       }).unwrap();
-      showToast("Team status saved successfully");
-    } catch {
+
+      showToast(
+        `${
+          field === "managerApproved" ? "Manager" : "Director"
+        } approval updated`
+      );
+    } catch (err) {
+      console.error(err);
       showToast("Failed to update status", "error");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleDelete = (teamId: string) => {
@@ -319,7 +327,11 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                       <ThreeStateCheckbox
                         status={team.managerApproved || "0"}
                         onChange={(status) =>
-                          handleStatusChange(team._id, "manager", status)
+                          handleStatusChange(
+                            team._id,
+                            "managerApproved",
+                            status
+                          )
                         }
                       />
                     </td>
@@ -327,7 +339,11 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                       <ThreeStateCheckbox
                         status={team.directorApproved || "0"}
                         onChange={(status) =>
-                          handleStatusChange(team._id, "director", status)
+                          handleStatusChange(
+                            team._id,
+                            "directorApproved",
+                            status
+                          )
                         }
                       />
                     </td>

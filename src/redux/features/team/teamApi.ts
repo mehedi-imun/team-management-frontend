@@ -77,12 +77,13 @@ export const teamApi = baseApi.injectEndpoints({
       }: {
         teamId: string;
         field: "managerApproved" | "directorApproved";
-        value: 0 | 1 | 2;
+        value: "0" | "1" | "-1";
       }) => ({
         url: `/teams/${teamId}/status`,
         method: "PATCH",
-        data: { field, value },
+        body: JSON.stringify({ field, value }),
       }),
+
       invalidatesTags: ["Team"],
     }),
 

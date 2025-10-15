@@ -1,47 +1,45 @@
-import { useState } from 'react';
-
 interface ThreeStateCheckboxProps {
   status: "0" | "1" | "-1";
   onChange: (status: "0" | "1" | "-1") => void;
 }
 
 const ThreeStateCheckbox = ({ status, onChange }: ThreeStateCheckboxProps) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const getStatusText = () => {
-    switch (status) {
-      case '0':
-        return 'No Action Taken';
-      case '1':
-        return 'Approved';
-      case '-1':
-        return 'Not Approved';
-    }
-  };
-
   const handleClick = () => {
-    let newStatus: "0" | "1" | "-1";
-    
-    if (status === '0') {
-      newStatus = '1';
-    } else if (status === '1') {
-      newStatus = '-1';
-    } else {
-      newStatus = '0';
-    }
-
-    onChange(newStatus);
+    const nextStatus: "0" | "1" | "-1" =
+      status === "0" ? "1" : status === "1" ? "-1" : "0";
+    onChange(nextStatus);
   };
+
+  const getColor = () =>
+    status === "1" ? "green" : status === "-1" ? "red" : "transparent";
+  const getSymbol = () => (status === "1" ? "✔" : status === "-1" ? "✖" : "");
+
+  const getTooltip = () =>
+    status === "0"
+      ? "No Action Taken"
+      : status === "1"
+      ? "Approved"
+      : "Not Approved";
 
   return (
     <div
-      className="status-circle"
-      data-status={status}
       onClick={handleClick}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      title={getTooltip()}
+      style={{
+        width: 24,
+        height: 24,
+        borderRadius: "50%",
+        border: "2px solid #666",
+        display: "inline-flex",
+        justifyContent: "center",
+        alignItems: "center",
+        cursor: "pointer",
+        backgroundColor: getColor(),
+        color: "#fff",
+        userSelect: "none",
+      }}
     >
-      {showTooltip && <div className="tooltip">{getStatusText()}</div>}
+      {getSymbol()}
     </div>
   );
 };
