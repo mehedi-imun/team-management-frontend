@@ -12,6 +12,7 @@ import {
   useGetAllTeamsQuery,
   useUpdateApprovalStatusMutation,
   useUpdateMemberMutation,
+  useUpdateTeamOrderMutation,
 } from "../redux/features/team/teamApi";
 import "../styles/teams.css";
 
@@ -30,6 +31,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   const [updateApprovalStatusApi] = useUpdateApprovalStatusMutation();
   const [updateMemberApi] = useUpdateMemberMutation();
   const [deleteMemberApi] = useDeleteMemberMutation();
+  const [updateTeamOrderApi] = useUpdateTeamOrderMutation();
 
   const teams = teamsData || [];
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
@@ -65,10 +67,37 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   const handleDragStart = (index: number) => {
     dragItem.current = index;
   };
+
   const handleDragEnter = (index: number) => {
     dragOverItem.current = index;
   };
-  const handleDragEnd = () => {
+
+  const handleDragEnd = async () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+
+    const newTeams = [...filteredTeams];
+    // Swap dragged item with target
+    const draggedTeam = newTeams[dragItem.current];
+    newTeams.splice(dragItem.current, 1);
+    newTeams.splice(dragOverItem.current, 0, draggedTeam);
+
+    // Update the order field for each team
+    const orderList = newTeams.map((team, index) => ({
+      id: team._id,
+      order: index + 1, // starting from 1
+    }));
+
+    try {
+      setLoading(true);
+      await updateTeamOrderApi(orderList).unwrap();
+      showToast("Team order updated successfully");
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to update team order", "error");
+    } finally {
+      setLoading(false);
+    }
+
     dragItem.current = null;
     dragOverItem.current = null;
   };
@@ -97,7 +126,6 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     nextValue: string
   ) => {
     setLoading(true);
-
     try {
       await updateApprovalStatusApi({
         teamId,
@@ -185,11 +213,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     if (!newName) return;
     setLoading(true);
     try {
-      await updateMemberApi({
-        teamId,
-        memberId,
-        data: { name: newName },
-      }).unwrap();
+      await updateMemberApi({ teamId, memberId, name: newName }).unwrap();
       showToast("Member updated successfully");
       setEditingMembers((prev) => {
         const copy = { ...prev };
