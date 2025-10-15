@@ -7,9 +7,8 @@ export const teamApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllTeams: builder.query<ITeam[], Record<string, any> | void>({
       query: (params: Record<string, any> = {}) => ({
-        url: "/teams?sort=order",
+        url: `/teams?${new URLSearchParams(params).toString()}`,
         method: "GET",
-        params,
       }),
       providesTags: ["Team"],
       transformResponse: (response: any) => response?.data || [],

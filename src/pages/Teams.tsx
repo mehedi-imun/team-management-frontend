@@ -1,7 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ThreeStateCheckbox from "../components/ThreeStateCheckbox";
 import type { ITeam } from "../types/index";
 
+import debounce from "lodash.debounce";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Loader from "../components/Loader";
 import Toast from "../components/Toast";
@@ -22,10 +23,17 @@ interface TeamsProps {
 }
 
 const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [editingMembers, setEditingMembers] = useState<Record<string, string>>(
     {}
   );
-  const { data: teamsData, isLoading: loadingTeams } = useGetAllTeamsQuery();
+
+  const { data: teamsData, isLoading: loadingTeams } = useGetAllTeamsQuery({
+    searchTerm: debouncedSearch,
+    sort: "order",
+  });
+
   const [deleteTeamApi] = useDeleteTeamMutation();
   const [bulkDeleteTeamsApi] = useBulkDeleteTeamsMutation();
   const [updateApprovalStatusApi] = useUpdateApprovalStatusMutation();
@@ -35,7 +43,6 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
 
   const teams = teamsData || [];
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -43,6 +50,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     message: string;
     onConfirm: () => void;
   }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
+
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     show: boolean;
@@ -75,16 +83,14 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   const handleDragEnd = async () => {
     if (dragItem.current === null || dragOverItem.current === null) return;
 
-    const newTeams = [...filteredTeams];
-    // Swap dragged item with target
+    const newTeams = [...teams];
     const draggedTeam = newTeams[dragItem.current];
     newTeams.splice(dragItem.current, 1);
     newTeams.splice(dragOverItem.current, 0, draggedTeam);
 
-    // Update the order field for each team
     const orderList = newTeams.map((team, index) => ({
       id: team._id,
-      order: index + 1, // starting from 1
+      order: index + 1,
     }));
 
     try {
@@ -111,13 +117,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedTeams(
-      checked
-        ? filteredTeams
-            .map((t) => t._id)
-            .filter((id): id is string => typeof id === "string")
-        : []
-    );
+    setSelectedTeams(checked ? teams.map((t) => t._id) : []);
   };
 
   const handleStatusChange = async (
@@ -132,14 +132,12 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
         field,
         value: nextValue as "0" | "1" | "-1",
       }).unwrap();
-
       showToast(
         `${
           field === "managerApproved" ? "Manager" : "Director"
         } approval updated`
       );
-    } catch (err) {
-      console.error(err);
+    } catch {
       showToast("Failed to update status", "error");
     } finally {
       setLoading(false);
@@ -250,14 +248,18 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     });
   };
 
-  const filteredTeams = teams.filter((team) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      team.name.toLowerCase().includes(query) ||
-      team.description.toLowerCase().includes(query) ||
-      team.members.some((member) => member.name.toLowerCase().includes(query))
-    );
-  });
+  // Debounced search
+  useEffect(() => {
+    const handler = debounce((query: string) => {
+      setDebouncedSearch(query);
+    }, 500);
+
+    handler(searchQuery);
+
+    return () => {
+      handler.cancel();
+    };
+  }, [searchQuery]);
 
   return (
     <div className="container">
@@ -295,23 +297,21 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                   type="checkbox"
                   className="checkbox"
                   checked={
-                    selectedTeams.length === filteredTeams.length &&
-                    filteredTeams.length > 0
+                    selectedTeams.length === teams.length && teams.length > 0
                   }
                   onChange={(e) => handleSelectAll(e.target.checked)}
                 />
               </th>
-              <th style={{ width: "40px " }}></th>
+              <th style={{ width: "40px" }}></th>
               <th>Team Name</th>
               <th>Description</th>
               <th>Approved by Manager</th>
               <th>Approved by Director</th>
-
               <th style={{ width: "120px" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredTeams.length === 0 ? (
+            {teams.length === 0 ? (
               <tr>
                 <td colSpan={9}>
                   <div className="no-data">
@@ -321,7 +321,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                 </td>
               </tr>
             ) : (
-              filteredTeams.map((team, index) => (
+              teams.map((team, index) => (
                 <React.Fragment key={team._id}>
                   <tr
                     className={
@@ -346,7 +346,6 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                     </td>
                     <td>{team.name}</td>
                     <td>{team.description}</td>
-
                     <td>
                       <ThreeStateCheckbox
                         status={team.managerApproved || "0"}
@@ -394,7 +393,6 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                       </div>
                     </td>
                   </tr>
-
                   {/* Expanded Members */}
                   {expandedTeams.includes(team._id) &&
                     team.members.length > 0 && (
