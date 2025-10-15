@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// src/modules/team/TeamForm.tsx
 import { useEffect, useState } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Loader from "../components/Loader";
