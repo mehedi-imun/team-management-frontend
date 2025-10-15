@@ -25,22 +25,21 @@ export const teamApi = baseApi.injectEndpoints({
 
     // Create new team
     createTeam: builder.mutation({
-      query: (data) => (
-        {
-          url: "/teams",
-          method: "POST",
+      query: (data) => ({
+        url: "/teams",
+        method: "POST",
 
-          body: JSON.stringify(data),
-        }
-      ),
+        body: JSON.stringify(data),
+      }),
       invalidatesTags: ["Team"],
     }),
 
     // Update team
     updateTeam: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `/teams/${id}`,
-        method: "PUT",
+      // { teamId: team._id, data: formData }
+      query: ({ teamId, data }) => ({
+        url: `/teams/${teamId}`,
+        method: "PATCH",
 
         body: JSON.stringify(data),
       }),
@@ -61,7 +60,7 @@ export const teamApi = baseApi.injectEndpoints({
       query: (ids: string[]) => ({
         url: "/teams",
         method: "DELETE",
-        data: { ids },
+        body: JSON.stringify({ ids }),
       }),
       invalidatesTags: ["Team"],
     }),
@@ -86,15 +85,14 @@ export const teamApi = baseApi.injectEndpoints({
     }),
 
     // Update team order (drag & drop)
- updateTeamOrder: builder.mutation({
-  query: (orderList: { id: string; order: number }[]) => ({
-    url: "/teams/order",
-    method: "POST",
-    body: JSON.stringify({ orderList }),
-  }),
-  invalidatesTags: ["Team"],
-}),
-
+    updateTeamOrder: builder.mutation({
+      query: (orderList: { id: string; order: number }[]) => ({
+        url: "/teams/order",
+        method: "POST",
+        body: JSON.stringify({ orderList }),
+      }),
+      invalidatesTags: ["Team"],
+    }),
 
     // Update a team member
     updateMember: builder.mutation({
@@ -106,7 +104,7 @@ export const teamApi = baseApi.injectEndpoints({
         teamId: string;
         memberId: string;
         name: any;
-      }) => ( {
+      }) => ({
         url: `/teams/${teamId}/members/${memberId}`,
         method: "PATCH",
         body: JSON.stringify({ name }),

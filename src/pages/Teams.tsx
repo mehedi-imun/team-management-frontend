@@ -43,6 +43,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
 
   const teams = teamsData || [];
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  console.log(selectedTeams);
   const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;

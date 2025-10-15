@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/modules/team/TeamForm.tsx
 import { useEffect, useState } from "react";
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -22,7 +23,7 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
     status: "0",
     managerApproved: "0",
     directorApproved: "0",
-    members: [{ _id: Date.now().toString(), name: "" }],
+    members: [{ _id: null, name: "" }], 
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -47,7 +48,7 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
         status: team.status,
         managerApproved: team.managerApproved,
         directorApproved: team.directorApproved,
-        members: team.members.length > 0 ? team.members : [{ _id: Date.now().toString(), name: "" }],
+        members: team.members.length > 0 ? team.members : [{ _id: null, name: "" }], 
       });
     }
   }, [isEditMode, team]);
@@ -81,11 +82,23 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
       onConfirm: async () => {
         setLoading(true);
         try {
+          // Filter out invalid _id for new members
+          const cleanedData = {
+            ...formData,
+            members: formData.members.map(m => {
+              if (!m._id) {
+                const { _id, ...rest } = m;
+                return rest;
+              }
+              return m;
+            }),
+          };
+
           if (isEditMode && team?._id) {
-            await updateTeamApi({ teamId: team._id, data: formData }).unwrap();
+            await updateTeamApi({ teamId: team._id, data: cleanedData }).unwrap();
             showToast("Team updated successfully", "success");
           } else {
-            await createTeamApi(formData).unwrap();
+            await createTeamApi(cleanedData).unwrap();
             showToast("Team created successfully", "success");
           }
           setTimeout(() => onBack(), 1000);
@@ -100,7 +113,7 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
   };
 
   const handleAddMember = () => {
-    const newMember: IMember = { _id: Date.now().toString(), name: "" };
+    const newMember: IMember = { _id: null, name: "" }; 
     setFormData(prev => ({ ...prev, members: [...prev.members, newMember] }));
   };
 
@@ -174,7 +187,7 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
 
           {formData.members.map((member, index) => (
             <TeamMemberRow
-              key={member._id}
+              key={member._id || index} // fallback key for new members
               member={member}
               index={index}
               errors={{
