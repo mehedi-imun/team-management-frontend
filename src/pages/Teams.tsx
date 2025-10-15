@@ -1,11 +1,19 @@
-import { useState, useRef } from 'react';
-import type { ITeam } from '../types/index';
-import ThreeStateCheckbox from '../components/ThreeStateCheckbox';
+import React, { useRef, useState } from "react";
+import ThreeStateCheckbox from "../components/ThreeStateCheckbox";
+import type { ITeam } from "../types/index";
 
-import '../styles/teams.css';
-import ConfirmDialog from '../components/ConfirmDialog';
-import Loader from '../components/Loader';
-import Toast from '../components/Toast';
+import ConfirmDialog from "../components/ConfirmDialog";
+import Loader from "../components/Loader";
+import Toast from "../components/Toast";
+import {
+  useBulkDeleteTeamsMutation,
+  useDeleteMemberMutation,
+  useDeleteTeamMutation,
+  useGetAllTeamsQuery,
+  useUpdateApprovalStatusMutation,
+  useUpdateMemberMutation,
+} from "../redux/features/team/teamApi";
+import "../styles/teams.css";
 
 interface TeamsProps {
   onNewTeam: () => void;
@@ -13,147 +21,116 @@ interface TeamsProps {
 }
 
 const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
-  const [teams, setTeams] = useState<ITeam[]>([
-    {
-      _id: '1',
-      name: 'Development Team',
-      manager: 'John Manager',
-      director: 'Jane Director',
-      description: 'Core development team',
-      status: '1',
-      managerApproved: '1',
-      directorApproved: '0',
-      members: [
-        { _id: '1-1', name: 'John Doe', position: 'Developer', email: 'john@example.com' },
-        { _id: '1-2', name: 'Jane Smith', position: 'Senior Developer', email: 'jane@example.com' },
-      ],
-    },
-    {
-      _id: '2',
-      name: 'Marketing Team',
-      manager: 'Bob Manager',
-      director: 'Alice Director',
-      description: 'Digital marketing and campaigns',
-      status: '0',
-      managerApproved: '0',
-      directorApproved: '0',
-      members: [
-        { _id: '2-1', name: 'Alice Johnson', position: 'Marketing Lead', email: 'alice@example.com' },
-        { _id: '2-2', name: 'Bob Wilson', position: 'Content Creator', email: 'bob@example.com' },
-        { _id: '2-3', name: 'Carol Brown', position: 'Social Media Manager', email: 'carol@example.com' },
-      ],
-    },
-    {
-      _id: '3',
-      name: 'Design Team',
-      manager: 'Eve Manager',
-      director: 'Frank Director',
-      description: 'UI/UX design team',
-      status: '-1',
-      managerApproved: '-1',
-      directorApproved: '1',
-      members: [
-        { _id: '3-1', name: 'David Lee', position: 'UI Designer', email: 'david@example.com' },
-      ],
-    },
-  ]);
+  const [editingMembers, setEditingMembers] = useState<Record<string, string>>(
+    {}
+  );
+  const { data: teamsData, isLoading: loadingTeams } = useGetAllTeamsQuery();
+  const [deleteTeamApi] = useDeleteTeamMutation();
+  const [bulkDeleteTeamsApi] = useBulkDeleteTeamsMutation();
+  const [updateApprovalStatusApi] = useUpdateApprovalStatusMutation();
+  const [updateMemberApi] = useUpdateMemberMutation();
+  const [deleteMemberApi] = useDeleteMemberMutation();
 
+  const teams = teamsData || [];
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     title: string;
     message: string;
     onConfirm: () => void;
-  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+  }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     show: boolean;
     message: string;
-    type: 'success' | 'error';
-  }>({ show: false, message: '', type: 'success' });
+    type: "success" | "error";
+  }>({ show: false, message: "", type: "success" });
 
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
 
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
     setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+    setTimeout(
+      () => setToast({ show: false, message: "", type: "success" }),
+      3000
+    );
   };
 
   const handleDragStart = (index: number) => {
     dragItem.current = index;
   };
-
   const handleDragEnter = (index: number) => {
     dragOverItem.current = index;
   };
-
-  const handleDragEnd = async () => {
-    if (dragItem.current !== null && dragOverItem.current !== null) {
-      const newTeams = [...teams];
-      const draggedItem = newTeams[dragItem.current];
-      newTeams.splice(dragItem.current, 1);
-      newTeams.splice(dragOverItem.current, 0, draggedItem);
-
-      setTeams(newTeams);
-      
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setLoading(false);
-      showToast('Team order saved successfully');
-    }
-    
+  const handleDragEnd = () => {
     dragItem.current = null;
     dragOverItem.current = null;
   };
 
   const handleSelectTeam = (teamId: string) => {
-    setSelectedTeams(prev =>
+    setSelectedTeams((prev) =>
       prev.includes(teamId)
-        ? prev.filter(id => id !== teamId)
+        ? prev.filter((id) => id !== teamId)
         : [...prev, teamId]
     );
   };
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectedTeams(checked ? filteredTeams.map(t => t._id) : []);
+    setSelectedTeams(
+      checked
+        ? filteredTeams
+            .map((t) => t._id)
+            .filter((id): id is string => typeof id === "string")
+        : []
+    );
   };
 
-  const handleStatusChange = async (teamId: string, type: 'manager' | 'director', status: "0" | "1" | "-1") => {
+  const handleStatusChange = async (
+    teamId: string,
+    type: "manager" | "director",
+    status: "0" | "1" | "-1"
+  ) => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    setTeams(prevTeams =>
-      prevTeams.map(team =>
-        team._id === teamId
-          ? {
-              ...team,
-              ...(type === 'manager'
-                ? { managerApproved: status }
-                : { directorApproved: status }),
-            }
-          : team
-      )
-    );
-    
+    try {
+      await updateApprovalStatusApi({
+        teamId,
+        field: type === "manager" ? "managerApproved" : "directorApproved",
+        value: Number(status) as 0 | 1 | 2,
+      }).unwrap();
+      showToast("Team status saved successfully");
+    } catch {
+      showToast("Failed to update status", "error");
+    }
     setLoading(false);
-    showToast('Team status saved successfully');
   };
 
   const handleDelete = (teamId: string) => {
     setConfirmDialog({
       isOpen: true,
-      title: 'Delete Team',
-      message: 'Are you sure you want to delete this team? This action cannot be undone.',
+      title: "Delete Team",
+      message:
+        "Are you sure you want to delete this team? This action cannot be undone.",
       onConfirm: async () => {
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setTeams(prevTeams => prevTeams.filter(t => t._id !== teamId));
+        try {
+          await deleteTeamApi(teamId).unwrap();
+          showToast("Team deleted successfully");
+        } catch {
+          showToast("Failed to delete team", "error");
+        }
         setLoading(false);
-        showToast('Team deleted successfully');
-        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+        setConfirmDialog({
+          isOpen: false,
+          title: "",
+          message: "",
+          onConfirm: () => {},
+        });
       },
     });
   };
@@ -161,80 +138,93 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   const handleBulkDelete = () => {
     setConfirmDialog({
       isOpen: true,
-      title: 'Delete Teams',
+      title: "Delete Teams",
       message: `Are you sure you want to delete ${selectedTeams.length} team(s)? This action cannot be undone.`,
       onConfirm: async () => {
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setTeams(prevTeams => prevTeams.filter(t => !selectedTeams.includes(t._id)));
-        setSelectedTeams([]);
+        try {
+          await bulkDeleteTeamsApi(selectedTeams).unwrap();
+          setSelectedTeams([]);
+          showToast("Teams deleted successfully");
+        } catch {
+          showToast("Failed to delete teams", "error");
+        }
         setLoading(false);
-        showToast('Teams deleted successfully');
-        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+        setConfirmDialog({
+          isOpen: false,
+          title: "",
+          message: "",
+          onConfirm: () => {},
+        });
       },
     });
   };
 
   const toggleExpand = (teamId: string) => {
-    setExpandedTeams(prev =>
+    setExpandedTeams((prev) =>
       prev.includes(teamId)
-        ? prev.filter(id => id !== teamId)
+        ? prev.filter((id) => id !== teamId)
         : [...prev, teamId]
     );
   };
 
-  const handleMemberNameChange = async (teamId: string, memberId: string, field: 'name' | 'position' | 'email', value: string) => {
-    setTeams(prevTeams =>
-      prevTeams.map(team =>
-        team._id === teamId
-          ? {
-              ...team,
-              members: team.members.map(member =>
-                member._id === memberId ? { ...member, [field]: value } : member
-              ),
-            }
-          : team
-      )
-    );
+  const handleEditMember = (memberId: string, value: string) => {
+    setEditingMembers((prev) => ({ ...prev, [memberId]: value }));
+  };
+
+  const handleSaveMember = async (teamId: string, memberId: string) => {
+    const newName = editingMembers[memberId];
+    if (!newName) return;
+    setLoading(true);
+    try {
+      await updateMemberApi({
+        teamId,
+        memberId,
+        data: { name: newName },
+      }).unwrap();
+      showToast("Member updated successfully");
+      setEditingMembers((prev) => {
+        const copy = { ...prev };
+        delete copy[memberId];
+        return copy;
+      });
+    } catch {
+      showToast("Failed to update member", "error");
+    }
+    setLoading(false);
   };
 
   const handleDeleteMember = (teamId: string, memberId: string) => {
     setConfirmDialog({
       isOpen: true,
-      title: 'Delete Member',
-      message: 'Are you sure you want to delete this member?',
+      title: "Delete Member",
+      message: "Are you sure you want to delete this member?",
       onConfirm: async () => {
         setLoading(true);
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setTeams(prevTeams =>
-          prevTeams.map(team =>
-            team._id === teamId
-              ? {
-                  ...team,
-                  members: team.members.filter(m => m._id !== memberId),
-                }
-              : team
-          )
-        );
+        try {
+          await deleteMemberApi({ teamId, memberId }).unwrap();
+          showToast("Member deleted successfully");
+        } catch {
+          showToast("Failed to delete member", "error");
+        }
         setLoading(false);
-        showToast('Member deleted successfully');
-        setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+        setConfirmDialog({
+          isOpen: false,
+          title: "",
+          message: "",
+          onConfirm: () => {},
+        });
       },
     });
   };
 
-  const filteredTeams = teams.filter(team => {
+  const filteredTeams = teams.filter((team) => {
     const query = searchQuery.toLowerCase();
-    const teamMatch = team.name.toLowerCase().includes(query) ||
+    return (
+      team.name.toLowerCase().includes(query) ||
       team.description.toLowerCase().includes(query) ||
-      team.manager.toLowerCase().includes(query) ||
-      team.director.toLowerCase().includes(query);
-    const memberMatch = team.members.some(member =>
-      member.name.toLowerCase().includes(query) ||
-      member.position.toLowerCase().includes(query) ||
-      member.email.toLowerCase().includes(query)
+      team.members.some((member) => member.name.toLowerCase().includes(query))
     );
-    return teamMatch || memberMatch;
   });
 
   return (
@@ -253,7 +243,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
             className="search-input"
             placeholder="Search teams or members..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <span className="search-icon">🔍</span>
         </div>
@@ -268,22 +258,24 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
         <table className="teams-table">
           <thead>
             <tr>
-              <th style={{ width: '40px' }}>
+              <th style={{ width: "40px" }}>
                 <input
                   type="checkbox"
                   className="checkbox"
-                  checked={selectedTeams.length === filteredTeams.length && filteredTeams.length > 0}
-                  onChange={e => handleSelectAll(e.target.checked)}
+                  checked={
+                    selectedTeams.length === filteredTeams.length &&
+                    filteredTeams.length > 0
+                  }
+                  onChange={(e) => handleSelectAll(e.target.checked)}
                 />
               </th>
-              <th style={{ width: '40px' }}></th>
+              <th style={{ width: "40px " }}></th>
               <th>Team Name</th>
               <th>Description</th>
-              <th>Manager</th>
-              <th>Director</th>
-              <th>Manager Approval</th>
-              <th>Director Approval</th>
-              <th style={{ width: '120px' }}>Actions</th>
+              <th>Approved by Manager</th>
+              <th>Approved by Director</th>
+
+              <th style={{ width: "120px" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -298,15 +290,16 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
               </tr>
             ) : (
               filteredTeams.map((team, index) => (
-                <>
+                <React.Fragment key={team._id}>
                   <tr
-                    key={team._id}
-                    className={selectedTeams.includes(team._id) ? 'selected' : ''}
+                    className={
+                      selectedTeams.includes(team._id) ? "selected" : ""
+                    }
                     draggable
                     onDragStart={() => handleDragStart(index)}
                     onDragEnter={() => handleDragEnter(index)}
                     onDragEnd={handleDragEnd}
-                    onDragOver={e => e.preventDefault()}
+                    onDragOver={(e) => e.preventDefault()}
                   >
                     <td>
                       <input
@@ -321,18 +314,21 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                     </td>
                     <td>{team.name}</td>
                     <td>{team.description}</td>
-                    <td>{team.manager}</td>
-                    <td>{team.director}</td>
+
                     <td>
                       <ThreeStateCheckbox
-                        status={team.managerApproved || '0'}
-                        onChange={status => handleStatusChange(team._id, 'manager', status)}
+                        status={team.managerApproved || "0"}
+                        onChange={(status) =>
+                          handleStatusChange(team._id, "manager", status)
+                        }
                       />
                     </td>
                     <td>
                       <ThreeStateCheckbox
-                        status={team.directorApproved || '0'}
-                        onChange={status => handleStatusChange(team._id, 'director', status)}
+                        status={team.directorApproved || "0"}
+                        onChange={(status) =>
+                          handleStatusChange(team._id, "director", status)
+                        }
                       />
                     </td>
                     <td>
@@ -340,75 +336,90 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
                         <button
                           className="icon-btn expand"
                           onClick={() => toggleExpand(team._id)}
-                          title="Show/Hide Members"
                         >
-                          {expandedTeams.includes(team._id) ? '▼' : '▶'}
+                          {expandedTeams.includes(team._id) ? "▼" : "▶"}
                         </button>
                         <button
                           className="icon-btn edit"
                           onClick={() => onEditTeam(team)}
-                          title="Edit"
                         >
                           ✏️
                         </button>
                         <button
                           className="icon-btn delete"
                           onClick={() => handleDelete(team._id)}
-                          title="Delete"
                         >
                           🗑️
                         </button>
                       </div>
                     </td>
                   </tr>
-                  {expandedTeams.includes(team._id) && (
-                    <tr className="member-details">
-                      <td colSpan={9}>
-                        <div className="members-list">
-                          <div className="members-title">Team Members ({team.members.length})</div>
-                          {team.members.map(member => (
-                            <div key={member._id} className="member-item">
-                              <input
-                                type="text"
-                                className="member-name"
-                                value={member.name}
-                                onChange={e =>
-                                  handleMemberNameChange(team._id, member._id!, 'name', e.target.value)
-                                }
-                                placeholder="Name"
-                              />
-                              <input
-                                type="text"
-                                className="member-name"
-                                value={member.position}
-                                onChange={e =>
-                                  handleMemberNameChange(team._id, member._id!, 'position', e.target.value)
-                                }
-                                placeholder="Position"
-                              />
-                              <input
-                                type="text"
-                                className="member-name"
-                                value={member.email}
-                                onChange={e =>
-                                  handleMemberNameChange(team._id, member._id!, 'email', e.target.value)
-                                }
-                                placeholder="Email"
-                              />
-                              <button
-                                className="icon-btn delete"
-                                onClick={() => handleDeleteMember(team._id, member._id!)}
-                                title="Delete Member"
-                              >
-                                🗑️
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </>
+
+                  {/* Expanded Members */}
+                  {expandedTeams.includes(team._id) &&
+                    team.members.length > 0 && (
+                      <tr className="member-details">
+                        <td colSpan={9}>
+                          <div className="members-list">
+                            {team.members.map((member) => {
+                              const isEditing =
+                                editingMembers[member._id!] !== undefined;
+                              const memberName = isEditing
+                                ? editingMembers[member._id!]
+                                : member.name;
+                              return (
+                                <div key={member._id} className="member-item">
+                                  <input
+                                    className={`form-input`}
+                                    type="text"
+                                    value={memberName}
+                                    readOnly={!isEditing}
+                                    onChange={(e) =>
+                                      handleEditMember(
+                                        member._id!,
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="Name"
+                                  />
+                                  {isEditing ? (
+                                    <button
+                                      className="icon-btn save"
+                                      onClick={() =>
+                                        handleSaveMember(team._id, member._id!)
+                                      }
+                                    >
+                                      💾
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="icon-btn edit"
+                                      onClick={() =>
+                                        handleEditMember(
+                                          member._id!,
+                                          member.name
+                                        )
+                                      }
+                                    >
+                                      ✏️
+                                    </button>
+                                  )}
+                                  <button
+                                    className="icon-btn delete"
+                                    onClick={() =>
+                                      handleDeleteMember(team._id, member._id!)
+                                    }
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                </React.Fragment>
               ))
             )}
           </tbody>
@@ -421,12 +432,17 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
           message={confirmDialog.message}
           onConfirm={confirmDialog.onConfirm}
           onCancel={() =>
-            setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: () => {} })
+            setConfirmDialog({
+              isOpen: false,
+              title: "",
+              message: "",
+              onConfirm: () => {},
+            })
           }
         />
       )}
 
-      {loading && <Loader />}
+      {(loading || loadingTeams) && <Loader />}
       {toast.show && <Toast message={toast.message} type={toast.type} />}
     </div>
   );
