@@ -5,9 +5,12 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import Loader from "../components/Loader";
 import TeamMemberRow from "../components/TeamMemberRow";
 import Toast from "../components/Toast";
+import {
+  useCreateTeamMutation,
+  useUpdateTeamMutation,
+} from "../redux/features/team/teamApi";
 import "../styles/teams.css";
-import type { IMember, ITeam, FormErrors } from "../types";
-import { useCreateTeamMutation, useUpdateTeamMutation } from "../redux/features/team/teamApi";
+import type { FormErrors, IMember, ITeam } from "../types";
 
 interface TeamFormProps {
   team: ITeam | null;
@@ -23,7 +26,7 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
     status: "0",
     managerApproved: "0",
     directorApproved: "0",
-    members: [{ _id: null, name: "" }], 
+    members: [{ _id: null, name: "" }],
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -34,7 +37,11 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
     message: string;
     onConfirm: () => void;
   }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "error"; }>({ show: false, message: "", type: "success" });
+  const [toast, setToast] = useState<{
+    show: boolean;
+    message: string;
+    type: "success" | "error";
+  }>({ show: false, message: "", type: "success" });
 
   // RTK Query
   const [createTeamApi] = useCreateTeamMutation();
@@ -48,22 +55,31 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
         status: team.status,
         managerApproved: team.managerApproved,
         directorApproved: team.directorApproved,
-        members: team.members.length > 0 ? team.members : [{ _id: null, name: "" }], 
+        members:
+          team.members.length > 0 ? team.members : [{ _id: null, name: "" }],
       });
     }
   }, [isEditMode, team]);
 
-  const showToast = (message: string, type: "success" | "error" = "success") => {
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
     setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
+    setTimeout(
+      () => setToast({ show: false, message: "", type: "success" }),
+      3000
+    );
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
     if (!formData.name.trim()) newErrors.name = "Team name is required";
-    if (!formData.description.trim()) newErrors.description = "Description is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
     formData.members.forEach((member, index) => {
-      if (!member.name.trim()) newErrors[`member_${index}_name`] = "Member name is required";
+      if (!member.name.trim())
+        newErrors[`member_${index}_name`] = "Member name is required";
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -78,14 +94,16 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
     setConfirmDialog({
       isOpen: true,
       title: isEditMode ? "Update Team" : "Create Team",
-      message: `Are you sure you want to ${isEditMode ? "update" : "create"} this team?`,
+      message: `Are you sure you want to ${
+        isEditMode ? "update" : "create"
+      } this team?`,
       onConfirm: async () => {
         setLoading(true);
         try {
           // Filter out invalid _id for new members
           const cleanedData = {
             ...formData,
-            members: formData.members.map(m => {
+            members: formData.members.map((m) => {
               if (!m._id) {
                 const { _id, ...rest } = m;
                 return rest;
@@ -95,7 +113,10 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
           };
 
           if (isEditMode && team?._id) {
-            await updateTeamApi({ teamId: team._id, data: cleanedData }).unwrap();
+            await updateTeamApi({
+              teamId: team._id,
+              data: cleanedData,
+            }).unwrap();
             showToast("Team updated successfully", "success");
           } else {
             await createTeamApi(cleanedData).unwrap();
@@ -107,24 +128,35 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
           showToast("Failed to save team", "error");
         }
         setLoading(false);
-        setConfirmDialog({ isOpen: false, title: "", message: "", onConfirm: () => {} });
+        setConfirmDialog({
+          isOpen: false,
+          title: "",
+          message: "",
+          onConfirm: () => {},
+        });
       },
     });
   };
 
   const handleAddMember = () => {
-    const newMember: IMember = { _id: null, name: "" }; 
-    setFormData(prev => ({ ...prev, members: [...prev.members, newMember] }));
+    const newMember: IMember = { _id: null, name: "" };
+    setFormData((prev) => ({ ...prev, members: [...prev.members, newMember] }));
   };
 
-  const handleMemberChange = (index: number, field: keyof IMember, value: string) => {
-    setFormData(prev => ({
+  const handleMemberChange = (
+    index: number,
+    field: keyof IMember,
+    value: string
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      members: prev.members.map((m, i) => (i === index ? { ...m, [field]: value } : m)),
+      members: prev.members.map((m, i) =>
+        i === index ? { ...m, [field]: value } : m
+      ),
     }));
     const errorKey = `member_${index}_${field}`;
     if (errors[errorKey]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[errorKey];
         return newErrors;
@@ -137,7 +169,10 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
       showToast("At least one team member is required", "error");
       return;
     }
-    setFormData(prev => ({ ...prev, members: prev.members.filter((_, i) => i !== index) }));
+    setFormData((prev) => ({
+      ...prev,
+      members: prev.members.filter((_, i) => i !== index),
+    }));
   };
 
   return (
@@ -155,8 +190,13 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
             className={`form-input ${errors.name ? "error" : ""}`}
             value={formData.name}
             onChange={(e) => {
-              setFormData(prev => ({ ...prev, name: e.target.value }));
-              if (errors.name) setErrors(prev => { const newErrors = { ...prev }; delete newErrors.name; return newErrors; });
+              setFormData((prev) => ({ ...prev, name: e.target.value }));
+              if (errors.name)
+                setErrors((prev) => {
+                  const newErrors = { ...prev };
+                  delete newErrors.name;
+                  return newErrors;
+                });
             }}
             placeholder="Enter team name"
           />
@@ -170,19 +210,28 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
             className={`form-textarea ${errors.description ? "error" : ""}`}
             value={formData.description}
             onChange={(e) => {
-              setFormData(prev => ({ ...prev, description: e.target.value }));
-              if (errors.description) setErrors(prev => { const newErrors = { ...prev }; delete newErrors.description; return newErrors; });
+              setFormData((prev) => ({ ...prev, description: e.target.value }));
+              if (errors.description)
+                setErrors((prev) => {
+                  const newErrors = { ...prev };
+                  delete newErrors.description;
+                  return newErrors;
+                });
             }}
             placeholder="Enter team description"
           />
-          {errors.description && <div className="error-message">{errors.description}</div>}
+          {errors.description && (
+            <div className="error-message">{errors.description}</div>
+          )}
         </div>
 
         {/* Members */}
         <div className="team-members-section">
           <div className="section-header">
             <h3 className="section-title">Team Members</h3>
-            <button className="btn btn-primary" onClick={handleAddMember}>+ Add New Member</button>
+            <button className="btn btn-primary" onClick={handleAddMember}>
+              + Add New Member
+            </button>
           </div>
 
           {formData.members.map((member, index) => (
@@ -201,7 +250,9 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
 
         {/* Actions */}
         <div className="form-actions">
-          <button className="btn btn-secondary" onClick={onBack}>Exit</button>
+          <button className="btn btn-secondary" onClick={onBack}>
+            Exit
+          </button>
           <button className="btn btn-primary" onClick={handleSubmit}>
             {isEditMode ? "Update Team" : "Save Team"}
           </button>
@@ -213,7 +264,14 @@ const TeamForm = ({ team, onBack }: TeamFormProps) => {
           title={confirmDialog.title}
           message={confirmDialog.message}
           onConfirm={confirmDialog.onConfirm}
-          onCancel={() => setConfirmDialog({ isOpen: false, title: "", message: "", onConfirm: () => {} })}
+          onCancel={() =>
+            setConfirmDialog({
+              isOpen: false,
+              title: "",
+              message: "",
+              onConfirm: () => {},
+            })
+          }
         />
       )}
 

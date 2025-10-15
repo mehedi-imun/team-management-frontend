@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import ThreeStateCheckbox from "../components/ThreeStateCheckbox";
+import debounce from "lodash.debounce";
+import { useEffect, useRef, useState } from "react";
 import type { ITeam } from "../types/index";
 
-import debounce from "lodash.debounce";
 import ConfirmDialog from "../components/ConfirmDialog";
 import Loader from "../components/Loader";
 import Toast from "../components/Toast";
+
 import {
   useBulkDeleteTeamsMutation,
   useDeleteMemberMutation,
@@ -15,7 +15,11 @@ import {
   useUpdateMemberMutation,
   useUpdateTeamOrderMutation,
 } from "../redux/features/team/teamApi";
+
 import "../styles/teams.css";
+import TeamsHeader from "./Teams/TeamsHeader";
+import TeamsSearchBar from "./Teams/TeamsSearchBar";
+import TeamsRow from "./Teams/TeamsRow";
 
 interface TeamsProps {
   onNewTeam: () => void;
@@ -28,12 +32,32 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   const [editingMembers, setEditingMembers] = useState<Record<string, string>>(
     {}
   );
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success" as "success" | "error",
+  });
+
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
   const { data: teamsData, isLoading: loadingTeams } = useGetAllTeamsQuery({
     searchTerm: debouncedSearch,
     sort: "order",
   });
 
+  const teams = teamsData || [];
+
+  // Mutations
   const [deleteTeamApi] = useDeleteTeamMutation();
   const [bulkDeleteTeamsApi] = useBulkDeleteTeamsMutation();
   const [updateApprovalStatusApi] = useUpdateApprovalStatusMutation();
@@ -41,27 +65,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
   const [deleteMemberApi] = useDeleteMemberMutation();
   const [updateTeamOrderApi] = useUpdateTeamOrderMutation();
 
-  const teams = teamsData || [];
-  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
-  console.log(selectedTeams);
-  const [expandedTeams, setExpandedTeams] = useState<string[]>([]);
-  const [confirmDialog, setConfirmDialog] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-  }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
-
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{
-    show: boolean;
-    message: string;
-    type: "success" | "error";
-  }>({ show: false, message: "", type: "success" });
-
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
-
+  // Toast helper
   const showToast = (
     message: string,
     type: "success" | "error" = "success"
@@ -73,14 +77,13 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     );
   };
 
+  // Drag & drop handlers
   const handleDragStart = (index: number) => {
     dragItem.current = index;
   };
-
   const handleDragEnter = (index: number) => {
     dragOverItem.current = index;
   };
-
   const handleDragEnd = async () => {
     if (dragItem.current === null || dragOverItem.current === null) return;
 
@@ -109,6 +112,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     dragOverItem.current = null;
   };
 
+  // Team selection
   const handleSelectTeam = (teamId: string) => {
     setSelectedTeams((prev) =>
       prev.includes(teamId)
@@ -116,22 +120,22 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
         : [...prev, teamId]
     );
   };
-
   const handleSelectAll = (checked: boolean) => {
     setSelectedTeams(checked ? teams.map((t) => t._id) : []);
   };
 
+  // Approval status
   const handleStatusChange = async (
     teamId: string,
     field: "managerApproved" | "directorApproved",
-    nextValue: string
+    value: string
   ) => {
     setLoading(true);
     try {
       await updateApprovalStatusApi({
         teamId,
         field,
-        value: nextValue as "0" | "1" | "-1",
+        value: value as "0" | "1" | "-1",
       }).unwrap();
       showToast(
         `${
@@ -145,7 +149,8 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     }
   };
 
-  const handleDelete = (teamId: string) => {
+  // Delete handlers
+  const handleDeleteTeam = (teamId: string) => {
     setConfirmDialog({
       isOpen: true,
       title: "Delete Team",
@@ -169,7 +174,6 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
       },
     });
   };
-
   const handleBulkDelete = () => {
     setConfirmDialog({
       isOpen: true,
@@ -195,6 +199,7 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     });
   };
 
+  // Member edit/delete
   const toggleExpand = (teamId: string) => {
     setExpandedTeams((prev) =>
       prev.includes(teamId)
@@ -202,11 +207,9 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
         : [...prev, teamId]
     );
   };
-
   const handleEditMember = (memberId: string, value: string) => {
     setEditingMembers((prev) => ({ ...prev, [memberId]: value }));
   };
-
   const handleSaveMember = async (teamId: string, memberId: string) => {
     const newName = editingMembers[memberId];
     if (!newName) return;
@@ -224,7 +227,6 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
     }
     setLoading(false);
   };
-
   const handleDeleteMember = (teamId: string, memberId: string) => {
     setConfirmDialog({
       isOpen: true,
@@ -251,12 +253,8 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
 
   // Debounced search
   useEffect(() => {
-    const handler = debounce((query: string) => {
-      setDebouncedSearch(query);
-    }, 500);
-
+    const handler = debounce((query: string) => setDebouncedSearch(query), 500);
     handler(searchQuery);
-
     return () => {
       handler.cancel();
     };
@@ -264,31 +262,13 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
 
   return (
     <div className="container">
-      <div className="page-header">
-        <h1 className="page-title">Team Management</h1>
-        <button className="btn btn-primary" onClick={onNewTeam}>
-          + New Team
-        </button>
-      </div>
-
-      <div className="actions-bar">
-        <div className="search-box">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search teams or members..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <span className="search-icon">🔍</span>
-        </div>
-        {selectedTeams.length > 0 && (
-          <button className="btn btn-danger" onClick={handleBulkDelete}>
-            Delete Selected ({selectedTeams.length})
-          </button>
-        )}
-      </div>
-
+      <TeamsHeader onNewTeam={onNewTeam} />
+      <TeamsSearchBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedCount={selectedTeams.length}
+        onBulkDelete={handleBulkDelete}
+      />
       <div className="table-container">
         <table className="teams-table">
           <thead>
@@ -323,142 +303,25 @@ const Teams = ({ onNewTeam, onEditTeam }: TeamsProps) => {
               </tr>
             ) : (
               teams.map((team, index) => (
-                <React.Fragment key={team._id}>
-                  <tr
-                    className={
-                      selectedTeams.includes(team._id) ? "selected" : ""
-                    }
-                    draggable
-                    onDragStart={() => handleDragStart(index)}
-                    onDragEnter={() => handleDragEnter(index)}
-                    onDragEnd={handleDragEnd}
-                    onDragOver={(e) => e.preventDefault()}
-                  >
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="checkbox"
-                        checked={selectedTeams.includes(team._id)}
-                        onChange={() => handleSelectTeam(team._id)}
-                      />
-                    </td>
-                    <td>
-                      <span className="drag-handle">⋮⋮</span>
-                    </td>
-                    <td>{team.name}</td>
-                    <td>{team.description}</td>
-                    <td>
-                      <ThreeStateCheckbox
-                        status={team.managerApproved || "0"}
-                        onChange={(status) =>
-                          handleStatusChange(
-                            team._id,
-                            "managerApproved",
-                            status
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <ThreeStateCheckbox
-                        status={team.directorApproved || "0"}
-                        onChange={(status) =>
-                          handleStatusChange(
-                            team._id,
-                            "directorApproved",
-                            status
-                          )
-                        }
-                      />
-                    </td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="icon-btn expand"
-                          onClick={() => toggleExpand(team._id)}
-                        >
-                          {expandedTeams.includes(team._id) ? "▼" : "▶"}
-                        </button>
-                        <button
-                          className="icon-btn edit"
-                          onClick={() => onEditTeam(team)}
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          className="icon-btn delete"
-                          onClick={() => handleDelete(team._id)}
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {/* Expanded Members */}
-                  {expandedTeams.includes(team._id) &&
-                    team.members.length > 0 && (
-                      <tr className="member-details">
-                        <td colSpan={9}>
-                          <div className="members-list">
-                            {team.members.map((member) => {
-                              const isEditing =
-                                editingMembers[member._id!] !== undefined;
-                              const memberName = isEditing
-                                ? editingMembers[member._id!]
-                                : member.name;
-                              return (
-                                <div key={member._id} className="member-item">
-                                  <input
-                                    className={`form-input`}
-                                    type="text"
-                                    value={memberName}
-                                    readOnly={!isEditing}
-                                    onChange={(e) =>
-                                      handleEditMember(
-                                        member._id!,
-                                        e.target.value
-                                      )
-                                    }
-                                    placeholder="Name"
-                                  />
-                                  {isEditing ? (
-                                    <button
-                                      className="icon-btn save"
-                                      onClick={() =>
-                                        handleSaveMember(team._id, member._id!)
-                                      }
-                                    >
-                                      💾
-                                    </button>
-                                  ) : (
-                                    <button
-                                      className="icon-btn edit"
-                                      onClick={() =>
-                                        handleEditMember(
-                                          member._id!,
-                                          member.name
-                                        )
-                                      }
-                                    >
-                                      ✏️
-                                    </button>
-                                  )}
-                                  <button
-                                    className="icon-btn delete"
-                                    onClick={() =>
-                                      handleDeleteMember(team._id, member._id!)
-                                    }
-                                  >
-                                    🗑️
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                </React.Fragment>
+                <TeamsRow
+                  key={team._id}
+                  team={team}
+                  index={index}
+                  isSelected={selectedTeams.includes(team._id)}
+                  isExpanded={expandedTeams.includes(team._id)}
+                  onSelect={() => handleSelectTeam(team._id)}
+                  onToggleExpand={() => toggleExpand(team._id)}
+                  onEditTeam={onEditTeam}
+                  onDeleteTeam={handleDeleteTeam}
+                  onStatusChange={handleStatusChange}
+                  editingMembers={editingMembers}
+                  onEditMember={handleEditMember}
+                  onSaveMember={handleSaveMember}
+                  onDeleteMember={handleDeleteMember}
+                  handleDragStart={handleDragStart}
+                  handleDragEnter={handleDragEnter}
+                  handleDragEnd={handleDragEnd}
+                />
               ))
             )}
           </tbody>
