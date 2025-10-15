@@ -1,45 +1,38 @@
 import { useState } from "react";
-import { TeamFormPage } from "./pages/TeamFormPage";
-import { TeamListPage } from "./pages/TeamListPage";
+import TeamForm from "./pages/TeamForm";
+import Teams from "./pages/Teams";
+
+import "./styles/teams.css";
 import type { ITeam } from "./types";
 
-export const App: React.FC = () => {
-  // null = show form in create mode, undefined = show list
-  const [editingTeam, setEditingTeam] = useState<ITeam | null | undefined>(undefined);
+function App() {
+  const [currentView, setCurrentView] = useState<"list" | "form">("list");
+  const [editingTeam, setEditingTeam] = useState<ITeam | null>(null);
 
-  // Handler when user clicks "Create New Team"
-  const handleCreateTeam = () => {
-    setEditingTeam(null); // show form in "create" mode
+  const handleNewTeam = () => {
+    setEditingTeam(null);
+    setCurrentView("form");
   };
 
-  // Handler when user clicks "Edit Team"
   const handleEditTeam = (team: ITeam) => {
-    setEditingTeam(team); // show form in "edit" mode
+    setEditingTeam(team);
+    setCurrentView("form");
   };
 
-  // Handler after save or exit
-  const handleFormExit = () => {
-    setEditingTeam(undefined); // back to list
+  const handleBackToList = () => {
+    setEditingTeam(null);
+    setCurrentView("list");
   };
 
   return (
-    <div>
-      {editingTeam === undefined ? (
-        // Show team list
-        <TeamListPage
-          onEditTeam={(teamId) => handleEditTeam({ _id: teamId } as ITeam)}
-          onCreateTeam={handleCreateTeam}
-        />
+    <>
+      {currentView === "list" ? (
+        <Teams onNewTeam={handleNewTeam} onEditTeam={handleEditTeam} />
       ) : (
-        // Show form (create or edit)
-        <TeamFormPage
-          team={editingTeam}
-          onSave={handleFormExit}
-          onExit={handleFormExit}
-        />
+        <TeamForm team={editingTeam} onBack={handleBackToList} />
       )}
-    </div>
+    </>
   );
-};
+}
 
 export default App;
