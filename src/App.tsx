@@ -5,7 +5,7 @@ import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
 import TeamForm from "./pages/TeamForm";
-import Teams from "./pages/Teams";
+import TeamsNew from "./pages/TeamsNew";
 import Users from "./pages/Users";
 import type { RootState } from "./redux/store";
 
@@ -34,7 +34,7 @@ function App() {
           path="/teams"
           element={
             <ProtectedRoute>
-              <Teams onNewTeam={() => {}} onEditTeam={() => {}} />
+              <TeamsNew />
             </ProtectedRoute>
           }
         />
@@ -54,7 +54,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         {/* Users Management (Admin only) */}
         <Route
           path="/users"
@@ -64,7 +64,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         {/* Analytics (Admin, Director) */}
         <Route
           path="/analytics"
@@ -74,7 +74,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         {/* Settings */}
         <Route
           path="/settings"

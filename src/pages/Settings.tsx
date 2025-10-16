@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { Save } from 'lucide-react';
-import { useChangePasswordMutation } from '../redux/features/user/userApi';
+import { Save } from "lucide-react";
+import { useState } from "react";
+import { useChangePasswordMutation } from "../redux/features/user/userApi";
 
 const Settings = () => {
   const [changePassword] = useChangePasswordMutation();
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setMessage('New passwords do not match');
+      setMessage("New passwords do not match");
       return;
     }
 
@@ -25,10 +25,14 @@ const Settings = () => {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       }).unwrap();
-      setMessage('Password changed successfully');
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setMessage("Password changed successfully");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch {
-      setMessage('Failed to change password');
+      setMessage("Failed to change password");
     }
   };
 
@@ -41,10 +45,18 @@ const Settings = () => {
       <div className="bg-white shadow rounded-lg divide-y divide-gray-200">
         {/* Change Password Section */}
         <div className="p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Change Password</h2>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Change Password
+          </h2>
           <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
             {message && (
-              <div className={`p-3 rounded ${message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+              <div
+                className={`p-3 rounded ${
+                  message.includes("success")
+                    ? "bg-green-50 text-green-700"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
                 {message}
               </div>
             )}
@@ -58,7 +70,12 @@ const Settings = () => {
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                onChange={(e) =>
+                  setPasswordData({
+                    ...passwordData,
+                    currentPassword: e.target.value,
+                  })
+                }
               />
             </div>
 
@@ -72,7 +89,12 @@ const Settings = () => {
                 minLength={6}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 value={passwordData.newPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                onChange={(e) =>
+                  setPasswordData({
+                    ...passwordData,
+                    newPassword: e.target.value,
+                  })
+                }
               />
             </div>
 
@@ -86,7 +108,12 @@ const Settings = () => {
                 minLength={6}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 value={passwordData.confirmPassword}
-                onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                onChange={(e) =>
+                  setPasswordData({
+                    ...passwordData,
+                    confirmPassword: e.target.value,
+                  })
+                }
               />
             </div>
 
@@ -102,14 +129,22 @@ const Settings = () => {
 
         {/* Notification Preferences - Placeholder */}
         <div className="p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Notification Preferences</h2>
-          <p className="text-gray-500 text-sm">Notification settings coming soon...</p>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            Notification Preferences
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Notification settings coming soon...
+          </p>
         </div>
 
         {/* System Settings - Placeholder */}
         <div className="p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">System Settings</h2>
-          <p className="text-gray-500 text-sm">System configuration coming soon...</p>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">
+            System Settings
+          </h2>
+          <p className="text-gray-500 text-sm">
+            System configuration coming soon...
+          </p>
         </div>
       </div>
     </div>

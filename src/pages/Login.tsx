@@ -1,12 +1,19 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../redux/features/auth/authApi";
 import { setUser } from "../redux/features/auth/authSlice";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -71,7 +78,7 @@ const Login = () => {
                 name="email"
                 type="email"
                 placeholder="admin@example.com"
-                autoComplete="email"
+                // autoComplete="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
@@ -93,7 +100,7 @@ const Login = () => {
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                autoComplete="current-password"
+                // autoComplete="current-password"
                 required
                 value={formData.password}
                 onChange={handleChange}
@@ -102,17 +109,13 @@ const Login = () => {
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign in"}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
               <p className="bg-muted/50 rounded-md p-2">
-                <strong>Default Admin:</strong> admin@example.com / Admin@123
+                <strong>Default Admin:</strong> admin@teammanagement.com / admin123
               </p>
             </div>
           </CardFooter>

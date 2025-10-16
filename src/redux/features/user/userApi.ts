@@ -1,10 +1,10 @@
-import { baseApi } from '../../baseApi';
+import { baseApi } from "../../baseApi";
 
 export interface User {
   _id: string;
   name: string;
   email: string;
-  role: 'Admin' | 'Manager' | 'Director';
+  role: "Admin" | "Manager" | "Director";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -14,13 +14,13 @@ export interface CreateUserRequest {
   name: string;
   email: string;
   password: string;
-  role: 'Admin' | 'Manager' | 'Director';
+  role: "Admin" | "Manager" | "Director";
 }
 
 export interface UpdateUserRequest {
   name?: string;
   email?: string;
-  role?: 'Admin' | 'Manager' | 'Director';
+  role?: "Admin" | "Manager" | "Director";
   isActive?: boolean;
 }
 
@@ -32,66 +32,78 @@ export interface ChangePasswordRequest {
 const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get all users
-    getAllUsers: builder.query<{ data: User[]; meta: Record<string, unknown> }, Record<string, string>>({
+    getAllUsers: builder.query<
+      { data: User[]; meta: Record<string, unknown> },
+      Record<string, string>
+    >({
       query: (params = {}) => ({
         url: `/users?${new URLSearchParams(params).toString()}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
-    
+
     // Get user by ID
     getUserById: builder.query<{ success: boolean; data: User }, string>({
       query: (id) => ({
         url: `/users/${id}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
-    
+
     // Create user
-    createUser: builder.mutation<{ success: boolean; data: User }, CreateUserRequest>({
+    createUser: builder.mutation<
+      { success: boolean; data: User },
+      CreateUserRequest
+    >({
       query: (userData) => ({
-        url: '/users',
-        method: 'POST',
+        url: "/users",
+        method: "POST",
         body: userData,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
-    
+
     // Update user
-    updateUser: builder.mutation<{ success: boolean; data: User }, { id: string; data: UpdateUserRequest }>({
+    updateUser: builder.mutation<
+      { success: boolean; data: User },
+      { id: string; data: UpdateUserRequest }
+    >({
       query: ({ id, data }) => ({
         url: `/users/${id}`,
-        method: 'PATCH',
+        method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
-    
+
     // Delete user
     deleteUser: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
         url: `/users/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
-    
+
     // Toggle user status
     toggleUserStatus: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
         url: `/users/${id}/toggle-status`,
-        method: 'PATCH',
+        method: "PATCH",
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
-    
+
     // Change password
-    changePassword: builder.mutation<{ success: boolean }, ChangePasswordRequest>({
+    changePassword: builder.mutation<
+      { success: boolean },
+      ChangePasswordRequest
+    >({
       query: (data) => ({
-        url: '/users/change-password',
-        method: 'POST',
+        url: "/users/change-password",
+        method: "POST",
         body: data,
       }),
     }),

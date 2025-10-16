@@ -1,21 +1,27 @@
-import { useState } from 'react';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
-import { useGetAllUsersQuery, useDeleteUserMutation, useToggleUserStatusMutation } from '../redux/features/user/userApi';
+import { Edit, Plus, Search, Trash2 } from "lucide-react";
+import { useState } from "react";
+import {
+  useDeleteUserMutation,
+  useGetAllUsersQuery,
+  useToggleUserStatusMutation,
+} from "../redux/features/user/userApi";
 
 const Users = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const { data: usersResponse, isLoading } = useGetAllUsersQuery({ searchTerm });
+  const [searchTerm, setSearchTerm] = useState("");
+  const { data: usersResponse, isLoading } = useGetAllUsersQuery({
+    searchTerm,
+  });
   const [deleteUser] = useDeleteUserMutation();
   const [toggleStatus] = useToggleUserStatusMutation();
 
   const users = usersResponse?.data || [];
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await deleteUser(id).unwrap();
       } catch (error) {
-        console.error('Failed to delete user:', error);
+        console.error("Failed to delete user:", error);
       }
     }
   };
@@ -24,7 +30,7 @@ const Users = () => {
     try {
       await toggleStatus(id).unwrap();
     } catch (error) {
-      console.error('Failed to toggle user status:', error);
+      console.error("Failed to toggle user status:", error);
     }
   };
 
@@ -87,17 +93,23 @@ const Users = () => {
               {users.map((user) => (
                 <tr key={user._id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {user.name}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{user.email}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      user.role === 'Admin' ? 'bg-purple-100 text-purple-800' :
-                      user.role === 'Manager' ? 'bg-blue-100 text-blue-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
+                    <span
+                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        user.role === "Admin"
+                          ? "bg-purple-100 text-purple-800"
+                          : user.role === "Manager"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {user.role}
                     </span>
                   </td>
@@ -105,17 +117,19 @@ const Users = () => {
                     <button
                       onClick={() => handleToggleStatus(user._id)}
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        user.isActive
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {user.isActive ? 'Active' : 'Inactive'}
+                      {user.isActive ? "Active" : "Inactive"}
                     </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button className="text-indigo-600 hover:text-indigo-900 mr-4">
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(user._id)}
                       className="text-red-600 hover:text-red-900"
                     >

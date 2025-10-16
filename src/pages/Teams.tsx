@@ -17,8 +17,8 @@ import {
 } from "../redux/features/team/teamApi";
 
 import TeamsHeader from "./Teams/TeamsHeader";
-import TeamsSearchBar from "./Teams/TeamsSearchBar";
 import TeamsRow from "./Teams/TeamsRow";
+import TeamsSearchBar from "./Teams/TeamsSearchBar";
 
 interface TeamsProps {
   onNewTeam: () => void;
