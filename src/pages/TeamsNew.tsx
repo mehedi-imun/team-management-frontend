@@ -1,39 +1,27 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { 
-  Plus, 
-  Trash2, 
-  Edit, 
-  Search, 
-  Download,
+import {
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
+  Circle,
+  Download,
+  Edit,
+  Plus,
+  Search,
+  Trash2,
   Users,
-  CheckCircle2,
   XCircle,
-  Circle
 } from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 // Shadcn UI Components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -49,23 +37,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Redux hooks
 import {
-  useGetAllTeamsQuery,
-  useDeleteTeamMutation,
   useBulkDeleteTeamsMutation,
+  useDeleteTeamMutation,
+  useGetAllTeamsQuery,
   useUpdateApprovalStatusMutation,
 } from "../redux/features/team/teamApi";
-import type { ITeam } from "../types/index";
 import type { RootState } from "../redux/store";
+import type { ITeam } from "../types/index";
 
 const TeamsNew = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
-  
+
   // Local state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
@@ -82,7 +77,8 @@ const TeamsNew = () => {
     sort: "order",
   });
   const [deleteTeam, { isLoading: isDeleting }] = useDeleteTeamMutation();
-  const [bulkDeleteTeams, { isLoading: isBulkDeleting }] = useBulkDeleteTeamsMutation();
+  const [bulkDeleteTeams, { isLoading: isBulkDeleting }] =
+    useBulkDeleteTeamsMutation();
   const [updateApprovalStatus] = useUpdateApprovalStatusMutation();
 
   const teams = teamsData || [];
@@ -92,9 +88,9 @@ const TeamsNew = () => {
 
   // Handlers
   const handleSelectTeam = (teamId: string) => {
-    setSelectedTeams(prev =>
+    setSelectedTeams((prev) =>
       prev.includes(teamId)
-        ? prev.filter(id => id !== teamId)
+        ? prev.filter((id) => id !== teamId)
         : [...prev, teamId]
     );
   };
@@ -108,9 +104,9 @@ const TeamsNew = () => {
   };
 
   const toggleExpand = (teamId: string) => {
-    setExpandedTeams(prev =>
+    setExpandedTeams((prev) =>
       prev.includes(teamId)
-        ? prev.filter(id => id !== teamId)
+        ? prev.filter((id) => id !== teamId)
         : [...prev, teamId]
     );
   };
@@ -141,17 +137,23 @@ const TeamsNew = () => {
     field: "managerApproved" | "directorApproved",
     currentValue: string
   ) => {
-    const nextValue = currentValue === "0" ? "1" : currentValue === "1" ? "-1" : "0";
-    
+    const nextValue =
+      currentValue === "0" ? "1" : currentValue === "1" ? "-1" : "0";
+
     try {
       await updateApprovalStatus({
         teamId,
         field,
         value: nextValue as "0" | "1" | "-1",
       }).unwrap();
-      
+
       const fieldLabel = field === "managerApproved" ? "Manager" : "Director";
-      const statusLabel = nextValue === "1" ? "approved" : nextValue === "-1" ? "rejected" : "pending";
+      const statusLabel =
+        nextValue === "1"
+          ? "approved"
+          : nextValue === "-1"
+          ? "rejected"
+          : "pending";
       toast.success(`${fieldLabel} status updated to ${statusLabel}`);
     } catch {
       toast.error("Failed to update approval status");
@@ -169,7 +171,10 @@ const TeamsNew = () => {
     }
   };
 
-  const getStatusBadge = (managerApproved: string, directorApproved: string) => {
+  const getStatusBadge = (
+    managerApproved: string,
+    directorApproved: string
+  ) => {
     if (managerApproved === "1" && directorApproved === "1") {
       return <Badge className="bg-green-600">Fully Approved</Badge>;
     }
@@ -206,7 +211,7 @@ const TeamsNew = () => {
             Manage your teams, members, and approval workflow
           </p>
         </div>
-        
+
         <div className="flex gap-2">
           {canEdit && (
             <Button onClick={() => navigate("/teams/new")}>
@@ -239,7 +244,7 @@ const TeamsNew = () => {
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex gap-2">
               <Button variant="outline" size="sm">
                 <Download className="mr-2 h-4 w-4" />
@@ -248,48 +253,65 @@ const TeamsNew = () => {
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-4 mb-6">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total Teams</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Teams
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{teams.length}</div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Approved</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">
-                  {teams.filter((t: ITeam) => t.managerApproved === "1" && t.directorApproved === "1").length}
+                  {
+                    teams.filter(
+                      (t: ITeam) =>
+                        t.managerApproved === "1" && t.directorApproved === "1"
+                    ).length
+                  }
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Pending</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-yellow-600">
-                  {teams.filter((t: ITeam) => t.managerApproved === "0" || t.directorApproved === "0").length}
+                  {
+                    teams.filter(
+                      (t: ITeam) =>
+                        t.managerApproved === "0" || t.directorApproved === "0"
+                    ).length
+                  }
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Total Members</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Members
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {teams.reduce((sum: number, t: ITeam) => sum + (t.members?.length || 0), 0)}
+                  {teams.reduce(
+                    (sum: number, t: ITeam) => sum + (t.members?.length || 0),
+                    0
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -300,13 +322,17 @@ const TeamsNew = () => {
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4" />
-                <p className="text-sm text-muted-foreground">Loading teams...</p>
+                <p className="text-sm text-muted-foreground">
+                  Loading teams...
+                </p>
               </div>
             </div>
           ) : filteredTeams.length === 0 ? (
             <Alert>
               <AlertDescription>
-                {searchQuery ? "No teams found matching your search." : "No teams yet. Create your first team to get started!"}
+                {searchQuery
+                  ? "No teams found matching your search."
+                  : "No teams yet. Create your first team to get started!"}
               </AlertDescription>
             </Alert>
           ) : (
@@ -329,7 +355,7 @@ const TeamsNew = () => {
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                
+
                 <TableBody>
                   {filteredTeams.map((team: ITeam) => (
                     <>
@@ -340,7 +366,7 @@ const TeamsNew = () => {
                             onCheckedChange={() => handleSelectTeam(team._id)}
                           />
                         </TableCell>
-                        
+
                         <TableCell>
                           <Button
                             variant="ghost"
@@ -354,48 +380,61 @@ const TeamsNew = () => {
                             )}
                           </Button>
                         </TableCell>
-                        
-                        <TableCell className="font-medium">{team.name}</TableCell>
-                        
+
+                        <TableCell className="font-medium">
+                          {team.name}
+                        </TableCell>
+
                         <TableCell>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() =>
                               canApprove &&
-                              handleApprovalToggle(team._id, "managerApproved", team.managerApproved)
+                              handleApprovalToggle(
+                                team._id,
+                                "managerApproved",
+                                team.managerApproved
+                              )
                             }
                             disabled={!canApprove}
                           >
                             {getApprovalIcon(team.managerApproved)}
                           </Button>
                         </TableCell>
-                        
+
                         <TableCell>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() =>
                               canApprove &&
-                              handleApprovalToggle(team._id, "directorApproved", team.directorApproved)
+                              handleApprovalToggle(
+                                team._id,
+                                "directorApproved",
+                                team.directorApproved
+                              )
                             }
                             disabled={!canApprove}
                           >
                             {getApprovalIcon(team.directorApproved)}
                           </Button>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex items-center gap-1">
                             <Users className="h-4 w-4 text-muted-foreground" />
                             <span>{team.members?.length || 0}</span>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
-                          {getStatusBadge(team.managerApproved, team.directorApproved)}
+                          {getStatusBadge(
+                            team.managerApproved,
+                            team.directorApproved
+                          )}
                         </TableCell>
-                        
+
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -405,7 +444,9 @@ const TeamsNew = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               {canEdit && (
-                                <DropdownMenuItem onClick={() => navigate(`/teams/${team._id}`)}>
+                                <DropdownMenuItem
+                                  onClick={() => navigate(`/teams/${team._id}`)}
+                                >
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
                                 </DropdownMenuItem>
@@ -432,33 +473,41 @@ const TeamsNew = () => {
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>
-                      
+
                       {/* Expanded Members Row */}
-                      {expandedTeams.includes(team._id) && team.members && team.members.length > 0 && (
-                        <TableRow>
-                          <TableCell colSpan={8} className="bg-muted/50">
-                            <div className="py-4 px-6">
-                              <h4 className="font-semibold mb-3">Team Members</h4>
-                              <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-                                {team.members.map((member, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="flex items-center justify-between rounded-lg border bg-card p-3"
-                                  >
-                                    <div>
-                                      <p className="font-medium">{member.name}</p>
-                                      {member.email && (
-                                        <p className="text-sm text-muted-foreground">{member.email}</p>
-                                      )}
+                      {expandedTeams.includes(team._id) &&
+                        team.members &&
+                        team.members.length > 0 && (
+                          <TableRow>
+                            <TableCell colSpan={8} className="bg-muted/50">
+                              <div className="py-4 px-6">
+                                <h4 className="font-semibold mb-3">
+                                  Team Members
+                                </h4>
+                                <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+                                  {team.members.map((member, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-center justify-between rounded-lg border bg-card p-3"
+                                    >
+                                      <div>
+                                        <p className="font-medium">
+                                          {member.name}
+                                        </p>
+                                        {member.email && (
+                                          <p className="text-sm text-muted-foreground">
+                                            {member.email}
+                                          </p>
+                                        )}
+                                      </div>
+                                      {getRoleBadge(member.role)}
                                     </div>
-                                    {getRoleBadge(member.role)}
-                                  </div>
-                                ))}
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
+                            </TableCell>
+                          </TableRow>
+                        )}
                     </>
                   ))}
                 </TableBody>
@@ -469,7 +518,10 @@ const TeamsNew = () => {
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialog.isOpen} onOpenChange={(open) => setDeleteDialog({ isOpen: open })}>
+      <Dialog
+        open={deleteDialog.isOpen}
+        onOpenChange={(open) => setDeleteDialog({ isOpen: open })}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -481,7 +533,7 @@ const TeamsNew = () => {
                 : `Are you sure you want to delete ${selectedTeams.length} team(s)? This action cannot be undone.`}
             </DialogDescription>
           </DialogHeader>
-          
+
           <DialogFooter>
             <Button
               variant="outline"
@@ -498,7 +550,7 @@ const TeamsNew = () => {
                   : handleBulkDelete()
               }
             >
-              {(isDeleting || isBulkDeleting) ? "Deleting..." : "Delete"}
+              {isDeleting || isBulkDeleting ? "Deleting..." : "Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>
