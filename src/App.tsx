@@ -1,10 +1,13 @@
 import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import DashboardLayout from "./components/Layout";
+import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
+import Settings from "./pages/Settings";
 import TeamForm from "./pages/TeamForm";
 import Teams from "./pages/Teams";
+import Users from "./pages/Users";
 import type { RootState } from "./redux/store";
-import "./styles/teams.css";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -16,7 +19,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  return <DashboardLayout>{children}</DashboardLayout>;
 };
 
 function App() {
@@ -48,6 +51,36 @@ function App() {
           element={
             <ProtectedRoute>
               <TeamForm team={null} onBack={() => {}} />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Users Management (Admin only) */}
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Analytics (Admin, Director) */}
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Settings */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

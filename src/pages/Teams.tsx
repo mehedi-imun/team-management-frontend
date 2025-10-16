@@ -16,7 +16,6 @@ import {
   useUpdateTeamOrderMutation,
 } from "../redux/features/team/teamApi";
 
-import "../styles/teams.css";
 import TeamsHeader from "./Teams/TeamsHeader";
 import TeamsSearchBar from "./Teams/TeamsSearchBar";
 import TeamsRow from "./Teams/TeamsRow";

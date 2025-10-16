@@ -8,7 +8,6 @@ import {
   useCreateTeamMutation,
   useUpdateTeamMutation,
 } from "../redux/features/team/teamApi";
-import "../styles/teams.css";
 import type { FormErrors, IMember, ITeam } from "../types";
 
 interface TeamFormProps {
