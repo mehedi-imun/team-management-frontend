@@ -1,35 +1,35 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '../redux/features/auth/authApi';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../redux/features/auth/authApi";
 
 const Login = () => {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
-  
+
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
-    setError('');
+    setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
       await login(formData).unwrap();
-      navigate('/teams');
+      navigate("/teams");
     } catch (err) {
       const error = err as { data?: { message?: string } };
-      setError(error?.data?.message || 'Login failed. Please try again.');
+      setError(error?.data?.message || "Login failed. Please try again.");
     }
   };
 
@@ -44,7 +44,7 @@ const Login = () => {
             Sign in to your account
           </p>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="rounded-md bg-red-50 p-4">
@@ -89,7 +89,10 @@ const Login = () => {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <a
+                href="/forgot-password"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
                 Forgot your password?
               </a>
             </div>
@@ -101,7 +104,7 @@ const Login = () => {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>

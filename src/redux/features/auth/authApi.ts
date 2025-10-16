@@ -1,4 +1,4 @@
-import { baseApi } from '../../baseApi';
+import { baseApi } from "../../baseApi";
 
 export interface LoginRequest {
   email: string;
@@ -38,47 +38,53 @@ const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/auth/login',
-        method: 'POST',
+        url: "/auth/login",
+        method: "POST",
         body: credentials,
       }),
     }),
-    
+
     register: builder.mutation<LoginResponse, RegisterRequest>({
       query: (userData) => ({
-        url: '/auth/register',
-        method: 'POST',
+        url: "/auth/register",
+        method: "POST",
         body: userData,
       }),
     }),
-    
+
     logout: builder.mutation<void, void>({
       query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
+        url: "/auth/logout",
+        method: "POST",
       }),
     }),
-    
-    forgotPassword: builder.mutation<{ success: boolean; message: string }, ForgotPasswordRequest>({
+
+    forgotPassword: builder.mutation<
+      { success: boolean; message: string },
+      ForgotPasswordRequest
+    >({
       query: (data) => ({
-        url: '/auth/forgot-password',
-        method: 'POST',
+        url: "/auth/forgot-password",
+        method: "POST",
         body: data,
       }),
     }),
-    
-    resetPassword: builder.mutation<{ success: boolean; message: string }, ResetPasswordRequest>({
+
+    resetPassword: builder.mutation<
+      { success: boolean; message: string },
+      ResetPasswordRequest
+    >({
       query: (data) => ({
-        url: '/auth/reset-password',
-        method: 'POST',
+        url: "/auth/reset-password",
+        method: "POST",
         body: data,
       }),
     }),
-    
+
     refreshToken: builder.mutation<LoginResponse, void>({
       query: () => ({
-        url: '/auth/refresh-token',
-        method: 'POST',
+        url: "/auth/refresh-token",
+        method: "POST",
       }),
     }),
   }),
