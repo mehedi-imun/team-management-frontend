@@ -9,60 +9,99 @@ const PricingPage = () => {
     "monthly"
   );
 
+  // Real pricing plans matching the billing system
   const plans = [
     {
-      name: "Starter",
+      name: "Free",
       description: "Perfect for small teams getting started",
-      monthlyPrice: 9,
-      annualPrice: 90,
+      monthlyPrice: 0,
+      annualPrice: 0,
       features: [
-        "Up to 10 team members",
-        "5 teams",
-        "Basic analytics",
-        "Email support",
-        "2GB storage",
-        "Mobile app access",
+        "Up to 5 team members",
+        "3 teams maximum",
+        "5GB storage",
+        "Basic support",
+        "Email notifications",
+        "14-day trial",
       ],
+      limits: {
+        maxUsers: 5,
+        maxTeams: 3,
+        maxStorage: "5GB",
+      },
       highlighted: false,
-      cta: "Start Free Trial",
+      cta: "Start Free",
     },
     {
       name: "Professional",
       description: "Best for growing teams and businesses",
-      monthlyPrice: 29,
-      annualPrice: 290,
+      monthlyPrice: 49,
+      annualPrice: 470, // Save $118/year (17% discount)
       features: [
         "Up to 50 team members",
-        "Unlimited teams",
-        "Advanced analytics",
+        "20 teams",
+        "100GB storage",
         "Priority support",
-        "Custom integrations",
-        "20GB storage",
+        "Advanced analytics",
+        "Custom branding",
         "API access",
-        "Custom roles",
-        "Activity logs",
       ],
+      limits: {
+        maxUsers: 50,
+        maxTeams: 20,
+        maxStorage: "100GB",
+      },
       highlighted: true,
+      cta: "Start Free Trial",
+    },
+    {
+      name: "Business",
+      description: "For established teams with growing needs",
+      monthlyPrice: 99,
+      annualPrice: 950, // Save $238/year (20% discount)
+      features: [
+        "Up to 200 team members",
+        "Unlimited teams",
+        "500GB storage",
+        "24/7 premium support",
+        "Advanced analytics",
+        "Custom branding",
+        "API access",
+        "SSO/SAML",
+        "Dedicated account manager",
+      ],
+      limits: {
+        maxUsers: 200,
+        maxTeams: 999,
+        maxStorage: "500GB",
+      },
+      highlighted: false,
       cta: "Start Free Trial",
     },
     {
       name: "Enterprise",
       description: "For large organizations with advanced needs",
-      monthlyPrice: 99,
-      annualPrice: 990,
+      monthlyPrice: 299,
+      annualPrice: 2870, // Save $718/year (20% discount)
       features: [
         "Unlimited team members",
         "Unlimited teams",
-        "Advanced analytics & reports",
-        "24/7 dedicated support",
-        "Custom integrations",
         "Unlimited storage",
-        "SLA guarantee",
-        "Custom contracts",
+        "24/7 dedicated support",
+        "Advanced analytics",
+        "Custom branding",
+        "API access",
+        "SSO/SAML",
         "Dedicated account manager",
+        "Custom integrations",
+        "SLA guarantees",
         "On-premise deployment option",
-        "Advanced security features",
       ],
+      limits: {
+        maxUsers: 99999,
+        maxTeams: 99999,
+        maxStorage: "Unlimited",
+      },
       highlighted: false,
       cta: "Contact Sales",
     },
@@ -139,7 +178,7 @@ const PricingPage = () => {
             >
               Annual
               <span className="ml-2 text-xs text-green-600 font-semibold">
-                Save 17%
+                Save up to 20%
               </span>
             </button>
           </div>
@@ -148,13 +187,13 @@ const PricingPage = () => {
 
       {/* Pricing Cards */}
       <section className="container mx-auto px-4 pb-20">
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <Card
               key={index}
-              className={`relative ${
+              className={`relative flex flex-col ${
                 plan.highlighted
-                  ? "border-primary shadow-xl scale-105"
+                  ? "border-primary shadow-xl lg:scale-105"
                   : "shadow-lg"
               }`}
             >
@@ -166,37 +205,37 @@ const PricingPage = () => {
                   </span>
                 </div>
               )}
-              <CardHeader className="text-center pb-8">
+              <CardHeader className="text-center pb-6">
                 <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
-                <p className="text-sm text-gray-600 mb-4">{plan.description}</p>
+                <p className="text-sm text-gray-600 mb-4 min-h-[40px]">{plan.description}</p>
                 <div className="mb-2">
-                  <span className="text-5xl font-bold">${getPrice(plan)}</span>
-                  <span className="text-gray-600">
-                    /{billingCycle === "monthly" ? "month" : "year"}
+                  <span className="text-4xl font-bold">${getPrice(plan)}</span>
+                  <span className="text-gray-600 text-sm">
+                    /{billingCycle === "monthly" ? "mo" : "yr"}
                   </span>
                 </div>
-                {billingCycle === "annual" && (
+                {billingCycle === "annual" && plan.monthlyPrice > 0 && (
                   <p className="text-sm text-green-600 font-medium">
                     Save ${getSavings(plan)}/year
                   </p>
                 )}
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-8">
+              <CardContent className="flex-grow flex flex-col">
+                <ul className="space-y-2 mb-6 flex-grow">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600 text-sm">{feature}</span>
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-600 text-xs">{feature}</span>
                     </li>
                   ))}
                 </ul>
                 <Link
                   to={plan.name === "Enterprise" ? "/contact" : "/register"}
+                  className="mt-auto"
                 >
                   <Button
                     className="w-full"
                     variant={plan.highlighted ? "default" : "outline"}
-                    size="lg"
                   >
                     {plan.cta}
                   </Button>
@@ -204,6 +243,108 @@ const PricingPage = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </section>
+
+      {/* Plan Comparison Table */}
+      <section className="container mx-auto px-4 py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-12">
+            Compare Plans
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full bg-white rounded-lg shadow-lg">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-4 font-semibold">Features</th>
+                  {plans.map((plan, index) => (
+                    <th key={index} className="text-center p-4 font-semibold">
+                      {plan.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">Team Members</td>
+                  {plans.map((plan, index) => (
+                    <td key={index} className="text-center p-4">
+                      {plan.limits.maxUsers === 99999 ? "Unlimited" : `Up to ${plan.limits.maxUsers}`}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">Teams</td>
+                  {plans.map((plan, index) => (
+                    <td key={index} className="text-center p-4">
+                      {plan.limits.maxTeams === 99999 ? "Unlimited" : `${plan.limits.maxTeams} teams`}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">Storage</td>
+                  {plans.map((plan, index) => (
+                    <td key={index} className="text-center p-4">
+                      {plan.limits.maxStorage}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">Support</td>
+                  <td className="text-center p-4">Email</td>
+                  <td className="text-center p-4">Priority</td>
+                  <td className="text-center p-4">24/7 Premium</td>
+                  <td className="text-center p-4">24/7 Dedicated</td>
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">Analytics</td>
+                  <td className="text-center p-4">Basic</td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">API Access</td>
+                  <td className="text-center p-4">-</td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b hover:bg-gray-50">
+                  <td className="p-4 font-medium">SSO/SAML</td>
+                  <td className="text-center p-4">-</td>
+                  <td className="text-center p-4">-</td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="hover:bg-gray-50">
+                  <td className="p-4 font-medium">SLA Guarantee</td>
+                  <td className="text-center p-4">-</td>
+                  <td className="text-center p-4">-</td>
+                  <td className="text-center p-4">-</td>
+                  <td className="text-center p-4">
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 

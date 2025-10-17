@@ -52,6 +52,7 @@ export const baseApi = createApi({
     "Team",
     "User",
     "Analytics",
+    "OrganizationAnalytics",
     "Notification",
     "Organization",
     "Invitation",

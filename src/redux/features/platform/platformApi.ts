@@ -155,6 +155,71 @@ const platformApi = baseApi.injectEndpoints({
       invalidatesTags: ["Organization", "Analytics"],
     }),
 
+    // Organization Member endpoints
+    getOrganizationMembers: builder.query<
+      { success: boolean; data: User[]; meta: PaginationMeta },
+      {
+        organizationId: string;
+        page?: number;
+        limit?: number;
+        search?: string;
+      }
+    >({
+      query: ({ organizationId, ...params }) => ({
+        url: `/organizations/${organizationId}/members`,
+        params,
+      }),
+      providesTags: ["User"],
+    }),
+
+    addOrganizationMember: builder.mutation<
+      { success: boolean; data: User },
+      {
+        organizationId: string;
+        email: string;
+        name: string;
+        role?: string;
+        isOrganizationAdmin?: boolean;
+        password?: string;
+      }
+    >({
+      query: ({ organizationId, ...body }) => ({
+        url: `/organizations/${organizationId}/members`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["User", "Organization"],
+    }),
+
+    updateOrganizationMember: builder.mutation<
+      { success: boolean; data: User },
+      {
+        organizationId: string;
+        userId: string;
+        role?: string;
+        isOrganizationAdmin?: boolean;
+        isActive?: boolean;
+      }
+    >({
+      query: ({ organizationId, userId, ...body }) => ({
+        url: `/organizations/${organizationId}/members/${userId}`,
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["User", "Organization"],
+    }),
+
+    removeOrganizationMember: builder.mutation<
+      { success: boolean; message: string },
+      { organizationId: string; userId: string }
+    >({
+      query: ({ organizationId, userId }) => ({
+        url: `/organizations/${organizationId}/members/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User", "Organization"],
+    }),
+
     // User endpoints
     getAllUsers: builder.query<
       { success: boolean; data: User[]; meta: PaginationMeta },
@@ -246,6 +311,10 @@ export const {
   useUpdateOrganizationStatusMutation,
   useDeleteOrganizationMutation,
   useCreateOrganizationForClientMutation,
+  useGetOrganizationMembersQuery,
+  useAddOrganizationMemberMutation,
+  useUpdateOrganizationMemberMutation,
+  useRemoveOrganizationMemberMutation,
   useGetAllUsersQuery,
   useGetUserByIdQuery,
   useGetUserStatsQuery,

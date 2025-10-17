@@ -1,14 +1,4 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import {
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  UserPlus,
-  Users,
-  CheckCircle2,
-  XCircle,
-  Clock,
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,8 +8,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import type { ITeam } from "@/types";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  CheckCircle2,
+  Clock,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  UserPlus,
+  Users,
+  XCircle,
+} from "lucide-react";
 
 export type TeamActions = {
   onEdit: (team: ITeam) => void;
@@ -28,9 +28,7 @@ export type TeamActions = {
   onAddMember: (team: ITeam) => void;
 };
 
-export const createTeamColumns = (
-  actions: TeamActions
-): ColumnDef<ITeam>[] => [
+export const createTeamColumns = (actions: TeamActions): ColumnDef<ITeam>[] => [
   {
     accessorKey: "name",
     header: "Team Name",

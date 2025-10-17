@@ -9,7 +9,10 @@ import DashboardPage from "@/pages/dashboard/DashboardPage";
 import OrganizationsPage from "@/pages/dashboard/organizations";
 import ReportsPage from "@/pages/dashboard/reports";
 import SettingsPage from "@/pages/dashboard/settings";
+import OrgSettingsPage from "@/pages/dashboard/settings/OrgSettingsPage";
 import TeamsPage from "@/pages/dashboard/teams/TeamsPage";
+import MembersPage from "@/pages/dashboard/members";
+import BillingPage from "@/pages/dashboard/billing";
 import UsersPage from "@/pages/dashboard/users";
 import FeaturesPage from "@/pages/FeaturesPage";
 import LandingPage from "@/pages/LandingPage";
@@ -80,6 +83,11 @@ function App() {
 
             {/* Teams - Available for all authenticated users */}
             <Route path="teams" element={<TeamsPage />} />
+
+            {/* Organization Owner & Admin Routes */}
+            <Route path="members" element={<MembersPage />} />
+            <Route path="billing" element={<BillingPage />} />
+            <Route path="org-settings" element={<OrgSettingsPage />} />
 
             {/* SuperAdmin & Admin Only Routes */}
             <Route

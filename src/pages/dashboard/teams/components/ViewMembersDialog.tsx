@@ -1,26 +1,4 @@
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import type { ITeam } from "@/types";
-import { Mail, User, Calendar, Trash2 } from "lucide-react";
-import { useDeleteMemberMutation } from "@/redux/features/team/teamApi";
-import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -30,6 +8,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { useDeleteMemberMutation } from "@/redux/features/team/teamApi";
+import type { ITeam } from "@/types";
+import { Calendar, Mail, Trash2, User } from "lucide-react";
+import { useState } from "react";
 
 interface ViewMembersDialogProps {
   team: ITeam | null;

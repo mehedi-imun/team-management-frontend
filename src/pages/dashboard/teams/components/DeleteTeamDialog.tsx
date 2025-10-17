@@ -8,8 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useDeleteTeamMutation } from "@/redux/features/team/teamApi";
 import { useToast } from "@/hooks/use-toast";
+import { useDeleteTeamMutation } from "@/redux/features/team/teamApi";
 import type { ITeam } from "@/types";
 import { Loader2 } from "lucide-react";
 

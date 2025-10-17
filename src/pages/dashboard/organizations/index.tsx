@@ -1,6 +1,8 @@
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -14,7 +16,7 @@ import {
   useUpdateOrganizationStatusMutation,
   type Organization,
 } from "@/redux/features/platform/platformApi";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createColumns } from "./columns";
@@ -22,6 +24,7 @@ import { CreateOrganizationDialog } from "./CreateOrganizationDialog";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { UpdateStatusDialog } from "./UpdateStatusDialog";
 import { ViewOrganizationDialog } from "./ViewOrganizationDialog";
+import { ManageMembersDialog } from "./ManageMembersDialog";
 
 const OrganizationsPage = () => {
   const [page, setPage] = useState(1);
@@ -33,21 +36,25 @@ const OrganizationsPage = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isManageMembersOpen, setIsManageMembersOpen] = useState(false);
 
   const [updateStatus, { isLoading: isUpdatingStatus }] =
     useUpdateOrganizationStatusMutation();
   const [deleteOrg, { isLoading: isDeleting }] =
     useDeleteOrganizationMutation();
 
-  const { data, isLoading } = useGetAllOrganizationsQuery({
+  const { data, isLoading, error } = useGetAllOrganizationsQuery({
     page,
     limit: 10,
     search,
-    status,
-    plan,
+    status: status === "all" ? undefined : status,
+    plan: plan === "all" ? undefined : plan,
   });
 
+  console.log("Organizations API Response:", { data, isLoading, error });
+
   const organizations = data?.data || [];
+  console.log("Organizations List:", organizations);
 
   const handleClearFilters = () => {
     setSearch("");
@@ -68,6 +75,11 @@ const OrganizationsPage = () => {
   const handleDelete = (org: Organization) => {
     setSelectedOrg(org);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleManageMembers = (org: Organization) => {
+    setSelectedOrg(org);
+    setIsManageMembersOpen(true);
   };
 
   const handleStatusUpdate = async (newStatus: string) => {
@@ -105,7 +117,56 @@ const OrganizationsPage = () => {
     onView: handleView,
     onUpdateStatus: handleUpdateStatus,
     onDelete: handleDelete,
+    onManageMembers: handleManageMembers,
   });
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="h-9 w-64 mb-2" />
+            <Skeleton className="h-5 w-96" />
+          </div>
+          <Skeleton className="h-10 w-48" />
+        </div>
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 flex-1 max-w-sm" />
+          <Skeleton className="h-10 w-[180px]" />
+          <Skeleton className="h-10 w-[180px]" />
+        </div>
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Organizations
+            </h1>
+            <p className="text-muted-foreground">
+              Manage all organizations on the platform
+            </p>
+          </div>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error Loading Organizations</AlertTitle>
+          <AlertDescription>
+            {error && "data" in error
+              ? JSON.stringify(error.data)
+              : "Failed to load organizations. Please try again."}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -200,6 +261,12 @@ const OrganizationsPage = () => {
         onConfirm={handleDeleteConfirm}
         organizationName={selectedOrg?.name || ""}
         isLoading={isDeleting}
+      />
+
+      <ManageMembersDialog
+        organization={selectedOrg}
+        open={isManageMembersOpen}
+        onOpenChange={setIsManageMembersOpen}
       />
     </div>
   );

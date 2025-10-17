@@ -1,5 +1,4 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Trash2, UserPlus, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,7 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import type { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal, Pencil, Trash2, UserPlus, Users } from "lucide-react";
 
 export type Team = {
   _id: string;

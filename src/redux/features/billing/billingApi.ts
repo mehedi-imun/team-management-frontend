@@ -1,14 +1,12 @@
 import { baseApi } from "../../baseApi";
 
 export interface SubscriptionDetails {
-  organizationId: string;
   plan: "free" | "professional" | "business" | "enterprise";
-  subscriptionStatus: "active" | "trialing" | "past_due" | "canceled";
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
-  stripePriceId?: string;
-  currentPeriodEnd?: string;
+  status: "active" | "trialing" | "past_due" | "canceled" | "incomplete";
+  hasSubscription: boolean;
+  currentPeriodEnd?: string | Date;
   cancelAtPeriodEnd?: boolean;
+  subscription?: Record<string, unknown>; // Stripe subscription object
 }
 
 export interface CreateCheckoutDto {

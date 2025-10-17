@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,10 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAddMemberMutation } from "@/redux/features/team/teamApi";
 import { useToast } from "@/hooks/use-toast";
+import { useAddMemberMutation } from "@/redux/features/team/teamApi";
 import type { ITeam } from "@/types";
 import { Loader2, Mail, User, UserPlus } from "lucide-react";
+import { useState } from "react";
 
 interface AddMemberDialogProps {
   team: ITeam | null;
@@ -115,8 +115,8 @@ export function AddMemberDialog({
             Add Team Member
           </DialogTitle>
           <DialogDescription>
-            Add a new member to <strong>{team?.name}</strong>. They will
-            receive an invitation email.
+            Add a new member to <strong>{team?.name}</strong>. They will receive
+            an invitation email.
           </DialogDescription>
         </DialogHeader>
 

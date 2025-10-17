@@ -16,7 +16,6 @@ import {
   LogOut,
   Settings,
   Shield,
-  UserCog,
   Users,
 } from "lucide-react";
 import { useState } from "react";
@@ -114,18 +113,6 @@ const Sidebar = () => {
           icon: Users,
           href: "/dashboard/members",
           roles: ["Member"],
-        },
-        {
-          title: "Invitations",
-          icon: UserCog,
-          href: "/dashboard/invitations",
-          roles: ["Member"],
-        },
-        {
-          title: "Analytics",
-          icon: BarChart3,
-          href: "/dashboard/analytics",
-          roles: ["Member"],
         }
       );
 
@@ -142,7 +129,7 @@ const Sidebar = () => {
       items.push({
         title: "Organization Settings",
         icon: Settings,
-        href: "/dashboard/settings",
+        href: "/dashboard/org-settings",
         roles: ["Member"],
       });
     }

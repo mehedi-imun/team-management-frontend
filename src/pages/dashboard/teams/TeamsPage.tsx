@@ -1,40 +1,58 @@
-import { useState, useEffect } from "react";
-import { Plus, Search, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetTeamsQuery } from "@/redux/features/team/teamApi";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { useGetTeamsQuery } from "@/redux/features/team/teamApi";
+import type { ITeam } from "@/types";
+import { AlertCircle, Plus, Search } from "lucide-react";
+import { useEffect, useState } from "react";
 import { CreateTeamDialog } from "../teams/CreateTeamDialog";
-import { EditTeamDialog } from "./components/EditTeamDialog";
-import { DeleteTeamDialog } from "./components/DeleteTeamDialog";
-import { ViewMembersDialog } from "./components/ViewMembersDialog";
 import { AddMemberDialog } from "./components/AddMemberDialog";
 import { createTeamColumns } from "./components/columns";
-import type { ITeam } from "@/types";
-import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { DeleteTeamDialog } from "./components/DeleteTeamDialog";
+import { EditTeamDialog } from "./components/EditTeamDialog";
+import { ViewMembersDialog } from "./components/ViewMembersDialog";
 
 export default function TeamsPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  
+
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [editDialog, setEditDialog] = useState<{ open: boolean; team: ITeam | null }>({
+  const [editDialog, setEditDialog] = useState<{
+    open: boolean;
+    team: ITeam | null;
+  }>({
     open: false,
     team: null,
   });
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; team: ITeam | null }>({
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    team: ITeam | null;
+  }>({
     open: false,
     team: null,
   });
-  const [viewMembersDialog, setViewMembersDialog] = useState<{ open: boolean; team: ITeam | null }>({
+  const [viewMembersDialog, setViewMembersDialog] = useState<{
+    open: boolean;
+    team: ITeam | null;
+  }>({
     open: false,
     team: null,
   });
-  const [addMemberDialog, setAddMemberDialog] = useState<{ open: boolean; team: ITeam | null }>({
+  const [addMemberDialog, setAddMemberDialog] = useState<{
+    open: boolean;
+    team: ITeam | null;
+  }>({
     open: false,
     team: null,
   });
@@ -147,11 +165,7 @@ export default function TeamsPage() {
           )}
 
           {/* Teams table */}
-          <DataTable
-            columns={columns}
-            data={teams}
-            isLoading={isLoading}
-          />
+          <DataTable columns={columns} data={teams} isLoading={isLoading} />
 
           {/* Pagination */}
           {!isLoading && teams.length > 0 && (

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,15 +7,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useUpdateTeamMutation } from "@/redux/features/team/teamApi";
 import { useToast } from "@/hooks/use-toast";
+import { useUpdateTeamMutation } from "@/redux/features/team/teamApi";
 import type { ITeam } from "@/types";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface EditTeamDialogProps {
   team: ITeam | null;

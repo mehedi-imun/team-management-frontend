@@ -8,7 +8,12 @@ type ToastProps = {
 };
 
 export const useToast = () => {
-  const toast = ({ title, description, variant, duration = 3000 }: ToastProps) => {
+  const toast = ({
+    title,
+    description,
+    variant,
+    duration = 3000,
+  }: ToastProps) => {
     if (variant === "destructive") {
       sonnerToast.error(title || "Error", {
         description,

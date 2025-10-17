@@ -49,38 +49,54 @@ const LandingPage = () => {
 
   const pricing = [
     {
-      name: "Starter",
-      price: "$9",
+      name: "Free",
+      price: "$0",
       period: "/month",
       features: [
-        "Up to 10 team members",
-        "5 teams",
-        "Basic analytics",
-        "Email support",
+        "Up to 5 team members",
+        "3 teams maximum",
+        "5GB storage",
+        "Basic support",
+        "Email notifications",
       ],
       highlighted: false,
     },
     {
       name: "Professional",
-      price: "$29",
+      price: "$49",
       period: "/month",
       features: [
         "Up to 50 team members",
-        "Unlimited teams",
-        "Advanced analytics",
+        "20 teams",
+        "100GB storage",
         "Priority support",
-        "Custom integrations",
+        "Advanced analytics",
+        "Custom branding",
       ],
       highlighted: true,
     },
     {
-      name: "Enterprise",
+      name: "Business",
       price: "$99",
+      period: "/month",
+      features: [
+        "Up to 200 team members",
+        "Unlimited teams",
+        "500GB storage",
+        "24/7 premium support",
+        "Advanced analytics",
+        "SSO/SAML",
+      ],
+      highlighted: false,
+    },
+    {
+      name: "Enterprise",
+      price: "$299",
       period: "/month",
       features: [
         "Unlimited team members",
         "Unlimited teams",
-        "Advanced analytics & reports",
+        "Unlimited storage",
         "24/7 dedicated support",
         "Custom integrations",
         "SLA guarantee",
@@ -180,13 +196,13 @@ const LandingPage = () => {
             Choose the perfect plan for your team's needs
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {pricing.map((plan, index) => (
             <Card
               key={index}
-              className={`relative ${
+              className={`relative flex flex-col ${
                 plan.highlighted
-                  ? "border-primary shadow-xl scale-105"
+                  ? "border-primary shadow-xl lg:scale-105"
                   : "shadow-lg"
               }`}
             >
@@ -199,22 +215,22 @@ const LandingPage = () => {
                 </div>
               )}
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
+                <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
                 <div className="mb-4">
-                  <span className="text-5xl font-bold">{plan.price}</span>
-                  <span className="text-gray-600">{plan.period}</span>
+                  <span className="text-4xl font-bold">{plan.price}</span>
+                  <span className="text-gray-600 text-sm">{plan.period}</span>
                 </div>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-6">
+              <CardContent className="flex-grow flex flex-col">
+                <ul className="space-y-2 mb-6 flex-grow">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-start">
-                      <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600">{feature}</span>
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-600 text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
-                <Link to="/register">
+                <Link to="/register" className="mt-auto">
                   <Button
                     className="w-full"
                     variant={plan.highlighted ? "default" : "outline"}
@@ -225,6 +241,14 @@ const LandingPage = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        <div className="text-center mt-12">
+          <Link to="/pricing">
+            <Button variant="outline" size="lg" className="text-lg">
+              View Full Pricing Details
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 

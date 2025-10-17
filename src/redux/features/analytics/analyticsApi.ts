@@ -19,6 +19,38 @@ export interface ApprovalRates {
   overallApprovalRate: number;
 }
 
+export interface OrganizationAnalytics {
+  organization: {
+    id: string;
+    name: string;
+    status: string;
+    plan: string;
+    subscriptionStatus: string;
+  };
+  members: {
+    total: number;
+    active: number;
+    inactive: number;
+    pending: number;
+  };
+  roles: {
+    owners: number;
+    admins: number;
+    members: number;
+  };
+  usage: {
+    users: number;
+    teams: number;
+    storage: string;
+  };
+  limits: {
+    maxUsers: number;
+    maxTeams: number;
+    maxStorage: string;
+    features: string[];
+  };
+}
+
 const analyticsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get analytics summary
@@ -47,6 +79,15 @@ const analyticsApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Analytics'],
     }),
+    
+    // Get organization analytics (Organization Owner only)
+    getMyOrganizationAnalytics: builder.query<{ success: boolean; data: OrganizationAnalytics }, void>({
+      query: () => ({
+        url: '/analytics/my-organization',
+        method: 'GET',
+      }),
+      providesTags: ['OrganizationAnalytics'],
+    }),
   }),
 });
 
@@ -54,6 +95,7 @@ export const {
   useGetAnalyticsSummaryQuery,
   useGetTeamDistributionQuery,
   useGetApprovalRatesQuery,
+  useGetMyOrganizationAnalyticsQuery,
 } = analyticsApi;
 
 export default analyticsApi;

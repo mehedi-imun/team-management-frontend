@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
-import { CreateTeamDialog } from "./CreateTeamDialog";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useGetTeamsQuery } from "@/redux/features/team/teamApi";
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { columns } from "./columns";
+import { CreateTeamDialog } from "./CreateTeamDialog";
 
 export default function TeamsPage() {
   const [search, setSearch] = useState("");

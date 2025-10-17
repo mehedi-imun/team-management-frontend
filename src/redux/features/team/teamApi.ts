@@ -139,7 +139,13 @@ export const teamApi = baseApi.injectEndpoints({
 
     // Assign manager to team
     assignManager: builder.mutation({
-      query: ({ teamId, managerId }: { teamId: string; managerId: string }) => ({
+      query: ({
+        teamId,
+        managerId,
+      }: {
+        teamId: string;
+        managerId: string;
+      }) => ({
         url: `/teams/${teamId}/manager`,
         method: "PATCH",
         body: JSON.stringify({ managerId }),

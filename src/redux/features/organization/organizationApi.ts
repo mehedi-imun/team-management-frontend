@@ -48,6 +48,27 @@ export interface UpdateOrganizationDto {
   slug?: string;
 }
 
+export interface OrganizationMember {
+  _id: string;
+  userId?: string;
+  name: string;
+  email: string;
+  role: string;
+  status?: "active" | "inactive" | "pending";
+  joinedAt?: string;
+  teams?: string[];
+  isActive?: boolean;
+}
+
+export interface OrganizationStats {
+  totalMembers: number;
+  activeMembers: number;
+  pendingMembers: number;
+  inactiveMembers: number;
+  totalTeams: number;
+  daysLeftInTrial?: number;
+}
+
 const organizationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get user's organizations
@@ -142,6 +163,70 @@ const organizationApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Organization"],
     }),
+
+    // Get organization members
+    getOrganizationMembers: builder.query<
+      { data: OrganizationMember[]; meta: any },
+      { organizationId: string; page?: number; limit?: number; search?: string }
+    >({
+      query: ({ organizationId, page = 1, limit = 10, search = "" }) => ({
+        url: `/organizations/${organizationId}/members?page=${page}&limit=${limit}&search=${search}`,
+        method: "GET",
+      }),
+      providesTags: ["User"],
+      transformResponse: (response: any) => response || { data: [], meta: {} },
+    }),
+
+    // Get organization stats  
+    getOrganizationStats: builder.query<OrganizationStats, void>({
+      query: () => ({
+        url: "/organizations/stats",
+        method: "GET",
+      }),
+      providesTags: ["Organization"],
+      transformResponse: (response: any) => response?.data || {
+        totalMembers: 0,
+        activeMembers: 0,
+        pendingMembers: 0,
+        inactiveMembers: 0,
+        totalTeams: 0,
+      },
+    }),
+
+    // Invite member
+    inviteMember: builder.mutation<
+      any,
+      { email: string; name?: string; role?: string }
+    >({
+      query: (data) => ({
+        url: "/invitations/send",
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+      invalidatesTags: ["User", "Invitation"],
+    }),
+
+    // Update member status
+    updateMemberStatus: builder.mutation<
+      any,
+      { userId: string; isActive: boolean }
+    >({
+      query: ({ userId, isActive }) => ({
+        url: `/users/${userId}/status`,
+        method: "PATCH",
+        body: JSON.stringify({ isActive }),
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    // Remove member
+    removeMember: builder.mutation<any, string>({
+      query: (userId) => ({
+        url: `/users/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User", "Team"],
+    }),
   }),
 });
 
@@ -153,4 +238,9 @@ export const {
   useDeleteOrganizationMutation,
   useCreateOrganizationWithSetupMutation,
   useGetAllOrganizationsQuery,
+  useGetOrganizationMembersQuery,
+  useGetOrganizationStatsQuery,
+  useInviteMemberMutation,
+  useUpdateMemberStatusMutation,
+  useRemoveMemberMutation,
 } = organizationApi;
