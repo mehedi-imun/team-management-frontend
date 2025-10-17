@@ -1,0 +1,290 @@
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, Eye, Ban, CheckCircle, Trash2 } from "lucide-react";
+import type { Organization } from "@/redux/features/platform/platformApi";
+import { format } from "date-fns";
+
+interface DataTableProps {
+  data: Organization[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  onPageChange: (page: number) => void;
+  isLoading?: boolean;
+}
+
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+
+const getStatusBadge = (status: string) => {
+  const variants: Record<string, { variant: BadgeVariant; label: string }> = {
+    trial: { variant: "secondary", label: "Trial" },
+    active: { variant: "default", label: "Active" },
+    suspended: { variant: "destructive", label: "Suspended" },
+    cancelled: { variant: "outline", label: "Cancelled" },
+  };
+
+  const config = variants[status] || variants.active;
+
+  return <Badge variant={config.variant}>{config.label}</Badge>;
+};
+
+const getPlanBadge = (plan: string) => {
+  const variants: Record<string, { variant: BadgeVariant; label: string }> = {
+    free: { variant: "outline", label: "Free" },
+    professional: { variant: "default", label: "Professional" },
+    business: { variant: "secondary", label: "Business" },
+    enterprise: { variant: "default", label: "Enterprise" },
+  };
+
+  const config = variants[plan] || variants.free;
+
+  return <Badge variant={config.variant}>{config.label}</Badge>;
+};
+
+const columns: ColumnDef<Organization>[] = [
+  {
+    accessorKey: "name",
+    header: "Organization",
+    cell: ({ row }) => {
+      const org = row.original;
+      return (
+        <div>
+          <div className="font-medium">{org.name}</div>
+          <div className="text-sm text-muted-foreground">{org.slug}</div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "ownerEmail",
+    header: "Owner",
+    cell: ({ row }) => {
+      const org = row.original;
+      return (
+        <div>
+          <div className="font-medium">{org.ownerName || "N/A"}</div>
+          <div className="text-sm text-muted-foreground">{org.ownerEmail}</div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "plan",
+    header: "Plan",
+    cell: ({ row }) => getPlanBadge(row.original.plan),
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => getStatusBadge(row.original.status),
+  },
+  {
+    accessorKey: "currentPeriodEnd",
+    header: "Subscription",
+    cell: ({ row }) => {
+      const endDate = row.original.currentPeriodEnd;
+      return endDate ? format(new Date(endDate), "MMM dd, yyyy") : "N/A";
+    },
+  },
+  {
+    accessorKey: "currentTeamCount",
+    header: "Teams",
+    cell: ({ row }) => {
+      const org = row.original;
+      return `${org.currentTeamCount} / ${org.teamLimit}`;
+    },
+  },
+  {
+    accessorKey: "currentMemberCount",
+    header: "Members",
+    cell: ({ row }) => {
+      const org = row.original;
+      return `${org.currentMemberCount} / ${org.memberLimit}`;
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      return format(new Date(row.original.createdAt), "MMM dd, yyyy");
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const org = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem>
+              <Eye className="mr-2 h-4 w-4" />
+              View Details
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {org.status === "active" ? (
+              <DropdownMenuItem className="text-orange-600">
+                <Ban className="mr-2 h-4 w-4" />
+                Suspend
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem className="text-green-600">
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Activate
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-red-600">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export function OrganizationsDataTable({
+  data,
+  meta,
+  onPageChange,
+  isLoading,
+}: DataTableProps) {
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil(meta.total / meta.limit),
+  });
+
+  const totalPages = Math.ceil(meta.total / meta.limit);
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  {isLoading ? "Loading..." : "No organizations found."}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-2">
+        <div className="text-sm text-muted-foreground">
+          Showing {(meta.page - 1) * meta.limit + 1} to{" "}
+          {Math.min(meta.page * meta.limit, meta.total)} of {meta.total}{" "}
+          organizations
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(meta.page - 1)}
+            disabled={meta.page === 1 || isLoading}
+          >
+            Previous
+          </Button>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              const pageNum = i + 1;
+              return (
+                <Button
+                  key={pageNum}
+                  variant={meta.page === pageNum ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => onPageChange(pageNum)}
+                  disabled={isLoading}
+                >
+                  {pageNum}
+                </Button>
+              );
+            })}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(meta.page + 1)}
+            disabled={meta.page === totalPages || isLoading}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}

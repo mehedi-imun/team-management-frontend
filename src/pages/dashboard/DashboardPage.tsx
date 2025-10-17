@@ -59,6 +59,23 @@ const DashboardPage = () => {
     return "Good Evening";
   };
 
+  const getUserRole = () => {
+    if (!user) return "Member";
+    
+    // Show Organization Owner if user owns the organization
+    if (user.isOrganizationOwner) {
+      return "Organization Owner";
+    }
+    
+    // Show Organization Admin if user is org admin
+    if (user.isOrganizationAdmin) {
+      return "Organization Admin";
+    }
+    
+    // Otherwise show their platform role
+    return user.role;
+  };
+
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
@@ -161,7 +178,7 @@ const DashboardPage = () => {
               <p className="text-sm text-gray-500">Your Role</p>
               <p className="text-lg font-semibold">
                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                  {user?.role}
+                  {getUserRole()}
                 </span>
               </p>
             </div>

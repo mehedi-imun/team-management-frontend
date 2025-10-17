@@ -6,6 +6,9 @@ interface User {
   name: string;
   email: string;
   role: string;
+  organizationId?: string;
+  isOrganizationOwner: boolean;
+  isOrganizationAdmin: boolean;
 }
 
 interface AuthState {
