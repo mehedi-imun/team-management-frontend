@@ -48,120 +48,148 @@ const Sidebar = () => {
     return "Member";
   };
 
-  // Navigation items based on role
+  // Navigation items based on role - Scalable Structure
   const getNavigationItems = () => {
     const role = user?.role;
     const isOrgOwner = user?.isOrganizationOwner;
     const isOrgAdmin = user?.isOrganizationAdmin;
+    const isAdmin = role === "SuperAdmin" || role === "Admin";
+    const hasMemberRole = role === "Member";
 
-    const items = [
-      {
-        title: "Dashboard",
-        icon: LayoutDashboard,
-        href: "/dashboard",
-        roles: ["SuperAdmin", "Admin", "Member"],
-      },
-    ];
+    type NavigationItem = {
+      title: string;
+      icon: React.ComponentType<{ className?: string }>;
+      href: string;
+      condition: boolean;
+    };
 
-    // SuperAdmin & Admin items
-    if (role === "SuperAdmin" || role === "Admin") {
-      items.push(
-        {
-          title: "Organizations",
-          icon: Building2,
-          href: "/dashboard/organizations",
-          roles: ["SuperAdmin", "Admin"],
-        },
-        {
-          title: "All Users",
-          icon: Users,
-          href: "/dashboard/users",
-          roles: ["SuperAdmin", "Admin"],
-        },
-        {
-          title: "Platform Analytics",
-          icon: BarChart3,
-          href: "/dashboard/platform-analytics",
-          roles: ["SuperAdmin", "Admin"],
-        },
-        {
-          title: "Reports",
-          icon: FileText,
-          href: "/dashboard/reports",
-          roles: ["SuperAdmin", "Admin"],
-        },
-        {
-          title: "System Settings",
-          icon: Settings,
-          href: "/dashboard/settings",
-          roles: ["SuperAdmin", "Admin"],
-        }
-      );
-    }
+    const sections: {
+      title: string;
+      items: NavigationItem[];
+    }[] = [];
 
-    // Organization Owner & Admin items
-    if (role === "Member" && (isOrgOwner || isOrgAdmin)) {
-      items.push(
+    // Main Dashboard (Everyone)
+    sections.push({
+      title: "",
+      items: [
         {
-          title: "Teams",
-          icon: FolderKanban,
-          href: "/dashboard/teams",
-          roles: ["Member"],
+          title: "Dashboard",
+          icon: LayoutDashboard,
+          href: "/dashboard",
+          condition: true,
         },
-        {
-          title: "Members",
-          icon: Users,
-          href: "/dashboard/members",
-          roles: ["Member"],
-        },
-        {
-          title: "Org Analytics",
-          icon: BarChart3,
-          href: "/dashboard/org-analytics",
-          roles: ["Member"],
-        }
-      );
+      ],
+    });
 
-      // Only Organization Owner can access billing
-      if (isOrgOwner) {
-        items.push({
-          title: "Billing",
-          icon: CreditCard,
-          href: "/dashboard/billing",
-          roles: ["Member"],
-        });
-      }
-
-      items.push({
-        title: "Organization Settings",
-        icon: Settings,
-        href: "/dashboard/org-settings",
-        roles: ["Member"],
+    // Platform Admin Section (SuperAdmin & Admin)
+    if (isAdmin) {
+      sections.push({
+        title: "Platform",
+        items: [
+          {
+            title: "Analytics",
+            icon: BarChart3,
+            href: "/dashboard/platform/analytics",
+            condition: true,
+          },
+          {
+            title: "Organizations",
+            icon: Building2,
+            href: "/dashboard/platform/organizations",
+            condition: true,
+          },
+          {
+            title: "All Users",
+            icon: Users,
+            href: "/dashboard/platform/users",
+            condition: true,
+          },
+          {
+            title: "Reports",
+            icon: FileText,
+            href: "/dashboard/platform/reports",
+            condition: true,
+          },
+          {
+            title: "Settings",
+            icon: Settings,
+            href: "/dashboard/platform/settings",
+            condition: true,
+          },
+        ],
       });
     }
 
-    // Regular Member items
-    if (role === "Member" && !isOrgOwner && !isOrgAdmin) {
-      items.push(
-        {
-          title: "My Teams",
-          icon: FolderKanban,
-          href: "/dashboard/my-teams",
-          roles: ["Member"],
-        },
-        {
-          title: "Notifications",
-          icon: Bell,
-          href: "/dashboard/notifications",
-          roles: ["Member"],
-        }
-      );
+    // Organization Section (Org Owner & Admin)
+    if (hasMemberRole && (isOrgOwner || isOrgAdmin)) {
+      sections.push({
+        title: "Organization",
+        items: [
+          {
+            title: "Overview",
+            icon: LayoutDashboard,
+            href: "/dashboard/org/overview",
+            condition: true,
+          },
+          {
+            title: "Members",
+            icon: Users,
+            href: "/dashboard/org/members",
+            condition: true,
+          },
+          {
+            title: "Teams",
+            icon: FolderKanban,
+            href: "/dashboard/org/teams",
+            condition: true,
+          },
+          {
+            title: "Analytics",
+            icon: BarChart3,
+            href: "/dashboard/org/analytics",
+            condition: true,
+          },
+          {
+            title: "Billing",
+            icon: CreditCard,
+            href: "/dashboard/org/billing",
+            condition: Boolean(isOrgOwner), // Only owner can access billing
+          },
+          {
+            title: "Settings",
+            icon: Settings,
+            href: "/dashboard/org/settings",
+            condition: true,
+          },
+        ],
+      });
     }
 
-    return items.filter((item) => item.roles.includes(role || "Member"));
+    // Regular Member Section (No org ownership)
+    if (hasMemberRole && !isOrgOwner && !isOrgAdmin) {
+      sections.push({
+        title: "My Workspace",
+        items: [
+          {
+            title: "My Teams",
+            icon: FolderKanban,
+            href: "/dashboard/my-teams",
+            condition: true,
+          },
+          {
+            title: "Notifications",
+            icon: Bell,
+            href: "/dashboard/notifications",
+            condition: true,
+          },
+        ],
+      });
+    }
+
+    return sections;
   };
 
-  const navigationItems = getNavigationItems();
+  const navigationSections = getNavigationItems();
 
   return (
     <div
@@ -219,29 +247,45 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-4 space-y-2">
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = location.pathname === item.href;
+      <nav className="flex-1 overflow-y-auto p-4 space-y-4">
+        {navigationSections.map((section, sectionIdx) => (
+          <div key={sectionIdx}>
+            {/* Section Title */}
+            {section.title && !collapsed && (
+              <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {section.title}
+              </h3>
+            )}
 
-          return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
-                isActive
-                  ? "bg-primary text-white"
-                  : "text-gray-300 hover:bg-gray-800 hover:text-white",
-                collapsed && "justify-center"
-              )}
-              title={collapsed ? item.title : undefined}
-            >
-              <Icon className="h-5 w-5 flex-shrink-0" />
-              {!collapsed && <span className="text-sm">{item.title}</span>}
-            </Link>
-          );
-        })}
+            {/* Section Items */}
+            <div className="space-y-1">
+              {section.items
+                .filter((item) => item.condition)
+                .map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.href;
+
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={cn(
+                        "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
+                        isActive
+                          ? "bg-primary text-white"
+                          : "text-gray-300 hover:bg-gray-800 hover:text-white",
+                        collapsed && "justify-center"
+                      )}
+                      title={collapsed ? item.title : undefined}
+                    >
+                      <Icon className="h-5 w-5 flex-shrink-0" />
+                      {!collapsed && <span className="text-sm">{item.title}</span>}
+                    </Link>
+                  );
+                })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       {/* Logout */}
