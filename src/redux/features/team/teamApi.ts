@@ -120,6 +120,51 @@ export const teamApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Team"],
     }),
+
+    // Add member to team
+    addMember: builder.mutation({
+      query: ({
+        teamId,
+        data,
+      }: {
+        teamId: string;
+        data: { email: string; name?: string; role?: "TeamLead" | "Member" };
+      }) => ({
+        url: `/teams/${teamId}/members`,
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+      invalidatesTags: ["Team"],
+    }),
+
+    // Assign manager to team
+    assignManager: builder.mutation({
+      query: ({ teamId, managerId }: { teamId: string; managerId: string }) => ({
+        url: `/teams/${teamId}/manager`,
+        method: "PATCH",
+        body: JSON.stringify({ managerId }),
+      }),
+      invalidatesTags: ["Team"],
+    }),
+
+    // Get teams managed by current user
+    getMyManagedTeams: builder.query({
+      query: () => ({
+        url: "/teams/my-managed-teams",
+        method: "GET",
+      }),
+      providesTags: ["Team"],
+      transformResponse: (response: any) => response?.data || [],
+    }),
+
+    // Get teams with pagination (new endpoint)
+    getTeams: builder.query({
+      query: ({ page = 1, limit = 10, searchTerm = "" }) => ({
+        url: `/teams?page=${page}&limit=${limit}&searchTerm=${searchTerm}`,
+        method: "GET",
+      }),
+      providesTags: ["Team"],
+    }),
   }),
 });
 
@@ -135,4 +180,8 @@ export const {
   useUpdateTeamOrderMutation,
   useUpdateMemberMutation,
   useDeleteMemberMutation,
+  useAddMemberMutation,
+  useAssignManagerMutation,
+  useGetMyManagedTeamsQuery,
+  useGetTeamsQuery,
 } = teamApi;

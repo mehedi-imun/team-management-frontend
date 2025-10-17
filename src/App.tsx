@@ -9,6 +9,7 @@ import DashboardPage from "@/pages/dashboard/DashboardPage";
 import OrganizationsPage from "@/pages/dashboard/organizations";
 import ReportsPage from "@/pages/dashboard/reports";
 import SettingsPage from "@/pages/dashboard/settings";
+import TeamsPage from "@/pages/dashboard/teams/TeamsPage";
 import UsersPage from "@/pages/dashboard/users";
 import FeaturesPage from "@/pages/FeaturesPage";
 import LandingPage from "@/pages/LandingPage";
@@ -76,6 +77,9 @@ function App() {
             }
           >
             <Route index element={<DashboardPage />} />
+
+            {/* Teams - Available for all authenticated users */}
+            <Route path="teams" element={<TeamsPage />} />
 
             {/* SuperAdmin & Admin Only Routes */}
             <Route

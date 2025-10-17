@@ -14,6 +14,9 @@ export interface LoginResponse {
       name: string;
       email: string;
       role: string;
+      organizationId?: string;
+      isOrganizationOwner: boolean;
+      isOrganizationAdmin: boolean;
     };
   };
 }

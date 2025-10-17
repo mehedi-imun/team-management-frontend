@@ -1,8 +1,12 @@
 export interface IMember {
   _id?: string | null;
-  name: string;
-  email?: string;
-  role: string;
+  userId?: string;
+  name?: string;
+  email: string;
+  role?: string;
+  joinedAt?: Date | string;
+  invitedAt?: Date | string;
+  isActive?: boolean;
 }
 
 export interface ITeam {
