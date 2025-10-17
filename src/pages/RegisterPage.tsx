@@ -56,7 +56,7 @@ const RegisterPage = () => {
 
       // Auto-login: tokens are automatically stored by RTK Query
       setSuccess(true);
-      
+
       // Redirect to dashboard after successful registration
       setTimeout(() => {
         navigate("/dashboard");
