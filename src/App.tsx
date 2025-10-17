@@ -1,10 +1,15 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PublicLayout from "@/components/layout/PublicLayout";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
+import PlatformAnalyticsPage from "@/pages/dashboard/analytics";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import OrganizationsPage from "@/pages/dashboard/organizations";
+import ReportsPage from "@/pages/dashboard/reports";
+import SettingsPage from "@/pages/dashboard/settings";
+import UsersPage from "@/pages/dashboard/users";
 import FeaturesPage from "@/pages/FeaturesPage";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
@@ -81,11 +86,48 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="users"
+              element={
+                <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+                  <UsersPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="platform-analytics"
+              element={
+                <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+                  <PlatformAnalyticsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="settings"
+              element={
+                <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="reports"
+              element={
+                <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+                  <ReportsPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <Toaster />
       </BrowserRouter>
     </ThemeProvider>
   );

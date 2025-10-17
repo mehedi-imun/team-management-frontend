@@ -86,10 +86,16 @@ const Sidebar = () => {
           roles: ["SuperAdmin", "Admin"],
         },
         {
+          title: "Reports",
+          icon: FileText,
+          href: "/dashboard/reports",
+          roles: ["SuperAdmin", "Admin"],
+        },
+        {
           title: "System Settings",
           icon: Settings,
-          href: "/dashboard/system-settings",
-          roles: ["SuperAdmin"],
+          href: "/dashboard/settings",
+          roles: ["SuperAdmin", "Admin"],
         }
       );
     }
@@ -158,14 +164,6 @@ const Sidebar = () => {
         }
       );
     }
-
-    // Common items for all
-    items.push({
-      title: "Reports",
-      icon: FileText,
-      href: "/dashboard/reports",
-      roles: ["SuperAdmin", "Admin", "Member"],
-    });
 
     return items.filter((item) => item.roles.includes(role || "Member"));
   };

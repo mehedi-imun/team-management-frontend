@@ -5,52 +5,106 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useAppSelector } from "@/redux/hook";
 import {
-  Activity,
-  Building2,
-  TrendingUp,
-  UserCheck,
-  Users,
-} from "lucide-react";
+  useGetOrganizationStatsQuery,
+  useGetUserStatsQuery,
+} from "@/redux/features/platform/platformApi";
+import { useAppSelector } from "@/redux/hook";
+import { Activity, Building2, Loader2, TrendingUp, Users } from "lucide-react";
 
 const DashboardPage = () => {
   const { user } = useAppSelector((state) => state.auth);
 
-  const stats = [
-    {
-      title: "Total Users",
-      value: 0,
-      icon: Users,
-      description: "Registered users",
-      color: "text-blue-600",
-      bg: "bg-blue-100",
-    },
-    {
-      title: "Active Users",
-      value: 0,
-      icon: UserCheck,
-      description: "Active this month",
-      color: "text-green-600",
-      bg: "bg-green-100",
-    },
-    {
-      title: "Total Teams",
-      value: 0,
-      icon: Building2,
-      description: "Teams created",
-      color: "text-purple-600",
-      bg: "bg-purple-100",
-    },
-    {
-      title: "Team Members",
-      value: 0,
-      icon: Activity,
-      description: "Total members",
-      color: "text-orange-600",
-      bg: "bg-orange-100",
-    },
-  ];
+  // Fetch stats based on user role
+  const isAdmin = user?.role === "SuperAdmin" || user?.role === "Admin";
+
+  const { data: userStatsData, isLoading: isLoadingUserStats } =
+    useGetUserStatsQuery(undefined, { skip: !isAdmin });
+
+  const { data: orgStatsData, isLoading: isLoadingOrgStats } =
+    useGetOrganizationStatsQuery(undefined, { skip: !isAdmin });
+
+  const isLoading = isLoadingUserStats || isLoadingOrgStats;
+  const userStats = userStatsData?.data;
+  const orgStats = orgStatsData?.data;
+
+  const getStats = () => {
+    if (isAdmin) {
+      // Admin/SuperAdmin sees platform-wide stats
+      return [
+        {
+          title: "Total Users",
+          value: userStats?.totalUsers || 0,
+          icon: Users,
+          description: `${userStats?.activeUsers || 0} active`,
+          color: "text-blue-600",
+          bg: "bg-blue-100",
+        },
+        {
+          title: "Organizations",
+          value: orgStats?.totalOrganizations || 0,
+          icon: Building2,
+          description: `${orgStats?.activeSubscriptions || 0} active`,
+          color: "text-green-600",
+          bg: "bg-green-100",
+        },
+        {
+          title: "Active Trials",
+          value: orgStats?.trialOrganizations || 0,
+          icon: Activity,
+          description: "Trial subscriptions",
+          color: "text-purple-600",
+          bg: "bg-purple-100",
+        },
+        {
+          title: "Monthly Revenue",
+          value: `$${orgStats?.monthlyRevenue?.toLocaleString() || 0}`,
+          icon: TrendingUp,
+          description: "This month",
+          color: "text-orange-600",
+          bg: "bg-orange-100",
+        },
+      ];
+    }
+
+    // Regular users see placeholder stats
+    return [
+      {
+        title: "My Teams",
+        value: 0,
+        icon: Building2,
+        description: "Teams you're in",
+        color: "text-blue-600",
+        bg: "bg-blue-100",
+      },
+      {
+        title: "Active Tasks",
+        value: 0,
+        icon: Activity,
+        description: "Pending tasks",
+        color: "text-green-600",
+        bg: "bg-green-100",
+      },
+      {
+        title: "Team Members",
+        value: 0,
+        icon: Users,
+        description: "Total members",
+        color: "text-purple-600",
+        bg: "bg-purple-100",
+      },
+      {
+        title: "Completion Rate",
+        value: "0%",
+        icon: TrendingUp,
+        description: "This week",
+        color: "text-orange-600",
+        bg: "bg-orange-100",
+      },
+    ];
+  };
+
+  const stats = getStats();
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -61,17 +115,17 @@ const DashboardPage = () => {
 
   const getUserRole = () => {
     if (!user) return "Member";
-    
+
     // Show Organization Owner if user owns the organization
     if (user.isOrganizationOwner) {
       return "Organization Owner";
     }
-    
+
     // Show Organization Admin if user is org admin
     if (user.isOrganizationAdmin) {
       return "Organization Admin";
     }
-    
+
     // Otherwise show their platform role
     return user.role;
   };
@@ -84,32 +138,39 @@ const DashboardPage = () => {
           {getGreeting()}, {user?.name}!
         </h1>
         <p className="text-gray-600">
-          Here's what's happening with your teams today.
+          Here's what's happening with your {isAdmin ? "platform" : "teams"}{" "}
+          today.
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </CardTitle>
-                <div className={`p-2 rounded-full ${stat.bg}`}>
-                  <Icon className={`h-5 w-5 ${stat.color}`} />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                <p className="text-xs text-gray-500">{stat.description}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      {isAdmin && isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-600">
+                    {stat.title}
+                  </CardTitle>
+                  <div className={`p-2 rounded-full ${stat.bg}`}>
+                    <Icon className={`h-5 w-5 ${stat.color}`} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold mb-1">{stat.value}</div>
+                  <p className="text-xs text-gray-500">{stat.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="grid gap-6 md:grid-cols-2">
@@ -119,24 +180,24 @@ const DashboardPage = () => {
             <CardDescription>Common tasks you might want to do</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            {user?.role === "Admin" && (
+            {isAdmin ? (
               <>
                 <a
-                  href="/teams"
+                  href="/dashboard/organizations"
                   className="block p-4 rounded-lg border hover:border-primary hover:shadow-md transition-all"
                 >
                   <div className="flex items-center">
                     <Building2 className="h-5 w-5 text-primary mr-3" />
                     <div>
-                      <p className="font-medium">Manage Teams</p>
+                      <p className="font-medium">Manage Organizations</p>
                       <p className="text-sm text-gray-500">
-                        Create and organize teams
+                        View and manage all organizations
                       </p>
                     </div>
                   </div>
                 </a>
                 <a
-                  href="/users"
+                  href="/dashboard/users"
                   className="block p-4 rounded-lg border hover:border-primary hover:shadow-md transition-all"
                 >
                   <div className="flex items-center">
@@ -149,29 +210,44 @@ const DashboardPage = () => {
                     </div>
                   </div>
                 </a>
+                <a
+                  href="/dashboard/platform-analytics"
+                  className="block p-4 rounded-lg border hover:border-primary hover:shadow-md transition-all"
+                >
+                  <div className="flex items-center">
+                    <TrendingUp className="h-5 w-5 text-primary mr-3" />
+                    <div>
+                      <p className="font-medium">View Analytics</p>
+                      <p className="text-sm text-gray-500">
+                        Platform performance metrics
+                      </p>
+                    </div>
+                  </div>
+                </a>
               </>
-            )}
-            <a
-              href="/analytics"
-              className="block p-4 rounded-lg border hover:border-primary hover:shadow-md transition-all"
-            >
-              <div className="flex items-center">
-                <TrendingUp className="h-5 w-5 text-primary mr-3" />
-                <div>
-                  <p className="font-medium">View Analytics</p>
-                  <p className="text-sm text-gray-500">
-                    Check performance metrics
-                  </p>
+            ) : (
+              <a
+                href="/dashboard/my-teams"
+                className="block p-4 rounded-lg border hover:border-primary hover:shadow-md transition-all"
+              >
+                <div className="flex items-center">
+                  <Building2 className="h-5 w-5 text-primary mr-3" />
+                  <div>
+                    <p className="font-medium">My Teams</p>
+                    <p className="text-sm text-gray-500">View your teams</p>
+                  </div>
                 </div>
-              </div>
-            </a>
+              </a>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Organization Info</CardTitle>
-            <CardDescription>Your current organization details</CardDescription>
+            <CardTitle>{isAdmin ? "Platform Info" : "Your Info"}</CardTitle>
+            <CardDescription>
+              {isAdmin ? "Platform statistics" : "Your account details"}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -186,6 +262,22 @@ const DashboardPage = () => {
               <p className="text-sm text-gray-500">Email</p>
               <p className="font-medium">{user?.email}</p>
             </div>
+            {isAdmin && (
+              <>
+                <div>
+                  <p className="text-sm text-gray-500">Platform Admins</p>
+                  <p className="font-medium">
+                    {(userStats?.superAdmins || 0) + (userStats?.admins || 0)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Total Revenue</p>
+                  <p className="font-medium">
+                    ${orgStats?.totalRevenue?.toLocaleString() || 0}
+                  </p>
+                </div>
+              </>
+            )}
             <div>
               <p className="text-sm text-gray-500">Member Since</p>
               <p className="font-medium">

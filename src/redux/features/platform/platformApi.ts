@@ -31,17 +31,25 @@ export interface OrganizationStats {
   cancelledOrganizations: number;
   monthlyRevenue: number;
   totalRevenue: number;
+  activeTrials: number;
+  paidOrganizations: number;
 }
 
 export interface User {
   _id: string;
   name: string;
   email: string;
-  role: "SuperAdmin" | "Admin" | "Member";
-  organizationId?: string;
+  role: "SuperAdmin" | "Admin" | "Member" | "Manager" | "Director";
+  organizationId?:
+    | string
+    | {
+        _id: string;
+        name: string;
+      };
   isOrganizationOwner: boolean;
   isOrganizationAdmin: boolean;
   managedTeamIds: string[];
+  teamCount?: number;
   status: "active" | "inactive" | "suspended";
   createdAt: string;
   updatedAt: string;
@@ -78,7 +86,7 @@ const platformApi = baseApi.injectEndpoints({
       }
     >({
       query: (params) => ({
-        url: "/organizations",
+        url: "/organizations/all",
         params,
       }),
       providesTags: ["Organization"],
@@ -119,6 +127,30 @@ const platformApi = baseApi.injectEndpoints({
       query: (id) => ({
         url: `/organizations/${id}`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Organization", "Analytics"],
+    }),
+
+    createOrganizationForClient: builder.mutation<
+      {
+        success: boolean;
+        message: string;
+        data: {
+          organization: Organization;
+          temporaryPassword: string;
+        };
+      },
+      {
+        name: string;
+        ownerEmail: string;
+        ownerName: string;
+        plan: "free" | "professional" | "business" | "enterprise";
+      }
+    >({
+      query: (body) => ({
+        url: "/organizations/create-for-client",
+        method: "POST",
+        body,
       }),
       invalidatesTags: ["Organization", "Analytics"],
     }),
@@ -213,6 +245,7 @@ export const {
   useGetOrganizationStatsQuery,
   useUpdateOrganizationStatusMutation,
   useDeleteOrganizationMutation,
+  useCreateOrganizationForClientMutation,
   useGetAllUsersQuery,
   useGetUserByIdQuery,
   useGetUserStatsQuery,

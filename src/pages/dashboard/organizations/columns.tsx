@@ -15,6 +15,12 @@ import { Ban, CheckCircle, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
+interface ActionHandlers {
+  onView: (org: Organization) => void;
+  onUpdateStatus: (org: Organization) => void;
+  onDelete: (org: Organization) => void;
+}
+
 const getStatusBadge = (status: string) => {
   const variants: Record<string, { variant: BadgeVariant; label: string }> = {
     trial: { variant: "secondary", label: "Trial" },
@@ -39,7 +45,9 @@ const getPlanBadge = (plan: string) => {
   return <Badge variant={config.variant}>{config.label}</Badge>;
 };
 
-export const columns: ColumnDef<Organization>[] = [
+export const createColumns = (
+  handlers: ActionHandlers
+): ColumnDef<Organization>[] => [
   {
     accessorKey: "name",
     header: "Organization",
@@ -122,24 +130,34 @@ export const columns: ColumnDef<Organization>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handlers.onView(org)}>
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {org.status === "active" ? (
-              <DropdownMenuItem className="text-orange-600">
-                <Ban className="mr-2 h-4 w-4" />
-                Suspend
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem className="text-green-600">
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Activate
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem
+              onClick={() => handlers.onUpdateStatus(org)}
+              className={
+                org.status === "active" ? "text-orange-600" : "text-green-600"
+              }
+            >
+              {org.status === "active" ? (
+                <>
+                  <Ban className="mr-2 h-4 w-4" />
+                  Suspend
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Activate
+                </>
+              )}
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">
+            <DropdownMenuItem
+              onClick={() => handlers.onDelete(org)}
+              className="text-red-600"
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </DropdownMenuItem>
