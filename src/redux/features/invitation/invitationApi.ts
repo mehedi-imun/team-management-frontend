@@ -56,7 +56,10 @@ const invitationApi = baseApi.injectEndpoints({
     acceptInvitation: builder.mutation<
       {
         success: boolean;
-        data: { user: { _id: string; name: string; email: string }; accessToken: string };
+        data: {
+          user: { _id: string; name: string; email: string };
+          accessToken: string;
+        };
         message: string;
       },
       AcceptInvitationDto

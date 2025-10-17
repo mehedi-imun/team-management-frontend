@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/button";
-import { useCreateCheckoutMutation } from "../redux/features/billing/billingApi";
-import { useGetSubscriptionQuery } from "../redux/features/billing/billingApi";
+import {
+  useCreateCheckoutMutation,
+  useGetSubscriptionQuery,
+} from "../redux/features/billing/billingApi";
 
 const plans = [
   {
@@ -89,9 +91,7 @@ export default function Billing() {
       window.location.href = result.data.url;
     } catch (error: unknown) {
       const err = error as { data?: { message?: string } };
-      toast.error(
-        err?.data?.message || "Failed to create checkout session"
-      );
+      toast.error(err?.data?.message || "Failed to create checkout session");
     }
   };
 
@@ -142,7 +142,8 @@ export default function Billing() {
           {plans.map((plan) => {
             const isCurrent =
               plan.name.toLowerCase() === currentPlan.toLowerCase();
-            const price = isAnnual && plan.priceAnnual ? plan.priceAnnual : plan.price;
+            const price =
+              isAnnual && plan.priceAnnual ? plan.priceAnnual : plan.price;
             const savings = plan.priceAnnual
               ? plan.price * 12 - plan.priceAnnual
               : 0;

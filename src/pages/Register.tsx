@@ -74,14 +74,13 @@ export default function Register() {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            🚀 TeamHub
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">🚀 TeamHub</h1>
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Create Your Account
           </h2>
           <p className="text-gray-600">
-            Start with our <span className="font-bold text-green-600">FREE</span> plan
+            Start with our{" "}
+            <span className="font-bold text-green-600">FREE</span> plan
           </p>
           <p className="text-sm text-gray-500 mt-1">
             No credit card required • 5 users • 3 teams

@@ -65,9 +65,7 @@ const organizationApi = baseApi.injectEndpoints({
       string
     >({
       query: (id) => `/organizations/${id}`,
-      providesTags: (_result, _error, id) => [
-        { type: "Organization", id },
-      ],
+      providesTags: (_result, _error, id) => [{ type: "Organization", id }],
     }),
 
     // Create organization

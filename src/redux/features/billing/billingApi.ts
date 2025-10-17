@@ -55,8 +55,7 @@ const billingApi = baseApi.injectEndpoints({
       },
       string
     >({
-      query: (sessionId) =>
-        `/billing/verify-checkout?session_id=${sessionId}`,
+      query: (sessionId) => `/billing/verify-checkout?session_id=${sessionId}`,
       providesTags: ["Billing", "Organization"],
     }),
 

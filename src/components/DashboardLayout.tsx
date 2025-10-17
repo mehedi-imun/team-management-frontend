@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
   Building2,
@@ -12,12 +10,13 @@ import {
   Users,
   UsersRound,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
 import { useLogoutMutation } from "../redux/features/auth/authApi";
 import { clearUser } from "../redux/features/auth/authSlice";
 import type { RootState } from "../redux/store";
-import { useDispatch } from "react-redux";
+import { Button } from "./ui/button";
 
 interface NavItem {
   name: string;
@@ -29,10 +28,25 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Teams", href: "/teams", icon: UsersRound },
-  { name: "Users", href: "/users", icon: Users, roles: ["SuperAdmin", "Admin"] },
+  {
+    name: "Users",
+    href: "/users",
+    icon: Users,
+    roles: ["SuperAdmin", "Admin"],
+  },
   { name: "Invitations", href: "/invitations", icon: Mail },
-  { name: "Analytics", href: "/analytics", icon: BarChart3, roles: ["SuperAdmin", "Admin"] },
-  { name: "Reports", href: "/reports", icon: FileText, roles: ["SuperAdmin", "Admin"] },
+  {
+    name: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
+    roles: ["SuperAdmin", "Admin"],
+  },
+  {
+    name: "Reports",
+    href: "/reports",
+    icon: FileText,
+    roles: ["SuperAdmin", "Admin"],
+  },
   { name: "Billing", href: "/billing", icon: CreditCard },
   { name: "Organization", href: "/organization", icon: Building2 },
   { name: "Settings", href: "/settings", icon: Settings },
@@ -143,16 +157,24 @@ export default function DashboardLayout({
         <header className="sticky top-0 z-40 bg-white border-b border-gray-200 h-16 flex items-center px-8">
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900">
-              {navigation.find((item) => item.href === location.pathname)?.name ||
-                "Dashboard"}
+              {navigation.find((item) => item.href === location.pathname)
+                ?.name || "Dashboard"}
             </h1>
           </div>
           {/* Quick Actions */}
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={() => navigate("/teams/new")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/teams/new")}
+            >
               + New Team
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate("/invitations")}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/invitations")}
+            >
               + Invite Member
             </Button>
           </div>

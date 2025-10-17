@@ -60,7 +60,10 @@ const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["Organization", "User"],
     }),
 
-    setupOrganization: builder.mutation<LoginResponse, SetupOrganizationRequest>({
+    setupOrganization: builder.mutation<
+      LoginResponse,
+      SetupOrganizationRequest
+    >({
       query: (data) => ({
         url: "/auth/setup-organization",
         method: "POST",
