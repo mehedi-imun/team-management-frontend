@@ -5,10 +5,10 @@ import { Toaster } from "@/components/ui/sonner";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 import PlatformAnalyticsPage from "@/pages/dashboard/analytics";
-import OrganizationAnalyticsPage from "@/pages/dashboard/org-analytics";
 import BillingPage from "@/pages/dashboard/billing";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import MembersPage from "@/pages/dashboard/members";
+import OrganizationAnalyticsPage from "@/pages/dashboard/org-analytics";
 import OrganizationsPage from "@/pages/dashboard/organizations";
 import ReportsPage from "@/pages/dashboard/reports";
 import SettingsPage from "@/pages/dashboard/settings";
@@ -89,7 +89,10 @@ function App() {
             <Route path="members" element={<MembersPage />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="org-settings" element={<OrgSettingsPage />} />
-            <Route path="org-analytics" element={<OrganizationAnalyticsPage />} />
+            <Route
+              path="org-analytics"
+              element={<OrganizationAnalyticsPage />}
+            />
 
             {/* SuperAdmin & Admin Only Routes */}
             <Route

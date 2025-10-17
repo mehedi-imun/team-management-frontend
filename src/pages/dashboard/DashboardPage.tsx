@@ -5,13 +5,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
-  useGetUserStatsQuery,
-} from "@/redux/features/platform/platformApi";
 import { useGetMyOrganizationStatsQuery } from "@/redux/features/organization/organizationApi";
+import {
+  useGetUserStatsQuery,
+  useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
+} from "@/redux/features/platform/platformApi";
 import { useAppSelector } from "@/redux/hook";
-import { Activity, Building2, Clock, Loader2, TrendingUp, Users } from "lucide-react";
+import {
+  Activity,
+  Building2,
+  Clock,
+  Loader2,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
 const DashboardPage = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -31,7 +38,8 @@ const DashboardPage = () => {
   const { data: orgOwnerStatsData, isLoading: isLoadingOrgOwnerStats } =
     useGetMyOrganizationStatsQuery(undefined, { skip: !isOrgOwner || isAdmin });
 
-  const isLoading = isLoadingUserStats || isLoadingPlatformOrgStats || isLoadingOrgOwnerStats;
+  const isLoading =
+    isLoadingUserStats || isLoadingPlatformOrgStats || isLoadingOrgOwnerStats;
   const userStats = userStatsData?.data;
   const orgStats = isAdmin ? platformOrgStatsData?.data : orgOwnerStatsData;
 

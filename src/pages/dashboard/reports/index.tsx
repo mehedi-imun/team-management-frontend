@@ -16,10 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
   useGetUserStatsQuery,
+  useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
 } from "@/redux/features/platform/platformApi";
-import { useGetMyOrganizationStatsQuery } from "@/redux/features/organization/organizationApi";
 import { useAppSelector } from "@/redux/hook";
 import {
   BarChart3,
@@ -48,12 +47,12 @@ const ReportsPage = () => {
   const { data: userStats } = useGetUserStatsQuery(undefined, {
     skip: !isAdmin,
   });
-  
+
   // Platform admins get platform stats, org owners get their org stats
   const { data: platformOrgStats } = usePlatformOrgStatsQuery(undefined, {
     skip: !isAdmin,
   });
-  
+
   const { data: orgOwnerStats } = useGetOrganizationStatsQuery(undefined, {
     skip: !isOrgOwner || isAdmin,
   });

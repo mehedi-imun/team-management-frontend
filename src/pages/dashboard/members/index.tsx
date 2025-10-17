@@ -36,8 +36,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  useGetOrganizationMembersQuery,
   useGetMyOrganizationStatsQuery,
+  useGetOrganizationMembersQuery,
   useInviteMemberMutation,
   useRemoveMemberMutation,
   useUpdateMemberStatusMutation,
@@ -92,11 +92,14 @@ export default function MembersPage() {
       }
     );
 
-  const { data: statsResponse, isLoading: isStatsLoading, refetch: refetchStats } =
-    useGetMyOrganizationStatsQuery(undefined, {
-      skip: !organizationId,
-      refetchOnMountOrArgChange: true, // Force fresh data on mount
-    });
+  const {
+    data: statsResponse,
+    isLoading: isStatsLoading,
+    refetch: refetchStats,
+  } = useGetMyOrganizationStatsQuery(undefined, {
+    skip: !organizationId,
+    refetchOnMountOrArgChange: true, // Force fresh data on mount
+  });
 
   // Backend returns { success: true, data: {...} } format
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,8 +107,11 @@ export default function MembersPage() {
 
   console.log("📊 Full Stats Response:", statsResponse);
   console.log("📊 Extracted Stats:", stats);
-  console.log("📊 Has totalMembers?", 'totalMembers' in (stats || {}));
-  console.log("📊 Has totalOrganizations?", 'totalOrganizations' in (stats || {}));
+  console.log("📊 Has totalMembers?", "totalMembers" in (stats || {}));
+  console.log(
+    "📊 Has totalOrganizations?",
+    "totalOrganizations" in (stats || {})
+  );
   // Mutations
   const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
   const [updateStatus, { isLoading: isUpdatingStatus }] =

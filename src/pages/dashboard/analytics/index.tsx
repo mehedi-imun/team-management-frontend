@@ -1,12 +1,10 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useGetPlatformAnalyticsQuery } from "@/redux/features/platform/platformApi";
-import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import {
+  AlertCircle,
   Building2,
   CreditCard,
   DollarSign,
@@ -15,8 +13,10 @@ import {
   UserCheck,
   UserPlus,
   Users,
-  AlertCircle,
 } from "lucide-react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const PlatformAnalyticsPage = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -49,8 +49,8 @@ const PlatformAnalyticsPage = () => {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            You don't have permission to view platform analytics. 
-            This page is only accessible to Super Admins and Admins.
+            You don't have permission to view platform analytics. This page is
+            only accessible to Super Admins and Admins.
             {user?.isOrganizationOwner && (
               <span className="block mt-2">
                 Redirecting to your organization analytics...
