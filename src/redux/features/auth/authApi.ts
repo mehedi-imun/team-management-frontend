@@ -22,7 +22,14 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
-  role?: string;
+  organizationName: string;
+  organizationSlug: string;
+}
+
+export interface SetupOrganizationRequest {
+  token: string;
+  name: string;
+  password: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -50,6 +57,16 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
         body: userData,
       }),
+      invalidatesTags: ["Organization", "User"],
+    }),
+
+    setupOrganization: builder.mutation<LoginResponse, SetupOrganizationRequest>({
+      query: (data) => ({
+        url: "/auth/setup-organization",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Organization", "User"],
     }),
 
     logout: builder.mutation<void, void>({
@@ -93,6 +110,7 @@ const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useSetupOrganizationMutation,
   useLogoutMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,

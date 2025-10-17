@@ -2,7 +2,9 @@ import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import DashboardLayout from "./components/Layout";
 import Analytics from "./pages/Analytics";
+import Billing from "./pages/Billing";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Settings from "./pages/Settings";
 import TeamForm from "./pages/TeamForm";
 import TeamsNew from "./pages/TeamsNew";
@@ -28,6 +30,7 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Protected Routes */}
         <Route
@@ -71,6 +74,16 @@ function App() {
           element={
             <ProtectedRoute>
               <Analytics />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Billing & Plans */}
+        <Route
+          path="/billing"
+          element={
+            <ProtectedRoute>
+              <Billing />
             </ProtectedRoute>
           }
         />
