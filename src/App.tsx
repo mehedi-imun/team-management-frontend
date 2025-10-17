@@ -1,115 +1,68 @@
-import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import DashboardLayout from "./components/DashboardLayout";
-import Analytics from "./pages/Analytics";
-import Billing from "./pages/Billing";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Settings from "./pages/Settings";
-import TeamForm from "./pages/TeamForm";
-import TeamsNew from "./pages/TeamsNew";
-import Users from "./pages/Users";
-import type { RootState } from "./redux/store";
+import { useAppSelector } from "@/redux/hook";
+import PublicLayout from "@/components/layout/PublicLayout";
+import LandingPage from "@/pages/LandingPage";
+import FeaturesPage from "@/pages/FeaturesPage";
+import PricingPage from "@/pages/PricingPage";
+import AboutPage from "@/pages/AboutPage";
+import ContactPage from "@/pages/ContactPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import DashboardPage from "@/pages/DashboardPage";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
-// Protected Route Component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+}
 
-  if (!isAuthenticated) {
+const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+  const { user } = useAppSelector((state) => state.auth);
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 function App() {
+  const { user } = useAppSelector((state) => state.auth);
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Public Routes with Layout */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LandingPage />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Route>
+
+        {/* Auth Routes (no layout) */}
+        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
+        <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <RegisterPage />} />
 
         {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <DashboardLayout />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/teams"
-          element={
-            <ProtectedRoute>
-              <TeamsNew />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/teams/new"
-          element={
-            <ProtectedRoute>
-              <TeamForm team={null} onBack={() => {}} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/teams/:id/edit"
-          element={
-            <ProtectedRoute>
-              <TeamForm team={null} onBack={() => {}} />
-            </ProtectedRoute>
-          }
-        />
+        >
+          <Route index element={<DashboardPage />} />
+        </Route>
 
-        {/* Users Management (Admin only) */}
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute>
-              <Users />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Analytics (Admin, Director) */}
-        <Route
-          path="/analytics"
-          element={
-            <ProtectedRoute>
-              <Analytics />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Billing & Plans */}
-        <Route
-          path="/billing"
-          element={
-            <ProtectedRoute>
-              <Billing />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Settings */}
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Default redirect */}
-        <Route path="/" element={<Navigate to="/teams" replace />} />
-        <Route path="*" element={<Navigate to="/teams" replace />} />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

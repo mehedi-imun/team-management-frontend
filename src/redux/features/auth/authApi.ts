@@ -30,6 +30,8 @@ export interface SetupOrganizationRequest {
   token: string;
   name: string;
   password: string;
+  organizationName: string;
+  organizationSlug: string;
 }
 
 export interface ForgotPasswordRequest {
