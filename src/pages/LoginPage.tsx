@@ -1,14 +1,21 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/redux/hook";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
-import { setUser } from "@/redux/features/auth/authSlice";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hook";
 import { Building2, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -54,7 +61,7 @@ const LoginPage = () => {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -62,7 +69,9 @@ const LoginPage = () => {
                 type="email"
                 placeholder="name@example.com"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
                 disabled={isLoading}
               />
@@ -83,7 +92,9 @@ const LoginPage = () => {
                 type="password"
                 placeholder="••••••••"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 required
                 disabled={isLoading}
               />
@@ -104,7 +115,10 @@ const LoginPage = () => {
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-sm text-center text-gray-600">
             Don't have an account?{" "}
-            <Link to="/register" className="text-primary font-medium hover:underline">
+            <Link
+              to="/register"
+              className="text-primary font-medium hover:underline"
+            >
               Sign up
             </Link>
           </div>

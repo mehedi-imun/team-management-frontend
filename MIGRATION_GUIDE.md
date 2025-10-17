@@ -3,12 +3,14 @@
 ## 📋 Migration Status
 
 ### ✅ Phase 1: Foundation (COMPLETED)
+
 - [x] Created new folder structure
 - [x] Created shared constants (roles, routes, status)
 - [x] Created shared utilities (format, validation)
 - [x] Created shared hooks (useDebounce, useLocalStorage, usePagination, usePermissions)
 
 ### 🔄 Phase 2: Move Shared Components (IN PROGRESS)
+
 - [ ] Move UI components to `shared/components/ui/`
 - [ ] Move layout components to `shared/components/layout/`
 - [ ] Create feedback components in `shared/components/feedback/`
@@ -16,6 +18,7 @@
 - [ ] Create common components in `shared/components/common/`
 
 ### ⏳ Phase 3: Feature Migration (PENDING)
+
 - [ ] Migrate Auth feature
 - [ ] Migrate Dashboard feature
 - [ ] Migrate Teams feature
@@ -27,11 +30,13 @@
 - [ ] Migrate Reports feature
 
 ### ⏳ Phase 4: App Configuration (PENDING)
+
 - [ ] Create providers in `app/providers/`
 - [ ] Create route config in `app/routes/`
 - [ ] Move store to `app/store/`
 
 ### ⏳ Phase 5: Cleanup (PENDING)
+
 - [ ] Update all imports to use new paths
 - [ ] Remove old folder structure
 - [ ] Update documentation
@@ -44,12 +49,14 @@
 ### Shared Constants
 
 1. **`shared/constants/roles.ts`**
+
    - `ROLES` - Role definitions
    - `ROLE_HIERARCHY` - Permission levels
    - `hasRole()` - Permission checker
    - `getRolesBelow()` - Helper function
 
 2. **`shared/constants/routes.ts`**
+
    - `ROUTES` - All application routes
    - `ROUTE_CONFIG` - Route metadata with icons and roles
    - `buildRoute()` - Dynamic route builder
@@ -65,6 +72,7 @@
 ### Shared Utilities
 
 1. **`shared/utils/format.ts`**
+
    - `formatDate()` - Date formatting
    - `formatRelativeTime()` - "2 hours ago" format
    - `formatCurrency()` - Money formatting
@@ -93,15 +101,18 @@
 ### Shared Hooks
 
 1. **`shared/hooks/useDebounce.ts`**
+
    - Debounce any value (great for search inputs)
    - Default 500ms delay
 
 2. **`shared/hooks/useLocalStorage.ts`**
+
    - Sync React state with localStorage
    - Auto-parse JSON
    - Remove functionality
 
 3. **`shared/hooks/usePagination.ts`**
+
    - Complete pagination state management
    - Next/prev/first/last page navigation
    - Total pages calculation
@@ -117,53 +128,68 @@
 ## 🎯 Benefits Already Achieved
 
 ### 1. **Centralized Constants**
+
 Before:
+
 ```typescript
 // Scattered throughout codebase
 if (user.role === 'Admin' || user.role === 'SuperAdmin') { ... }
 ```
 
 After:
+
 ```typescript
 import { ROLES, hasRole } from '@/shared/constants/roles';
 if (hasRole(user.role, ROLES.MANAGER)) { ... }
 ```
 
 ### 2. **Reusable Utilities**
+
 Before:
+
 ```typescript
 // Duplicated in multiple files
-const slug = orgName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const slug = orgName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 ```
 
 After:
+
 ```typescript
-import { generateSlug } from '@/shared/utils/format';
+import { generateSlug } from "@/shared/utils/format";
 const slug = generateSlug(orgName);
 ```
 
 ### 3. **Type-Safe Routes**
+
 Before:
+
 ```typescript
-navigate('/teams/' + teamId + '/edit');
+navigate("/teams/" + teamId + "/edit");
 ```
 
 After:
+
 ```typescript
-import { ROUTES, buildRoute } from '@/shared/constants/routes';
+import { ROUTES, buildRoute } from "@/shared/constants/routes";
 navigate(buildRoute(ROUTES.TEAMS_EDIT, { id: teamId }));
 ```
 
 ### 4. **Consistent Validation**
+
 Before:
+
 ```typescript
 // Different validation logic in each form
 const isValid = password.length >= 8 && /[A-Z]/.test(password);
 ```
 
 After:
+
 ```typescript
-import { isValidPassword, getPasswordStrength } from '@/shared/utils/validation';
+import {
+  isValidPassword,
+  getPasswordStrength,
+} from "@/shared/utils/validation";
 const isValid = isValidPassword(password);
 const strength = getPasswordStrength(password);
 ```
@@ -175,22 +201,24 @@ const strength = getPasswordStrength(password);
 ### Immediate (Next 30 mins)
 
 1. **Move Shared Components**
+
    ```bash
    # Move UI components
    mv src/components/ui/* src/shared/components/ui/
-   
+
    # Move DashboardLayout
    mv src/components/DashboardLayout.tsx src/shared/components/layout/
-   
+
    # Move feedback components
    mv src/components/Loader.tsx src/shared/components/feedback/
    mv src/components/Toast.tsx src/shared/components/feedback/
-   
+
    # Move common components
    mv src/components/ConfirmDialog.tsx src/shared/components/common/
    ```
 
 2. **Create Feature Folders**
+
    - Start with Auth feature (easiest)
    - Move Login, Register, ForgotPassword pages
    - Move authApi.ts and authSlice.ts
@@ -203,6 +231,7 @@ const strength = getPasswordStrength(password);
 ### Short Term (Next 2 hours)
 
 4. **Migrate All Features**
+
    - Follow pattern established with Auth
    - One feature at a time
    - Test after each migration
@@ -215,6 +244,7 @@ const strength = getPasswordStrength(password);
 ### Long Term (Next day)
 
 6. **Optimization**
+
    - Code splitting per feature
    - Lazy loading for routes
    - Bundle analysis
@@ -262,18 +292,18 @@ import { NotificationsPage } from '@/features/notifications';
 
 ```typescript
 // Constants
-import { ROUTES, ROLES, APPROVAL_STATUS } from '@/shared/constants';
+import { ROUTES, ROLES, APPROVAL_STATUS } from "@/shared/constants";
 
 // Utilities
-import { formatDate, generateSlug, isValidEmail } from '@/shared/utils';
+import { formatDate, generateSlug, isValidEmail } from "@/shared/utils";
 
 // Hooks
-import { useDebounce, usePagination, usePermissions } from '@/shared/hooks';
+import { useDebounce, usePagination, usePermissions } from "@/shared/hooks";
 
 // Components
-import { Button, Dialog } from '@/shared/components/ui';
-import { DashboardLayout } from '@/shared/components/layout';
-import { Loader } from '@/shared/components/feedback';
+import { Button, Dialog } from "@/shared/components/ui";
+import { DashboardLayout } from "@/shared/components/layout";
+import { Loader } from "@/shared/components/feedback";
 ```
 
 ---

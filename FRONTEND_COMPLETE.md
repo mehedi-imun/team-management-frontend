@@ -9,6 +9,7 @@ Modern, role-based dashboard built with **React 19**, **Vite**, **TypeScript**, 
 ## ✨ Features Implemented
 
 ### 🎯 Core Features
+
 - ✅ **Role-Based Dashboard** - Different views for Admin, Manager, Member
 - ✅ **Self-Service Registration** - Sign up with automatic organization creation
 - ✅ **Multi-Tenant Architecture** - Each organization isolated with usage limits
@@ -20,6 +21,7 @@ Modern, role-based dashboard built with **React 19**, **Vite**, **TypeScript**, 
 - ✅ **Usage Tracking** - Real-time usage limits with visual indicators
 
 ### 🎨 UI/UX Features
+
 - ✅ **Modern Design** - Gradients, shadows, hover effects
 - ✅ **Responsive Layout** - Mobile-friendly grid system
 - ✅ **Toast Notifications** - User feedback with Sonner
@@ -90,26 +92,27 @@ src/
 
 ## 🛠️ Tech Stack
 
-| Category | Technology | Version |
-|----------|-----------|---------|
-| **Framework** | React | 19.x |
-| **Build Tool** | Vite | 6.x |
-| **Language** | TypeScript | 5.x |
-| **State Management** | Redux Toolkit | 2.x |
-| **API Integration** | RTK Query | 2.x |
-| **Routing** | React Router | 7.9.4 |
-| **UI Components** | Shadcn/UI | Latest |
-| **Styling** | Tailwind CSS | 3.x |
-| **Form Handling** | React Hook Form | 7.x |
-| **Validation** | Zod | 3.x |
-| **Notifications** | Sonner | 1.x |
-| **Icons** | Lucide React | Latest |
+| Category             | Technology      | Version |
+| -------------------- | --------------- | ------- |
+| **Framework**        | React           | 19.x    |
+| **Build Tool**       | Vite            | 6.x     |
+| **Language**         | TypeScript      | 5.x     |
+| **State Management** | Redux Toolkit   | 2.x     |
+| **API Integration**  | RTK Query       | 2.x     |
+| **Routing**          | React Router    | 7.9.4   |
+| **UI Components**    | Shadcn/UI       | Latest  |
+| **Styling**          | Tailwind CSS    | 3.x     |
+| **Form Handling**    | React Hook Form | 7.x     |
+| **Validation**       | Zod             | 3.x     |
+| **Notifications**    | Sonner          | 1.x     |
+| **Icons**            | Lucide React    | Latest  |
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - Backend API running on `http://localhost:5000`
 
@@ -146,34 +149,35 @@ VITE_BASE_URL=https://your-api-domain.com/api/v1
 
 ### Public Routes
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/login` | Login.tsx | User authentication |
-| `/register` | Register.tsx | Self-service signup with org creation |
-| `/accept-invite` | AcceptInvitation.tsx | Accept team invitation (token-based) |
-| `/setup-organization` | SetupOrganization.tsx | Setup org from admin invite |
+| Route                 | Component             | Description                           |
+| --------------------- | --------------------- | ------------------------------------- |
+| `/login`              | Login.tsx             | User authentication                   |
+| `/register`           | Register.tsx          | Self-service signup with org creation |
+| `/accept-invite`      | AcceptInvitation.tsx  | Accept team invitation (token-based)  |
+| `/setup-organization` | SetupOrganization.tsx | Setup org from admin invite           |
 
 ### Protected Routes (Require Authentication)
 
-| Route | Component | Access | Description |
-|-------|-----------|--------|-------------|
-| `/dashboard` | Dashboard.tsx | All | Main dashboard home |
-| `/teams` | TeamsNew.tsx | All | Teams listing |
-| `/teams/new` | TeamForm.tsx | Admin, Manager | Create new team |
-| `/teams/:id/edit` | TeamForm.tsx | Admin, Manager | Edit team |
-| `/users` | Users.tsx | Admin | User management |
-| `/analytics` | Analytics.tsx | Admin, Director | Analytics dashboard |
-| `/reports` | Reports.tsx | Admin, Director | Generate reports |
-| `/invitations` | Invitations.tsx | Admin, Manager | Manage invitations |
-| `/billing` | Billing.tsx | All | View/upgrade plans |
-| `/organization` | OrganizationPage.tsx | Admin, Owner | Org settings |
-| `/settings` | Settings.tsx | All | User settings |
+| Route             | Component            | Access          | Description         |
+| ----------------- | -------------------- | --------------- | ------------------- |
+| `/dashboard`      | Dashboard.tsx        | All             | Main dashboard home |
+| `/teams`          | TeamsNew.tsx         | All             | Teams listing       |
+| `/teams/new`      | TeamForm.tsx         | Admin, Manager  | Create new team     |
+| `/teams/:id/edit` | TeamForm.tsx         | Admin, Manager  | Edit team           |
+| `/users`          | Users.tsx            | Admin           | User management     |
+| `/analytics`      | Analytics.tsx        | Admin, Director | Analytics dashboard |
+| `/reports`        | Reports.tsx          | Admin, Director | Generate reports    |
+| `/invitations`    | Invitations.tsx      | Admin, Manager  | Manage invitations  |
+| `/billing`        | Billing.tsx          | All             | View/upgrade plans  |
+| `/organization`   | OrganizationPage.tsx | Admin, Owner    | Org settings        |
+| `/settings`       | Settings.tsx         | All             | User settings       |
 
 ---
 
 ## 🔐 Role-Based Access Control
 
 ### User Roles
+
 - **SuperAdmin** - Platform-level admin (all access)
 - **Admin** - Organization admin (full org access)
 - **Manager** - Team manager (team management + approvals)
@@ -188,13 +192,23 @@ Navigation menu items are automatically filtered based on user role:
 const navigation = [
   { name: "Dashboard", path: "/dashboard", icon: Home },
   { name: "Teams", path: "/teams", icon: UsersRound },
-  { name: "Users", path: "/users", icon: Users, roles: ["Admin", "SuperAdmin"] },
-  { name: "Analytics", path: "/analytics", icon: BarChart3, roles: ["Admin", "SuperAdmin", "Director"] },
+  {
+    name: "Users",
+    path: "/users",
+    icon: Users,
+    roles: ["Admin", "SuperAdmin"],
+  },
+  {
+    name: "Analytics",
+    path: "/analytics",
+    icon: BarChart3,
+    roles: ["Admin", "SuperAdmin", "Director"],
+  },
   // ...
 ];
 
-const filteredNavigation = navigation.filter((item) =>
-  !item.roles || item.roles.includes(user?.role || "")
+const filteredNavigation = navigation.filter(
+  (item) => !item.roles || item.roles.includes(user?.role || "")
 );
 ```
 
@@ -203,9 +217,9 @@ const filteredNavigation = navigation.filter((item) =>
 ```typescript
 const isAdmin = user?.role === "Admin" || user?.role === "SuperAdmin";
 
-{isAdmin && (
-  <div>Admin-only content</div>
-)}
+{
+  isAdmin && <div>Admin-only content</div>;
+}
 ```
 
 ---
@@ -231,9 +245,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog } from "@/components/ui/dialog";
 
-<Button className="bg-indigo-600 hover:bg-indigo-700">
-  Click Me
-</Button>
+<Button className="bg-indigo-600 hover:bg-indigo-700">Click Me</Button>;
 ```
 
 ---
@@ -292,6 +304,7 @@ createTeam: builder.mutation({
 ### 1. Dashboard (Dashboard.tsx)
 
 **Features:**
+
 - Welcome banner with user name
 - FREE plan upgrade prompt
 - 4 stat cards (Teams, Members, Active Teams, Pending Approvals)
@@ -299,6 +312,7 @@ createTeam: builder.mutation({
 - Recent activity section (admin-only)
 
 **Integration:**
+
 ```typescript
 const { data: subscription } = useGetSubscriptionQuery();
 const currentPlan = subscription?.data?.plan || "free";
@@ -307,12 +321,14 @@ const currentPlan = subscription?.data?.plan || "free";
 ### 2. Registration (Register.tsx)
 
 **Features:**
+
 - Self-service signup
 - Auto-slug generation from org name
 - Zod validation
 - Auto-login after registration
 
 **Auto-Slug Logic:**
+
 ```typescript
 const slug = orgName
   .toLowerCase()
@@ -323,17 +339,22 @@ const slug = orgName
 ### 3. Billing (Billing.tsx)
 
 **Features:**
+
 - 4 pricing tiers
 - Monthly/Annual toggle
 - Feature comparison
 - Stripe checkout integration
 
 **Checkout Flow:**
+
 ```typescript
 const [createCheckout] = useCreateCheckoutMutation();
 
 const handleUpgrade = async (plan) => {
-  const result = await createCheckout({ plan, billingCycle: "monthly" }).unwrap();
+  const result = await createCheckout({
+    plan,
+    billingCycle: "monthly",
+  }).unwrap();
   window.location.href = result.data.url; // Redirect to Stripe
 };
 ```
@@ -341,12 +362,14 @@ const handleUpgrade = async (plan) => {
 ### 4. Invitations (Invitations.tsx)
 
 **Features:**
+
 - Create invitation dialog
 - Table with status badges
 - Resend/Revoke actions
 - Stats cards
 
 **Status Colors:**
+
 ```typescript
 const statusColors = {
   pending: "bg-yellow-100 text-yellow-700",
@@ -359,12 +382,14 @@ const statusColors = {
 ### 5. Organization Management (OrganizationPage.tsx)
 
 **Features:**
+
 - View/Edit org details
 - Usage tracking with progress bars
 - Plan upgrade prompts
 - Feature list display
 
 **Usage Calculation:**
+
 ```typescript
 const usagePercentage = {
   users: (usage.users / limits.maxUsers) * 100,
@@ -375,12 +400,14 @@ const usagePercentage = {
 ### 6. Reports (Reports.tsx)
 
 **Features:**
+
 - Report type selection
 - Date range filter
 - Real-time preview
 - Export to JSON/CSV/PDF
 
 **Export Logic:**
+
 ```typescript
 const handleExport = () => {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -399,12 +426,14 @@ const handleExport = () => {
 ## 🧪 Testing User Flows
 
 ### Flow 1: Self-Service Registration
+
 1. Navigate to http://localhost:5173/register
 2. Enter name, email, password
 3. Enter organization name (slug auto-generated)
 4. Submit → Auto-login → Redirect to /dashboard
 
 ### Flow 2: Accept Team Invitation
+
 1. Receive invitation email with link
 2. Click link → Navigate to /accept-invite?token=xxx
 3. View invitation details (org, team, role)
@@ -413,6 +442,7 @@ const handleExport = () => {
 6. Auto-login → Redirect to /dashboard
 
 ### Flow 3: Upgrade Plan
+
 1. Navigate to /billing
 2. Select desired plan (Professional, Business, Enterprise)
 3. Click "Upgrade Now"
@@ -421,6 +451,7 @@ const handleExport = () => {
 6. Redirect back to app → Plan updated
 
 ### Flow 4: Create Team Invitation
+
 1. Navigate to /invitations
 2. Click "Create Invitation"
 3. Enter email, select team, select role
@@ -435,40 +466,60 @@ const handleExport = () => {
 
 ```css
 /* Primary Colors */
---indigo-600: #4f46e5;  /* Primary actions */
---purple-600: #9333ea;  /* Accents */
+--indigo-600: #4f46e5; /* Primary actions */
+--purple-600: #9333ea; /* Accents */
 
 /* Status Colors */
---green-600: #16a34a;   /* Success, Active */
---yellow-600: #ca8a04;  /* Pending, Warning */
---red-600: #dc2626;     /* Error, Rejected */
---gray-600: #4b5563;    /* Inactive, Neutral */
+--green-600: #16a34a; /* Success, Active */
+--yellow-600: #ca8a04; /* Pending, Warning */
+--red-600: #dc2626; /* Error, Rejected */
+--gray-600: #4b5563; /* Inactive, Neutral */
 ```
 
 ### Typography
 
 ```css
 /* Headings */
-.text-3xl { font-size: 1.875rem; } /* Page titles */
-.text-xl  { font-size: 1.25rem; }  /* Section titles */
-.text-lg  { font-size: 1.125rem; } /* Card titles */
+.text-3xl {
+  font-size: 1.875rem;
+} /* Page titles */
+.text-xl {
+  font-size: 1.25rem;
+} /* Section titles */
+.text-lg {
+  font-size: 1.125rem;
+} /* Card titles */
 
 /* Body */
-.text-base { font-size: 1rem; }    /* Normal text */
-.text-sm   { font-size: 0.875rem; } /* Secondary text */
-.text-xs   { font-size: 0.75rem; }  /* Captions */
+.text-base {
+  font-size: 1rem;
+} /* Normal text */
+.text-sm {
+  font-size: 0.875rem;
+} /* Secondary text */
+.text-xs {
+  font-size: 0.75rem;
+} /* Captions */
 ```
 
 ### Spacing
 
 ```css
 /* Card Padding */
-.p-6  { padding: 1.5rem; }  /* Standard cards */
-.p-8  { padding: 2rem; }    /* Large cards */
+.p-6 {
+  padding: 1.5rem;
+} /* Standard cards */
+.p-8 {
+  padding: 2rem;
+} /* Large cards */
 
 /* Gaps */
-.gap-4 { gap: 1rem; }       /* Component gaps */
-.gap-6 { gap: 1.5rem; }     /* Section gaps */
+.gap-4 {
+  gap: 1rem;
+} /* Component gaps */
+.gap-6 {
+  gap: 1.5rem;
+} /* Section gaps */
 ```
 
 ---
@@ -476,20 +527,24 @@ const handleExport = () => {
 ## 📊 Performance Optimizations
 
 ### 1. Code Splitting
+
 - Route-based code splitting with React Router
 - Lazy loading for heavy components
 
 ### 2. API Caching
+
 - RTK Query automatic caching (default 60s stale time)
 - Tag-based cache invalidation
 - Optimistic updates where applicable
 
 ### 3. Image Optimization
+
 - Lazy loading for images
 - WebP format support
 - Responsive images
 
 ### 4. Bundle Optimization
+
 - Vite automatic code splitting
 - Tree shaking for unused code
 - Minification in production builds
@@ -499,17 +554,23 @@ const handleExport = () => {
 ## 🐛 Common Issues & Solutions
 
 ### Issue 1: CORS Errors
+
 **Solution:** Ensure backend CORS is configured for frontend URL
+
 ```typescript
 // Backend: app.ts
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 ```
 
 ### Issue 2: Cookie Not Sent
+
 **Solution:** Ensure `credentials: "include"` in RTK Query
+
 ```typescript
 baseQuery: fetchBaseQuery({
   baseUrl: API_URL,
@@ -518,13 +579,17 @@ baseQuery: fetchBaseQuery({
 ```
 
 ### Issue 3: TypeScript Errors
+
 **Solution:** Run type checking
+
 ```bash
 npm run build  # Checks TypeScript types
 ```
 
 ### Issue 4: Component Not Found
+
 **Solution:** Check import path uses `@/` alias
+
 ```typescript
 import { Button } from "@/components/ui/button"; // ✅
 import { Button } from "../components/ui/button"; // ❌
@@ -535,24 +600,28 @@ import { Button } from "../components/ui/button"; // ❌
 ## 📦 Build & Deployment
 
 ### Development Build
+
 ```bash
 npm run dev
 # Runs on http://localhost:5173
 ```
 
 ### Production Build
+
 ```bash
 npm run build
 # Output in dist/ folder
 ```
 
 ### Preview Production Build
+
 ```bash
 npm run preview
 # Preview production build locally
 ```
 
 ### Deploy to Vercel
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -568,27 +637,30 @@ vercel env add VITE_BASE_URL
 
 ## 📝 Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| `dev` | `vite` | Start dev server |
-| `build` | `tsc && vite build` | Build for production |
-| `preview` | `vite preview` | Preview production build |
-| `lint` | `eslint .` | Run ESLint |
+| Script    | Command             | Description              |
+| --------- | ------------------- | ------------------------ |
+| `dev`     | `vite`              | Start dev server         |
+| `build`   | `tsc && vite build` | Build for production     |
+| `preview` | `vite preview`      | Preview production build |
+| `lint`    | `eslint .`          | Run ESLint               |
 
 ---
 
 ## 🎓 Learning Resources
 
 ### RTK Query
+
 - [Official Docs](https://redux-toolkit.js.org/rtk-query/overview)
 - [Mutations](https://redux-toolkit.js.org/rtk-query/usage/mutations)
 - [Cache Behavior](https://redux-toolkit.js.org/rtk-query/usage/cache-behavior)
 
 ### Shadcn/UI
+
 - [Component Docs](https://ui.shadcn.com)
 - [Theming Guide](https://ui.shadcn.com/docs/theming)
 
 ### React Hook Form + Zod
+
 - [React Hook Form](https://react-hook-form.com)
 - [Zod Integration](https://react-hook-form.com/get-started#SchemaValidation)
 
@@ -624,6 +696,7 @@ MIT License - feel free to use for personal or commercial projects.
 ## 📞 Support
 
 For issues or questions:
+
 - Create an issue on GitHub
 - Check existing documentation
 - Review code comments

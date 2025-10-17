@@ -1,7 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/redux/hook";
-import { useLogoutMutation } from "@/redux/features/auth/authApi";
-import { clearUser } from "@/redux/features/auth/authSlice";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,22 +7,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
+import { clearUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import {
-  LayoutDashboard,
-  Users,
-  UserPlus,
-  CreditCard,
-  Building2,
   BarChart3,
+  Building2,
+  CreditCard,
   FileText,
-  Menu,
-  X,
+  LayoutDashboard,
   LogOut,
+  Menu,
   Settings,
   User,
+  UserPlus,
+  Users,
+  X,
 } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -147,7 +147,10 @@ const Navbar = () => {
               const Icon = link.icon;
               return (
                 <Link key={link.to} to={link.to}>
-                  <Button variant="ghost" className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center space-x-2"
+                  >
                     <Icon className="h-4 w-4" />
                     <span>{link.label}</span>
                   </Button>
@@ -160,7 +163,10 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full"
+                >
                   <Avatar>
                     <AvatarFallback className="bg-primary text-white">
                       {getInitials(user.name)}
@@ -172,7 +178,9 @@ const Navbar = () => {
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                         {user.role}
@@ -198,7 +206,11 @@ const Navbar = () => {
               className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>

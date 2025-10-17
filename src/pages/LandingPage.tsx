@@ -1,16 +1,16 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Users,
-  Shield,
-  Zap,
-  BarChart3,
-  CheckCircle,
-  Building2,
   ArrowRight,
+  BarChart3,
+  Building2,
+  CheckCircle,
+  Shield,
   Star,
+  Users,
+  Zap,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   const features = [
@@ -101,8 +101,8 @@ const LandingPage = () => {
             Manage Your Teams Like Never Before
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Streamline team collaboration, track progress, and boost productivity
-            with our comprehensive team management platform.
+            Streamline team collaboration, track progress, and boost
+            productivity with our comprehensive team management platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
@@ -151,7 +151,10 @@ const LandingPage = () => {
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+              <Card
+                key={index}
+                className="text-center hover:shadow-lg transition-shadow"
+              >
                 <CardHeader>
                   <div className="mx-auto mb-4 h-16 w-16 flex items-center justify-center rounded-full bg-primary/10">
                     <Icon className="h-8 w-8 text-primary" />
@@ -170,7 +173,9 @@ const LandingPage = () => {
       {/* Pricing Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+          <h2 className="text-4xl font-bold mb-4">
+            Simple, Transparent Pricing
+          </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Choose the perfect plan for your team's needs
           </p>

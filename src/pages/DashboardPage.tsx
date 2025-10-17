@@ -1,6 +1,18 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useAppSelector } from "@/redux/hook";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, Building2, TrendingUp, Activity } from "lucide-react";
+import {
+  Activity,
+  Building2,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from "lucide-react";
 
 const DashboardPage = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -100,7 +112,9 @@ const DashboardPage = () => {
                     <Building2 className="h-5 w-5 text-primary mr-3" />
                     <div>
                       <p className="font-medium">Manage Teams</p>
-                      <p className="text-sm text-gray-500">Create and organize teams</p>
+                      <p className="text-sm text-gray-500">
+                        Create and organize teams
+                      </p>
                     </div>
                   </div>
                 </a>
@@ -112,7 +126,9 @@ const DashboardPage = () => {
                     <Users className="h-5 w-5 text-primary mr-3" />
                     <div>
                       <p className="font-medium">Manage Users</p>
-                      <p className="text-sm text-gray-500">Add or update user accounts</p>
+                      <p className="text-sm text-gray-500">
+                        Add or update user accounts
+                      </p>
                     </div>
                   </div>
                 </a>
@@ -126,7 +142,9 @@ const DashboardPage = () => {
                 <TrendingUp className="h-5 w-5 text-primary mr-3" />
                 <div>
                   <p className="font-medium">View Analytics</p>
-                  <p className="text-sm text-gray-500">Check performance metrics</p>
+                  <p className="text-sm text-gray-500">
+                    Check performance metrics
+                  </p>
                 </div>
               </div>
             </a>

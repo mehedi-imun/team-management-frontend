@@ -216,11 +216,13 @@ src/
 ## 🎯 Key Principles Applied
 
 ### 1. **Feature-Based Architecture**
+
 - Each feature is self-contained in its own folder
 - Easy to scale, test, and maintain
 - Clear boundaries between features
 
 ### 2. **Separation of Concerns**
+
 - **API Layer:** All RTK Query endpoints
 - **Components:** Presentational components
 - **Pages:** Container components
@@ -229,15 +231,18 @@ src/
 - **Utils:** Reusable utility functions
 
 ### 3. **Domain-Driven Design**
+
 - Features organized by business domain (auth, teams, billing)
 - Not by technical layer (all components together)
 
 ### 4. **Shared Resources Pattern**
+
 - Common components in `shared/components/`
 - Reusable hooks in `shared/hooks/`
 - Utilities in `shared/utils/`
 
 ### 5. **Public API Pattern**
+
 - Each feature has `index.ts` for controlled exports
 - Prevents deep imports: `import { LoginPage } from '@/features/auth'`
 
@@ -248,30 +253,33 @@ src/
 export default {
   resolve: {
     alias: {
-      '@': '/src',
-      '@/features': '/src/features',
-      '@/shared': '/src/shared',
-      '@/app': '/src/app',
-      '@/assets': '/src/assets',
-      '@/lib': '/src/lib',
-    }
-  }
-}
+      "@": "/src",
+      "@/features": "/src/features",
+      "@/shared": "/src/shared",
+      "@/app": "/src/app",
+      "@/assets": "/src/assets",
+      "@/lib": "/src/lib",
+    },
+  },
+};
 ```
 
 ## 🔄 Migration Plan
 
 ### Phase 1: Setup New Structure
+
 1. Create new folder structure
 2. Move shared components to `shared/components/`
 3. Move UI components to `shared/components/ui/`
 
 ### Phase 2: Feature Migration
+
 4. Migrate Auth feature
 5. Migrate Teams feature
 6. Migrate other features one by one
 
 ### Phase 3: Cleanup
+
 7. Update all imports
 8. Remove old structure
 9. Update documentation

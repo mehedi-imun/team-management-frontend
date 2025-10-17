@@ -95,7 +95,7 @@ const RegisterPage = () => {
           </div>
           <CardTitle className="text-3xl font-bold">Create Account</CardTitle>
           <CardDescription>
-            Start managing your teams effectively today
+            Start your 14-day free trial. No credit card required.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -215,9 +215,14 @@ const RegisterPage = () => {
                   Creating account...
                 </>
               ) : (
-                "Create Account"
+                "Start Free Trial"
               )}
             </Button>
+
+            <p className="text-xs text-center text-gray-600 mt-4">
+              By creating an account, you'll become the owner of your
+              organization with full control over teams, members, and settings.
+            </p>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">

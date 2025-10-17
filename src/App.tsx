@@ -1,15 +1,15 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { useAppSelector } from "@/redux/hook";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 import PublicLayout from "@/components/layout/PublicLayout";
-import LandingPage from "@/pages/LandingPage";
-import FeaturesPage from "@/pages/FeaturesPage";
-import PricingPage from "@/pages/PricingPage";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
-import LoginPage from "@/pages/LoginPage";
-import RegisterPage from "@/pages/RegisterPage";
 import DashboardPage from "@/pages/DashboardPage";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import FeaturesPage from "@/pages/FeaturesPage";
+import LandingPage from "@/pages/LandingPage";
+import LoginPage from "@/pages/LoginPage";
+import PricingPage from "@/pages/PricingPage";
+import RegisterPage from "@/pages/RegisterPage";
+import { useAppSelector } from "@/redux/hook";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -38,7 +38,10 @@ function App() {
       <Routes>
         {/* Public Routes with Layout */}
         <Route element={<PublicLayout />}>
-          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <LandingPage />} />
+          <Route
+            path="/"
+            element={user ? <Navigate to="/dashboard" /> : <LandingPage />}
+          />
           <Route path="/features" element={<FeaturesPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/about" element={<AboutPage />} />
@@ -46,8 +49,14 @@ function App() {
         </Route>
 
         {/* Auth Routes (no layout) */}
-        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
-        <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <RegisterPage />} />
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/dashboard" /> : <LoginPage />}
+        />
+        <Route
+          path="/register"
+          element={user ? <Navigate to="/dashboard" /> : <RegisterPage />}
+        />
 
         {/* Protected Routes */}
         <Route

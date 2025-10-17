@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, Star, ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle, Star } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const PricingPage = () => {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
+    "monthly"
+  );
 
   const plans = [
     {
@@ -93,11 +95,11 @@ const PricingPage = () => {
     },
   ];
 
-  const getPrice = (plan: typeof plans[0]) => {
+  const getPrice = (plan: (typeof plans)[0]) => {
     return billingCycle === "monthly" ? plan.monthlyPrice : plan.annualPrice;
   };
 
-  const getSavings = (plan: typeof plans[0]) => {
+  const getSavings = (plan: (typeof plans)[0]) => {
     const monthlyCost = plan.monthlyPrice * 12;
     const annualCost = plan.annualPrice;
     return monthlyCost - annualCost;
@@ -114,7 +116,7 @@ const PricingPage = () => {
           <p className="text-xl text-gray-600 mb-8">
             Choose the perfect plan for your team's needs. No hidden fees.
           </p>
-          
+
           {/* Billing Toggle */}
           <div className="inline-flex items-center bg-gray-100 rounded-lg p-1 mb-12">
             <button
@@ -136,7 +138,9 @@ const PricingPage = () => {
               }`}
             >
               Annual
-              <span className="ml-2 text-xs text-green-600 font-semibold">Save 17%</span>
+              <span className="ml-2 text-xs text-green-600 font-semibold">
+                Save 17%
+              </span>
             </button>
           </div>
         </div>
@@ -186,7 +190,9 @@ const PricingPage = () => {
                     </li>
                   ))}
                 </ul>
-                <Link to={plan.name === "Enterprise" ? "/contact" : "/register"}>
+                <Link
+                  to={plan.name === "Enterprise" ? "/contact" : "/register"}
+                >
                   <Button
                     className="w-full"
                     variant={plan.highlighted ? "default" : "outline"}
@@ -226,9 +232,7 @@ const PricingPage = () => {
       <section className="container mx-auto px-4 py-20">
         <Card className="bg-primary text-white shadow-2xl">
           <CardContent className="text-center py-16">
-            <h2 className="text-4xl font-bold mb-4">
-              Ready to Get Started?
-            </h2>
+            <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
             <p className="text-xl mb-8 opacity-90">
               Start your 14-day free trial today. No credit card required.
             </p>

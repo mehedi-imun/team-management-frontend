@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Users, Target, Heart, Award } from "lucide-react";
+import { ArrowRight, Award, Heart, Target, Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AboutPage = () => {
   const values = [
@@ -52,8 +52,8 @@ const AboutPage = () => {
             Building the Future of Team Management
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            We're on a mission to make team collaboration effortless and enjoyable
-            for everyone.
+            We're on a mission to make team collaboration effortless and
+            enjoyable for everyone.
           </p>
         </div>
       </section>
@@ -66,15 +66,15 @@ const AboutPage = () => {
               <h2 className="text-3xl font-bold mb-6">Our Story</h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  TeamManager was born out of frustration with existing team management
-                  tools. In 2020, our founders were managing multiple teams across
-                  different projects and realized there wasn't a single platform that
-                  made team collaboration truly seamless.
+                  TeamManager was born out of frustration with existing team
+                  management tools. In 2020, our founders were managing multiple
+                  teams across different projects and realized there wasn't a
+                  single platform that made team collaboration truly seamless.
                 </p>
                 <p>
-                  We set out to build something better – a platform that combines
-                  powerful features with an intuitive interface. A tool that teams
-                  actually enjoy using, not just endure.
+                  We set out to build something better – a platform that
+                  combines powerful features with an intuitive interface. A tool
+                  that teams actually enjoy using, not just endure.
                 </p>
                 <p>
                   Today, TeamManager serves thousands of teams worldwide, from
@@ -99,7 +99,10 @@ const AboutPage = () => {
           {values.map((value, index) => {
             const Icon = value.icon;
             return (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+              <Card
+                key={index}
+                className="text-center hover:shadow-lg transition-shadow"
+              >
                 <CardContent className="pt-8">
                   <div className="mx-auto mb-4 h-16 w-16 flex items-center justify-center rounded-full bg-primary/10">
                     <Icon className="h-8 w-8 text-primary" />
@@ -117,13 +120,14 @@ const AboutPage = () => {
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Meet Our Team</h2>
-          <p className="text-xl text-gray-600">
-            The people behind TeamManager
-          </p>
+          <p className="text-xl text-gray-600">The people behind TeamManager</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {team.map((member, index) => (
-            <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+            <Card
+              key={index}
+              className="text-center hover:shadow-lg transition-shadow"
+            >
               <CardContent className="pt-8">
                 <div className="text-6xl mb-4">{member.image}</div>
                 <h3 className="text-xl font-bold mb-1">{member.name}</h3>
@@ -138,9 +142,7 @@ const AboutPage = () => {
       <section className="container mx-auto px-4 py-20 bg-white">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Our Journey</h2>
-          <p className="text-xl text-gray-600">
-            Key milestones in our growth
-          </p>
+          <p className="text-xl text-gray-600">Key milestones in our growth</p>
         </div>
         <div className="max-w-4xl mx-auto">
           <div className="space-y-8">

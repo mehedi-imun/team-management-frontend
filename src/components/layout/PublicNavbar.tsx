@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Building2, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const PublicNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -49,7 +49,11 @@ const PublicNavbar = () => {
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
 
