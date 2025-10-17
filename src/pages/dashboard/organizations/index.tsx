@@ -1,10 +1,16 @@
-import { useState } from "react";
-import { useGetAllOrganizationsQuery } from "@/redux/features/platform/platformApi";
+import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useGetAllOrganizationsQuery } from "@/redux/features/platform/platformApi";
 import { Plus, Search } from "lucide-react";
-import { DataTable } from "@/components/data-table";
+import { useState } from "react";
 import { columns } from "./columns";
 
 const OrganizationsPage = () => {
@@ -34,7 +40,9 @@ const OrganizationsPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
-          <p className="text-muted-foreground">Manage all organizations on the platform</p>
+          <p className="text-muted-foreground">
+            Manage all organizations on the platform
+          </p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
@@ -45,7 +53,12 @@ const OrganizationsPage = () => {
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search organizations..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+          <Input
+            placeholder="Search organizations..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
         </div>
 
         <Select value={status} onValueChange={setStatus}>
@@ -75,11 +88,19 @@ const OrganizationsPage = () => {
         </Select>
 
         {(search || status || plan) && (
-          <Button variant="outline" onClick={handleClearFilters}>Clear Filters</Button>
+          <Button variant="outline" onClick={handleClearFilters}>
+            Clear Filters
+          </Button>
         )}
       </div>
 
-      <DataTable columns={columns} data={organizations} meta={data?.meta} onPageChange={setPage} isLoading={isLoading} />
+      <DataTable
+        columns={columns}
+        data={organizations}
+        meta={data?.meta}
+        onPageChange={setPage}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
-import { type ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,11 +8,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Eye, Ban, CheckCircle, Trash2 } from "lucide-react";
 import type { Organization } from "@/redux/features/platform/platformApi";
+import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { Ban, CheckCircle, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 

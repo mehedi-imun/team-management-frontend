@@ -63,19 +63,24 @@ src/
 ## 🎯 Design Principles
 
 ### 1. **Feature-Based Organization**
+
 Each feature (organizations, users, teams, etc.) has its own folder with all related files:
+
 - `index.tsx` - Main page component
 - `columns.tsx` - Data table column definitions
 - `*Dialog.tsx` - Modal/dialog components
 - `types.ts` - Feature-specific types (optional)
 
 ### 2. **Reusable Components**
+
 Shared components are extracted to:
+
 - `components/data-table/` - Table components used across all list pages
 - `components/dashboard/` - Dashboard-specific reusable UI
 - `components/forms/` - Form components with validation
 
 ### 3. **Separation of Concerns**
+
 - **Pages** - Route components, state management, API calls
 - **Components** - Presentational components, reusable UI
 - **Redux** - API endpoints, data fetching, caching
@@ -87,6 +92,7 @@ Shared components are extracted to:
 **Example: Users Page**
 
 1. **Create folder structure:**
+
 ```bash
 mkdir src/pages/dashboard/users
 touch src/pages/dashboard/users/index.tsx
@@ -94,6 +100,7 @@ touch src/pages/dashboard/users/columns.tsx
 ```
 
 2. **Define columns** (`columns.tsx`):
+
 ```tsx
 import { type ColumnDef } from "@tanstack/react-table";
 import type { User } from "@/redux/features/platform/platformApi";
@@ -109,6 +116,7 @@ export const columns: ColumnDef<User>[] = [
 ```
 
 3. **Create main page** (`index.tsx`):
+
 ```tsx
 import { useState } from "react";
 import { useGetAllUsersQuery } from "@/redux/features/platform/platformApi";
@@ -137,6 +145,7 @@ export default UsersPage;
 ```
 
 4. **Add route** (`App.tsx`):
+
 ```tsx
 import UsersPage from "@/pages/dashboard/users";
 
@@ -147,7 +156,7 @@ import UsersPage from "@/pages/dashboard/users";
       <UsersPage />
     </ProtectedRoute>
   }
-/>
+/>;
 ```
 
 ### Using the DataTable Component
@@ -156,19 +165,21 @@ The generic `DataTable` component accepts:
 
 ```tsx
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];  // Column definitions
-  data: TData[];                         // Array of data
-  meta?: {                               // Pagination metadata
+  columns: ColumnDef<TData, TValue>[]; // Column definitions
+  data: TData[]; // Array of data
+  meta?: {
+    // Pagination metadata
     page: number;
     limit: number;
     total: number;
   };
   onPageChange?: (page: number) => void; // Page change handler
-  isLoading?: boolean;                   // Loading state
+  isLoading?: boolean; // Loading state
 }
 ```
 
 **Benefits:**
+
 - ✅ Reusable across all list pages
 - ✅ Built-in loading state
 - ✅ Automatic pagination
@@ -179,6 +190,7 @@ interface DataTableProps<TData, TValue> {
 ### Existing Features to Migrate:
 
 1. **Teams Page** (already exists in old structure)
+
    - Move to `pages/dashboard/teams/`
    - Extract columns to `columns.tsx`
    - Use reusable `DataTable` component
@@ -207,21 +219,25 @@ mv src/pages/Teams.tsx src/pages/dashboard/teams/index.tsx
 ## 🚀 Benefits of This Structure
 
 ### ✅ Scalability
+
 - Easy to add new features without cluttering
 - Each feature is self-contained
 - Clear separation of concerns
 
 ### ✅ Maintainability
+
 - Easy to find files (feature-based organization)
 - Reusable components reduce duplication
 - Consistent patterns across features
 
 ### ✅ Team Collaboration
+
 - Multiple developers can work on different features
 - Clear ownership of feature folders
 - No merge conflicts in large files
 
 ### ✅ Performance
+
 - Code splitting by feature (lazy loading)
 - Reusable components optimize bundle size
 - Efficient re-renders with proper component structure
@@ -278,21 +294,25 @@ Each feature folder can have route-level protection:
 ## 📦 Next Steps
 
 1. ✅ **Organizations Module** - COMPLETE
+
    - Page with filters
    - Data table with columns
    - Pagination
 
 2. 🔄 **Users Module** - IN PROGRESS
+
    - Create users page similar to organizations
    - Add role management dialogs
    - User status controls
 
 3. ⏳ **Forms with React Hook Form + Zod** - TODO
+
    - Extract form components
    - Add validation schemas
    - Create reusable dialogs
 
 4. ⏳ **Analytics Dashboard** - TODO
+
    - Platform statistics
    - Charts and graphs
    - Real-time data
