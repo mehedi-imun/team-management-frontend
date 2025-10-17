@@ -1,8 +1,9 @@
 import { useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import DashboardLayout from "./components/Layout";
+import DashboardLayout from "./components/DashboardLayout";
 import Analytics from "./pages/Analytics";
 import Billing from "./pages/Billing";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Settings from "./pages/Settings";
@@ -33,6 +34,14 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/teams"
           element={
