@@ -207,7 +207,9 @@ const PricingPage = () => {
               )}
               <CardHeader className="text-center pb-6">
                 <CardTitle className="text-2xl mb-2">{plan.name}</CardTitle>
-                <p className="text-sm text-gray-600 mb-4 min-h-[40px]">{plan.description}</p>
+                <p className="text-sm text-gray-600 mb-4 min-h-[40px]">
+                  {plan.description}
+                </p>
                 <div className="mb-2">
                   <span className="text-4xl font-bold">${getPrice(plan)}</span>
                   <span className="text-gray-600 text-sm">
@@ -269,7 +271,9 @@ const PricingPage = () => {
                   <td className="p-4 font-medium">Team Members</td>
                   {plans.map((plan, index) => (
                     <td key={index} className="text-center p-4">
-                      {plan.limits.maxUsers === 99999 ? "Unlimited" : `Up to ${plan.limits.maxUsers}`}
+                      {plan.limits.maxUsers === 99999
+                        ? "Unlimited"
+                        : `Up to ${plan.limits.maxUsers}`}
                     </td>
                   ))}
                 </tr>
@@ -277,7 +281,9 @@ const PricingPage = () => {
                   <td className="p-4 font-medium">Teams</td>
                   {plans.map((plan, index) => (
                     <td key={index} className="text-center p-4">
-                      {plan.limits.maxTeams === 99999 ? "Unlimited" : `${plan.limits.maxTeams} teams`}
+                      {plan.limits.maxTeams === 99999
+                        ? "Unlimited"
+                        : `${plan.limits.maxTeams} teams`}
                     </td>
                   ))}
                 </tr>

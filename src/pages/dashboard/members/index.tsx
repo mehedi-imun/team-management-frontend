@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,15 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -32,34 +24,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  CheckCircle2,
-  Clock,
-  Mail,
-  Plus,
-  Search,
-  UserX,
-  MoreHorizontal,
-  Loader2,
-  AlertCircle,
-  UserMinus,
-  UserCheck,
-  UserCog,
-} from "lucide-react";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   useGetOrganizationMembersQuery,
   useGetOrganizationStatsQuery,
   useInviteMemberMutation,
-  useUpdateMemberStatusMutation,
   useRemoveMemberMutation,
+  useUpdateMemberStatusMutation,
   type OrganizationMember,
 } from "@/redux/features/organization/organizationApi";
+import type { RootState } from "@/redux/store";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Mail,
+  MoreHorizontal,
+  Plus,
+  Search,
+  UserCheck,
+  UserCog,
+  UserMinus,
+  UserX,
+} from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export default function MembersPage() {
@@ -68,7 +68,8 @@ export default function MembersPage() {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<OrganizationMember | null>(null);
+  const [selectedMember, setSelectedMember] =
+    useState<OrganizationMember | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteName, setInviteName] = useState("");
   const [inviteRole, setInviteRole] = useState("Member");
@@ -78,23 +79,26 @@ export default function MembersPage() {
   const organizationId = user?.organizationId;
 
   // Fetch data
-  const { data: membersData, isLoading: isMembersLoading } = useGetOrganizationMembersQuery(
-    {
-      organizationId: organizationId || "",
-      page,
-      limit: 10,
-      search: searchTerm,
-    },
-    {
-      skip: !organizationId, // Skip query if no organization ID
-    }
-  );
+  const { data: membersData, isLoading: isMembersLoading } =
+    useGetOrganizationMembersQuery(
+      {
+        organizationId: organizationId || "",
+        page,
+        limit: 10,
+        search: searchTerm,
+      },
+      {
+        skip: !organizationId, // Skip query if no organization ID
+      }
+    );
 
-  const { data: stats, isLoading: isStatsLoading } = useGetOrganizationStatsQuery();
+  const { data: stats, isLoading: isStatsLoading } =
+    useGetOrganizationStatsQuery();
 
   // Mutations
   const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
-  const [updateStatus, { isLoading: isUpdatingStatus }] = useUpdateMemberStatusMutation();
+  const [updateStatus, { isLoading: isUpdatingStatus }] =
+    useUpdateMemberStatusMutation();
   const [removeMember, { isLoading: isRemoving }] = useRemoveMemberMutation();
 
   const members = membersData?.data || [];
@@ -135,7 +139,11 @@ export default function MembersPage() {
         userId: selectedMember.userId,
         isActive: !selectedMember.isActive,
       }).unwrap();
-      toast.success(`Member ${selectedMember.isActive ? "deactivated" : "activated"} successfully`);
+      toast.success(
+        `Member ${
+          selectedMember.isActive ? "deactivated" : "activated"
+        } successfully`
+      );
       setIsStatusDialogOpen(false);
       setSelectedMember(null);
     } catch (error) {
@@ -188,7 +196,8 @@ export default function MembersPage() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                You are not assigned to any organization. Please contact your administrator.
+                You are not assigned to any organization. Please contact your
+                administrator.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -249,7 +258,9 @@ export default function MembersPage() {
                     <p className="text-sm text-muted-foreground">
                       Total Members
                     </p>
-                    <p className="text-2xl font-bold">{stats?.totalMembers || 0}</p>
+                    <p className="text-2xl font-bold">
+                      {stats?.totalMembers || 0}
+                    </p>
                   </div>
                   <CheckCircle2 className="h-8 w-8 text-green-500" />
                 </div>
@@ -260,7 +271,9 @@ export default function MembersPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Active</p>
-                    <p className="text-2xl font-bold">{stats?.activeMembers || 0}</p>
+                    <p className="text-2xl font-bold">
+                      {stats?.activeMembers || 0}
+                    </p>
                   </div>
                   <CheckCircle2 className="h-8 w-8 text-blue-500" />
                 </div>
@@ -271,7 +284,9 @@ export default function MembersPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Pending</p>
-                    <p className="text-2xl font-bold">{stats?.pendingMembers || 0}</p>
+                    <p className="text-2xl font-bold">
+                      {stats?.pendingMembers || 0}
+                    </p>
                   </div>
                   <Clock className="h-8 w-8 text-yellow-500" />
                 </div>
@@ -282,7 +297,9 @@ export default function MembersPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-muted-foreground">Inactive</p>
-                    <p className="text-2xl font-bold">{stats?.inactiveMembers || 0}</p>
+                    <p className="text-2xl font-bold">
+                      {stats?.inactiveMembers || 0}
+                    </p>
                   </div>
                   <UserX className="h-8 w-8 text-red-500" />
                 </div>
@@ -377,7 +394,9 @@ export default function MembersPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => openStatusDialog(member)}>
+                              <DropdownMenuItem
+                                onClick={() => openStatusDialog(member)}
+                              >
                                 {member.isActive ? (
                                   <>
                                     <UserMinus className="mr-2 h-4 w-4" />
@@ -416,7 +435,8 @@ export default function MembersPage() {
                 <div className="flex items-center justify-between mt-4">
                   <div className="text-sm text-muted-foreground">
                     Showing {(page - 1) * meta.limit + 1} to{" "}
-                    {Math.min(page * meta.limit, meta.total)} of {meta.total} members
+                    {Math.min(page * meta.limit, meta.total)} of {meta.total}{" "}
+                    members
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -506,7 +526,8 @@ export default function MembersPage() {
               {selectedMember?.isActive ? "Deactivate" : "Activate"} Member
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to {selectedMember?.isActive ? "deactivate" : "activate"}{" "}
+              Are you sure you want to{" "}
+              {selectedMember?.isActive ? "deactivate" : "activate"}{" "}
               <span className="font-semibold">{selectedMember?.name}</span>?
               {selectedMember?.isActive &&
                 " They will lose access to the organization immediately."}
@@ -525,7 +546,9 @@ export default function MembersPage() {
               onClick={handleToggleStatus}
               disabled={isUpdatingStatus}
             >
-              {isUpdatingStatus && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isUpdatingStatus && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               {selectedMember?.isActive ? "Deactivate" : "Activate"}
             </Button>
           </DialogFooter>
@@ -539,8 +562,8 @@ export default function MembersPage() {
             <DialogTitle>Remove Member</DialogTitle>
             <DialogDescription>
               Are you sure you want to remove{" "}
-              <span className="font-semibold">{selectedMember?.name}</span> from the
-              organization? This action cannot be undone.
+              <span className="font-semibold">{selectedMember?.name}</span> from
+              the organization? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

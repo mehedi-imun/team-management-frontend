@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,15 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, Mail, Globe, Users, Shield, Bell } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Bell, Building2, Globe, Mail, Shield, Users } from "lucide-react";
+import { useState } from "react";
 
 export default function OrganizationSettingsPage() {
   const { toast } = useToast();
@@ -264,7 +264,10 @@ export default function OrganizationSettingsPage() {
                   <Switch
                     checked={notifications.teamUpdates}
                     onCheckedChange={(checked) =>
-                      setNotifications({ ...notifications, teamUpdates: checked })
+                      setNotifications({
+                        ...notifications,
+                        teamUpdates: checked,
+                      })
                     }
                   />
                 </div>
@@ -312,7 +315,9 @@ export default function OrganizationSettingsPage() {
                 </div>
               </div>
 
-              <Button onClick={handleSaveNotifications}>Save Preferences</Button>
+              <Button onClick={handleSaveNotifications}>
+                Save Preferences
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

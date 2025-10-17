@@ -1,4 +1,4 @@
-import { baseApi } from '../../baseApi';
+import { baseApi } from "../../baseApi";
 
 export interface AnalyticsSummary {
   totalTeams: number;
@@ -54,39 +54,51 @@ export interface OrganizationAnalytics {
 const analyticsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Get analytics summary
-    getAnalyticsSummary: builder.query<{ success: boolean; data: AnalyticsSummary }, void>({
+    getAnalyticsSummary: builder.query<
+      { success: boolean; data: AnalyticsSummary },
+      void
+    >({
       query: () => ({
-        url: '/analytics/summary',
-        method: 'GET',
+        url: "/analytics/summary",
+        method: "GET",
       }),
-      providesTags: ['Analytics'],
+      providesTags: ["Analytics"],
     }),
-    
+
     // Get team distribution
-    getTeamDistribution: builder.query<{ success: boolean; data: TeamDistribution[] }, void>({
+    getTeamDistribution: builder.query<
+      { success: boolean; data: TeamDistribution[] },
+      void
+    >({
       query: () => ({
-        url: '/analytics/teams',
-        method: 'GET',
+        url: "/analytics/teams",
+        method: "GET",
       }),
-      providesTags: ['Analytics'],
+      providesTags: ["Analytics"],
     }),
-    
+
     // Get approval rates
-    getApprovalRates: builder.query<{ success: boolean; data: ApprovalRates }, void>({
+    getApprovalRates: builder.query<
+      { success: boolean; data: ApprovalRates },
+      void
+    >({
       query: () => ({
-        url: '/analytics/approvals',
-        method: 'GET',
+        url: "/analytics/approvals",
+        method: "GET",
       }),
-      providesTags: ['Analytics'],
+      providesTags: ["Analytics"],
     }),
-    
+
     // Get organization analytics (Organization Owner only)
-    getMyOrganizationAnalytics: builder.query<{ success: boolean; data: OrganizationAnalytics }, void>({
+    getMyOrganizationAnalytics: builder.query<
+      { success: boolean; data: OrganizationAnalytics },
+      void
+    >({
       query: () => ({
-        url: '/analytics/my-organization',
-        method: 'GET',
+        url: "/analytics/my-organization",
+        method: "GET",
       }),
-      providesTags: ['OrganizationAnalytics'],
+      providesTags: ["OrganizationAnalytics"],
     }),
   }),
 });

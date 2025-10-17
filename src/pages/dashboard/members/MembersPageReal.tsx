@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -16,16 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle2, Clock, Mail, Plus, Search, UserX } from "lucide-react";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
 import {
   useGetOrganizationMembersQuery,
   useGetOrganizationStatsQuery,
 } from "@/redux/features/organization/organizationApi";
+import type { RootState } from "@/redux/store";
+import { CheckCircle2, Clock, Mail, Plus, Search, UserX } from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 export default function MembersPage() {
   const [page, setPage] = useState(1);
@@ -51,6 +51,8 @@ export default function MembersPage() {
     activeMembers: 0,
     pendingMembers: 0,
     inactiveMembers: 0,
+    totalTeams: 0,
+    daysLeftInTrial: undefined,
   };
 
   const members = membersData?.data || [];
@@ -81,6 +83,21 @@ export default function MembersPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Trial Info Alert */}
+          {!statsLoading && stats.daysLeftInTrial !== undefined && stats.daysLeftInTrial > 0 && (
+            <Alert className="mb-6 bg-blue-50 border-blue-200">
+              <Clock className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                <strong>Trial Period:</strong> You have {stats.daysLeftInTrial} day{stats.daysLeftInTrial !== 1 ? 's' : ''} remaining in your trial period.
+                {stats.daysLeftInTrial <= 7 && (
+                  <span className="ml-2 text-blue-600 font-semibold">
+                    Upgrade now to continue using premium features!
+                  </span>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card>
@@ -172,7 +189,9 @@ export default function MembersPage() {
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertDescription>
-                Failed to load members. Please try again later.
+                {(error as any)?.data?.message === "Forbidden - Requires one of: SuperAdmin, Admin"
+                  ? "You don't have permission to view organization members. Please contact your organization administrator."
+                  : (error as any)?.data?.message || "Failed to load members. Please try again later."}
               </AlertDescription>
             </Alert>
           )}

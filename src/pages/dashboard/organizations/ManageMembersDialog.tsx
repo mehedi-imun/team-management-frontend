@@ -1,29 +1,3 @@
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,25 +8,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  useGetOrganizationMembersQuery,
-  useAddOrganizationMemberMutation,
-  useUpdateOrganizationMemberMutation,
-  useRemoveOrganizationMemberMutation,
-  type Organization,
-  type User,
-} from "@/redux/features/platform/platformApi";
-import {
-  UserPlus,
-  Trash2,
-  Edit,
-  Search,
-  Shield,
-  ShieldCheck,
-  Crown,
-  Loader2,
-} from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -61,10 +26,45 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import {
+  useAddOrganizationMemberMutation,
+  useGetOrganizationMembersQuery,
+  useRemoveOrganizationMemberMutation,
+  useUpdateOrganizationMemberMutation,
+  type Organization,
+  type User,
+} from "@/redux/features/platform/platformApi";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Crown,
+  Edit,
+  Loader2,
+  Search,
+  Shield,
+  ShieldCheck,
+  Trash2,
+  UserPlus,
+} from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface ManageMembersDialogProps {
   organization: Organization | null;
@@ -212,8 +212,10 @@ export function ManageMembersDialog({
   };
 
   const getRoleIcon = (user: User) => {
-    if (user.isOrganizationOwner) return <Crown className="h-4 w-4 text-yellow-500" />;
-    if (user.isOrganizationAdmin) return <ShieldCheck className="h-4 w-4 text-blue-500" />;
+    if (user.isOrganizationOwner)
+      return <Crown className="h-4 w-4 text-yellow-500" />;
+    if (user.isOrganizationAdmin)
+      return <ShieldCheck className="h-4 w-4 text-blue-500" />;
     return <Shield className="h-4 w-4 text-gray-500" />;
   };
 
@@ -354,9 +356,7 @@ export function ManageMembersDialog({
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel>
-                              Organization Administrator
-                            </FormLabel>
+                            <FormLabel>Organization Administrator</FormLabel>
                             <p className="text-sm text-muted-foreground">
                               Can manage organization settings and members
                             </p>

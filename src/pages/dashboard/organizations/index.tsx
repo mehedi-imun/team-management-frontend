@@ -1,8 +1,7 @@
 import { DataTable } from "@/components/data-table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -10,21 +9,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useDeleteOrganizationMutation,
   useGetAllOrganizationsQuery,
   useUpdateOrganizationStatusMutation,
   type Organization,
 } from "@/redux/features/platform/platformApi";
-import { Plus, Search, AlertCircle } from "lucide-react";
+import { AlertCircle, Plus, Search } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createColumns } from "./columns";
 import { CreateOrganizationDialog } from "./CreateOrganizationDialog";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { ManageMembersDialog } from "./ManageMembersDialog";
 import { UpdateStatusDialog } from "./UpdateStatusDialog";
 import { ViewOrganizationDialog } from "./ViewOrganizationDialog";
-import { ManageMembersDialog } from "./ManageMembersDialog";
 
 const OrganizationsPage = () => {
   const [page, setPage] = useState(1);
@@ -147,9 +147,7 @@ const OrganizationsPage = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Organizations
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
             <p className="text-muted-foreground">
               Manage all organizations on the platform
             </p>

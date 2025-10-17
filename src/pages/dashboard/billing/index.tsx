@@ -19,6 +19,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { useGetMyOrganizationAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
 import {
   useCancelSubscriptionMutation,
   useCreateCheckoutMutation,
@@ -26,9 +27,7 @@ import {
   useGetSubscriptionQuery,
   useReactivateSubscriptionMutation,
 } from "@/redux/features/billing/billingApi";
-import { useGetMyOrganizationAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
 import type { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
 import {
   AlertCircle,
   ArrowUpRight,
@@ -40,6 +39,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 // Pricing plans configuration
 const PLANS = {
@@ -136,32 +136,45 @@ const PLANS = {
 export default function BillingPage() {
   const { toast } = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
-  
+
   // API hooks
-  const { data: subscriptionData, isLoading: subscriptionLoading, error: subscriptionError } = useGetSubscriptionQuery();
-  const { data: analyticsData, isLoading: analyticsLoading } = useGetMyOrganizationAnalyticsQuery();
-  const [createCheckout, { isLoading: checkoutLoading }] = useCreateCheckoutMutation();
-  const [createPortal, { isLoading: portalLoading }] = useCreatePortalMutation();
-  const [cancelSubscription, { isLoading: cancelLoading }] = useCancelSubscriptionMutation();
-  const [reactivateSubscription, { isLoading: reactivateLoading }] = useReactivateSubscriptionMutation();
+  const {
+    data: subscriptionData,
+    isLoading: subscriptionLoading,
+    error: subscriptionError,
+  } = useGetSubscriptionQuery();
+  const { data: analyticsData, isLoading: analyticsLoading } =
+    useGetMyOrganizationAnalyticsQuery();
+  const [createCheckout, { isLoading: checkoutLoading }] =
+    useCreateCheckoutMutation();
+  const [createPortal, { isLoading: portalLoading }] =
+    useCreatePortalMutation();
+  const [cancelSubscription, { isLoading: cancelLoading }] =
+    useCancelSubscriptionMutation();
+  const [reactivateSubscription, { isLoading: reactivateLoading }] =
+    useReactivateSubscriptionMutation();
 
   // State
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<keyof typeof PLANS | null>(null);
-  const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">("monthly");
+  const [selectedPlan, setSelectedPlan] = useState<keyof typeof PLANS | null>(
+    null
+  );
+  const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">(
+    "monthly"
+  );
 
   // Check for successful checkout in URL
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session_id');
+    const sessionId = urlParams.get("session_id");
     if (sessionId) {
       toast({
         title: "Success!",
         description: "Your subscription has been activated successfully.",
       });
       // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname);
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, [toast]);
 
@@ -212,10 +225,17 @@ export default function BillingPage() {
   console.log("========================");
 
   // Calculate usage percentages
-  const userUsagePercent = analytics ? (analytics.usage.users / analytics.limits.maxUsers) * 100 : 0;
-  const teamUsagePercent = analytics ? (analytics.usage.teams / analytics.limits.maxTeams) * 100 : 0;
+  const userUsagePercent = analytics
+    ? (analytics.usage.users / analytics.limits.maxUsers) * 100
+    : 0;
+  const teamUsagePercent = analytics
+    ? (analytics.usage.teams / analytics.limits.maxTeams) * 100
+    : 0;
 
-  const handleUpgradePlan = async (plan: keyof typeof PLANS, interval: "monthly" | "annual") => {
+  const handleUpgradePlan = async (
+    plan: keyof typeof PLANS,
+    interval: "monthly" | "annual"
+  ) => {
     if (!isOwner) {
       toast({
         title: "Permission Denied",
@@ -284,7 +304,8 @@ export default function BillingPage() {
       await cancelSubscription().unwrap();
       toast({
         title: "Subscription Canceled",
-        description: "Your subscription will be canceled at the end of the billing period.",
+        description:
+          "Your subscription will be canceled at the end of the billing period.",
       });
       setShowCancelDialog(false);
     } catch (error) {
@@ -339,37 +360,43 @@ export default function BillingPage() {
     <div className="container mx-auto py-8 px-4 space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Billing & Subscription</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Billing & Subscription
+        </h1>
         <p className="text-muted-foreground">
           Manage your subscription, billing, and usage
         </p>
       </div>
 
       {/* Trial Banner */}
-      {subscription?.status === "trialing" && subscription?.currentPeriodEnd && (
-        <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Clock className="h-6 w-6 text-yellow-600" />
-                <div>
-                  <h3 className="font-semibold text-yellow-900 dark:text-yellow-100">
-                    Trial Period Active
-                  </h3>
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                    Trial ends on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                  </p>
+      {subscription?.status === "trialing" &&
+        subscription?.currentPeriodEnd && (
+          <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-yellow-600" />
+                  <div>
+                    <h3 className="font-semibold text-yellow-900 dark:text-yellow-100">
+                      Trial Period Active
+                    </h3>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                      Trial ends on{" "}
+                      {new Date(
+                        subscription.currentPeriodEnd
+                      ).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
+                {isOwner && (
+                  <Button onClick={() => openUpgradeDialog("professional")}>
+                    Upgrade Now
+                  </Button>
+                )}
               </div>
-              {isOwner && (
-                <Button onClick={() => openUpgradeDialog("professional")}>
-                  Upgrade Now
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
 
       {/* Canceled Subscription Banner */}
       {subscription?.cancelAtPeriodEnd && (
@@ -385,7 +412,9 @@ export default function BillingPage() {
                   <p className="text-sm text-red-700 dark:text-red-300">
                     Your subscription will end on{" "}
                     {subscription.currentPeriodEnd &&
-                      new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                      new Date(
+                        subscription.currentPeriodEnd
+                      ).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -394,7 +423,9 @@ export default function BillingPage() {
                   onClick={handleReactivateSubscription}
                   disabled={reactivateLoading}
                 >
-                  {reactivateLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {reactivateLoading && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Reactivate Subscription
                 </Button>
               )}
@@ -442,49 +473,61 @@ export default function BillingPage() {
                 </ul>
               </div>
 
-              {subscription?.currentPeriodEnd && !subscription?.cancelAtPeriodEnd && (
-                <div className="pt-4 space-y-2 border-t">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">
-                      Subscription Status:
-                    </p>
-                    <span className="font-medium text-foreground">
-                      {subscription?.hasSubscription ? "Active Subscription" : "No Active Subscription"}
-                    </span>
+              {subscription?.currentPeriodEnd &&
+                !subscription?.cancelAtPeriodEnd && (
+                  <div className="pt-4 space-y-2 border-t">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-muted-foreground">
+                        Subscription Status:
+                      </p>
+                      <span className="font-medium text-foreground">
+                        {subscription?.hasSubscription
+                          ? "Active Subscription"
+                          : "No Active Subscription"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-muted-foreground">
+                        Next billing date:
+                      </p>
+                      <span className="font-medium text-foreground">
+                        {new Date(
+                          subscription.currentPeriodEnd
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">
-                      Next billing date:
-                    </p>
-                    <span className="font-medium text-foreground">
-                      {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                    </span>
+                )}
+
+              {subscription?.status === "trialing" &&
+                subscription?.currentPeriodEnd && (
+                  <div className="pt-4 border-t">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-muted-foreground">
+                        Trial ends:
+                      </p>
+                      <span className="font-medium text-foreground">
+                        {new Date(
+                          subscription.currentPeriodEnd
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
-              
-              {subscription?.status === "trialing" && subscription?.currentPeriodEnd && (
-                <div className="pt-4 border-t">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">
-                      Trial ends:
-                    </p>
-                    <span className="font-medium text-foreground">
-                      {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              )}
+                )}
             </div>
 
             {isOwner && (
               <div className="flex flex-col gap-2">
                 {currentPlan !== "enterprise" && (
-                  <Button 
-                    variant="default" 
+                  <Button
+                    variant="default"
                     onClick={() => {
-                      const nextPlan = currentPlan === "free" ? "professional" : 
-                                      currentPlan === "professional" ? "business" : "enterprise";
+                      const nextPlan =
+                        currentPlan === "free"
+                          ? "professional"
+                          : currentPlan === "professional"
+                          ? "business"
+                          : "enterprise";
                       openUpgradeDialog(nextPlan as keyof typeof PLANS);
                     }}
                   >
@@ -494,12 +537,14 @@ export default function BillingPage() {
                 )}
                 {currentPlan !== "free" && subscription?.hasSubscription && (
                   <>
-                    <Button 
+                    <Button
                       variant="outline"
                       onClick={handleManageSubscription}
                       disabled={portalLoading}
                     >
-                      {portalLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {portalLoading && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                       <CreditCard className="mr-2 h-4 w-4" />
                       Manage Billing
                     </Button>
@@ -525,7 +570,9 @@ export default function BillingPage() {
         <Card>
           <CardHeader>
             <CardTitle>Usage This Month</CardTitle>
-            <CardDescription>Track your organization's resource usage</CardDescription>
+            <CardDescription>
+              Track your organization's resource usage
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -542,11 +589,18 @@ export default function BillingPage() {
               <div className="p-4 border rounded-lg space-y-2">
                 <p className="text-sm text-muted-foreground">Teams</p>
                 <p className="text-2xl font-bold">
-                  {analytics.usage.teams} / {analytics.limits.maxTeams === 99999 ? "∞" : analytics.limits.maxTeams}
+                  {analytics.usage.teams} /{" "}
+                  {analytics.limits.maxTeams === 99999
+                    ? "∞"
+                    : analytics.limits.maxTeams}
                 </p>
                 <Progress value={teamUsagePercent} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  {analytics.limits.maxTeams === 99999 ? "Unlimited" : `${analytics.limits.maxTeams - analytics.usage.teams} remaining`}
+                  {analytics.limits.maxTeams === 99999
+                    ? "Unlimited"
+                    : `${
+                        analytics.limits.maxTeams - analytics.usage.teams
+                      } remaining`}
                 </p>
               </div>
               <div className="p-4 border rounded-lg space-y-2">
@@ -556,7 +610,9 @@ export default function BillingPage() {
                 </p>
                 <Progress value={25} className="h-2" />
                 <p className="text-xs text-muted-foreground">
-                  {analytics.limits.maxStorage === "Unlimited" ? "Unlimited" : "75% available"}
+                  {analytics.limits.maxStorage === "Unlimited"
+                    ? "Unlimited"
+                    : "75% available"}
                 </p>
               </div>
             </div>
@@ -577,12 +633,14 @@ export default function BillingPage() {
             {Object.entries(PLANS).map(([key, plan]) => {
               const isCurrent = currentPlan === key;
               const isUpgrade = plan.price > planDetails.price;
-              
+
               return (
                 <div
                   key={key}
                   className={`p-6 border rounded-lg space-y-4 ${
-                    isCurrent ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20" : ""
+                    isCurrent
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                      : ""
                   } ${plan.popular ? "relative" : ""}`}
                 >
                   {plan.popular && (
@@ -593,7 +651,7 @@ export default function BillingPage() {
                       </Badge>
                     </div>
                   )}
-                  
+
                   <div>
                     <h4 className="text-lg font-bold">{plan.name}</h4>
                     <p className="text-3xl font-bold mt-2">
@@ -606,7 +664,10 @@ export default function BillingPage() {
 
                   <ul className="space-y-2">
                     {plan.features.slice(0, 4).map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm">
+                      <li
+                        key={index}
+                        className="flex items-center gap-2 text-sm"
+                      >
                         <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
                         <span className="text-muted-foreground">{feature}</span>
                       </li>
@@ -616,7 +677,13 @@ export default function BillingPage() {
                   {isOwner && (
                     <Button
                       className="w-full"
-                      variant={isCurrent ? "outline" : isUpgrade ? "default" : "secondary"}
+                      variant={
+                        isCurrent
+                          ? "outline"
+                          : isUpgrade
+                          ? "default"
+                          : "secondary"
+                      }
                       disabled={isCurrent || checkoutLoading || key === "free"}
                       onClick={() => {
                         if (key !== "free") {
@@ -624,8 +691,14 @@ export default function BillingPage() {
                         }
                       }}
                     >
-                      {checkoutLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {isCurrent ? "Current Plan" : isUpgrade ? "Upgrade" : "Contact Sales"}
+                      {checkoutLoading && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      {isCurrent
+                        ? "Current Plan"
+                        : isUpgrade
+                        ? "Upgrade"
+                        : "Contact Sales"}
                       {isUpgrade && <Zap className="ml-2 h-4 w-4" />}
                     </Button>
                   )}
@@ -642,12 +715,15 @@ export default function BillingPage() {
           <DialogHeader>
             <DialogTitle>Cancel Subscription</DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel your subscription? You'll lose access to premium
-              features at the end of your billing period.
+              Are you sure you want to cancel your subscription? You'll lose
+              access to premium features at the end of your billing period.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCancelDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowCancelDialog(false)}
+            >
               Keep Subscription
             </Button>
             <Button
@@ -655,7 +731,9 @@ export default function BillingPage() {
               onClick={handleCancelSubscription}
               disabled={cancelLoading}
             >
-              {cancelLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {cancelLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Cancel Subscription
             </Button>
           </DialogFooter>
@@ -666,10 +744,10 @@ export default function BillingPage() {
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Upgrade to {selectedPlan && PLANS[selectedPlan].name}</DialogTitle>
-            <DialogDescription>
-              Choose your billing interval
-            </DialogDescription>
+            <DialogTitle>
+              Upgrade to {selectedPlan && PLANS[selectedPlan].name}
+            </DialogTitle>
+            <DialogDescription>Choose your billing interval</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="flex items-center justify-center gap-4">
@@ -695,7 +773,10 @@ export default function BillingPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowUpgradeDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowUpgradeDialog(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -706,7 +787,9 @@ export default function BillingPage() {
               }}
               disabled={checkoutLoading}
             >
-              {checkoutLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {checkoutLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Continue to Checkout
             </Button>
           </DialogFooter>

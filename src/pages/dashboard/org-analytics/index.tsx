@@ -50,10 +50,11 @@ const OrganizationAnalyticsPage = () => {
   }
 
   if (error) {
-    const errorMessage = error && typeof error === 'object' && 'data' in error 
-      ? (error.data as { message?: string })?.message 
-      : undefined;
-    
+    const errorMessage =
+      error && typeof error === "object" && "data" in error
+        ? (error.data as { message?: string })?.message
+        : undefined;
+
     return (
       <div className="space-y-6">
         <div>
@@ -115,7 +116,9 @@ const OrganizationAnalyticsPage = () => {
     {
       title: "Active Members",
       value: members.active,
-      description: `${((members.active / members.total) * 100).toFixed(0)}% of total`,
+      description: `${((members.active / members.total) * 100).toFixed(
+        0
+      )}% of total`,
       icon: UserCheck,
       color: "text-green-600",
     },
@@ -284,7 +287,7 @@ const OrganizationAnalyticsPage = () => {
               </div>
               <Progress value={userUsagePercent} className="h-2" />
               <p className="text-xs text-muted-foreground">
-                {(limits.maxUsers - usage.users)} users remaining
+                {limits.maxUsers - usage.users} users remaining
               </p>
             </div>
 
@@ -385,15 +388,20 @@ const OrganizationAnalyticsPage = () => {
       </Card>
 
       {/* Usage Warnings */}
-      {(userUsagePercent > 80 || teamUsagePercent > 80 || storageUsagePercent > 80) && (
+      {(userUsagePercent > 80 ||
+        teamUsagePercent > 80 ||
+        storageUsagePercent > 80) && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             <strong>Warning:</strong> You're approaching your plan limits.
-            {userUsagePercent > 80 && " User capacity is at " + userUsagePercent.toFixed(0) + "%."}
-            {teamUsagePercent > 80 && " Team capacity is at " + teamUsagePercent.toFixed(0) + "%."}
-            {storageUsagePercent > 80 && " Storage is at " + storageUsagePercent.toFixed(0) + "%."}
-            {" "}Consider upgrading your plan to avoid service interruption.
+            {userUsagePercent > 80 &&
+              " User capacity is at " + userUsagePercent.toFixed(0) + "%."}
+            {teamUsagePercent > 80 &&
+              " Team capacity is at " + teamUsagePercent.toFixed(0) + "%."}
+            {storageUsagePercent > 80 &&
+              " Storage is at " + storageUsagePercent.toFixed(0) + "%."}{" "}
+            Consider upgrading your plan to avoid service interruption.
           </AlertDescription>
         </Alert>
       )}

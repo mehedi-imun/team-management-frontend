@@ -11,7 +11,14 @@ import {
 import type { Organization } from "@/redux/features/platform/platformApi";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { Ban, CheckCircle, Eye, MoreHorizontal, Trash2, Users } from "lucide-react";
+import {
+  Ban,
+  CheckCircle,
+  Eye,
+  MoreHorizontal,
+  Trash2,
+  Users,
+} from "lucide-react";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 

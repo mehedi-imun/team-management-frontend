@@ -177,20 +177,22 @@ const organizationApi = baseApi.injectEndpoints({
       transformResponse: (response: any) => response || { data: [], meta: {} },
     }),
 
-    // Get organization stats  
+    // Get organization stats
     getOrganizationStats: builder.query<OrganizationStats, void>({
       query: () => ({
         url: "/organizations/stats",
         method: "GET",
       }),
       providesTags: ["Organization"],
-      transformResponse: (response: any) => response?.data || {
-        totalMembers: 0,
-        activeMembers: 0,
-        pendingMembers: 0,
-        inactiveMembers: 0,
-        totalTeams: 0,
-      },
+      transformResponse: (response: any) =>
+        response?.data || {
+          totalMembers: 0,
+          activeMembers: 0,
+          pendingMembers: 0,
+          inactiveMembers: 0,
+          totalTeams: 0,
+          daysLeftInTrial: undefined,
+        },
     }),
 
     // Invite member
