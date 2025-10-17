@@ -54,9 +54,12 @@ const RegisterPage = () => {
         organizationSlug: formData.organizationSlug,
       }).unwrap();
 
+      // Auto-login: tokens are automatically stored by RTK Query
       setSuccess(true);
+      
+      // Redirect to dashboard after successful registration
       setTimeout(() => {
-        navigate("/login");
+        navigate("/dashboard");
       }, 2000);
     } catch (err: unknown) {
       const error = err as { data?: { message?: string } };
@@ -77,9 +80,12 @@ const RegisterPage = () => {
               </div>
             </div>
             <h2 className="text-2xl font-bold mb-2">
-              Registration Successful!
+              Welcome to Your Organization!
             </h2>
-            <p className="text-gray-600">Redirecting to login page...</p>
+            <p className="text-gray-600 mb-2">
+              Your 14-day free trial has started.
+            </p>
+            <p className="text-gray-600">Redirecting to dashboard...</p>
           </CardContent>
         </Card>
       </div>
