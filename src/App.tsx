@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 import PlatformAnalyticsPage from "@/pages/dashboard/analytics";
+import OrganizationAnalyticsPage from "@/pages/dashboard/org-analytics";
 import BillingPage from "@/pages/dashboard/billing";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import MembersPage from "@/pages/dashboard/members";
@@ -84,10 +85,11 @@ function App() {
             {/* Teams - Available for all authenticated users */}
             <Route path="teams" element={<TeamsPage />} />
 
-            {/* Organization Owner & Admin Routes */}
+            {/* Organization Owner */}
             <Route path="members" element={<MembersPage />} />
             <Route path="billing" element={<BillingPage />} />
             <Route path="org-settings" element={<OrgSettingsPage />} />
+            <Route path="org-analytics" element={<OrganizationAnalyticsPage />} />
 
             {/* SuperAdmin & Admin Only Routes */}
             <Route

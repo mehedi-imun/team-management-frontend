@@ -6,31 +6,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  useGetOrganizationStatsQuery,
+  useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
   useGetUserStatsQuery,
 } from "@/redux/features/platform/platformApi";
+import { useGetMyOrganizationStatsQuery } from "@/redux/features/organization/organizationApi";
 import { useAppSelector } from "@/redux/hook";
-import { Activity, Building2, Loader2, TrendingUp, Users } from "lucide-react";
+import { Activity, Building2, Clock, Loader2, TrendingUp, Users } from "lucide-react";
 
 const DashboardPage = () => {
   const { user } = useAppSelector((state) => state.auth);
 
   // Fetch stats based on user role
   const isAdmin = user?.role === "SuperAdmin" || user?.role === "Admin";
+  const isOrgOwner = user?.isOrganizationOwner;
 
+  // Platform admins see platform stats
   const { data: userStatsData, isLoading: isLoadingUserStats } =
     useGetUserStatsQuery(undefined, { skip: !isAdmin });
 
-  const { data: orgStatsData, isLoading: isLoadingOrgStats } =
-    useGetOrganizationStatsQuery(undefined, { skip: !isAdmin });
+  const { data: platformOrgStatsData, isLoading: isLoadingPlatformOrgStats } =
+    usePlatformOrgStatsQuery(undefined, { skip: !isAdmin });
 
-  const isLoading = isLoadingUserStats || isLoadingOrgStats;
+  // Organization owners see their org stats
+  const { data: orgOwnerStatsData, isLoading: isLoadingOrgOwnerStats } =
+    useGetMyOrganizationStatsQuery(undefined, { skip: !isOrgOwner || isAdmin });
+
+  const isLoading = isLoadingUserStats || isLoadingPlatformOrgStats || isLoadingOrgOwnerStats;
   const userStats = userStatsData?.data;
-  const orgStats = orgStatsData?.data;
+  const orgStats = isAdmin ? platformOrgStatsData?.data : orgOwnerStatsData;
 
   const getStats = () => {
     if (isAdmin) {
       // Admin/SuperAdmin sees platform-wide stats
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const platformOrgStats = orgStats as any; // Platform stats from analytics API
       return [
         {
           title: "Total Users",
@@ -42,15 +51,15 @@ const DashboardPage = () => {
         },
         {
           title: "Organizations",
-          value: orgStats?.totalOrganizations || 0,
+          value: platformOrgStats?.totalOrganizations || 0,
           icon: Building2,
-          description: `${orgStats?.activeSubscriptions || 0} active`,
+          description: `${platformOrgStats?.activeSubscriptions || 0} active`,
           color: "text-green-600",
           bg: "bg-green-100",
         },
         {
           title: "Active Trials",
-          value: orgStats?.trialOrganizations || 0,
+          value: platformOrgStats?.trialOrganizations || 0,
           icon: Activity,
           description: "Trial subscriptions",
           color: "text-purple-600",
@@ -58,11 +67,51 @@ const DashboardPage = () => {
         },
         {
           title: "Monthly Revenue",
-          value: `$${orgStats?.monthlyRevenue?.toLocaleString() || 0}`,
+          value: `$${platformOrgStats?.monthlyRevenue?.toLocaleString() || 0}`,
           icon: TrendingUp,
           description: "This month",
           color: "text-orange-600",
           bg: "bg-orange-100",
+        },
+      ];
+    }
+
+    if (isOrgOwner) {
+      // Organization owners see their org stats
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ownerOrgStats = orgStats as any; // Org stats from organization API
+      return [
+        {
+          title: "Total Members",
+          value: ownerOrgStats?.totalMembers || 0,
+          icon: Users,
+          description: `${ownerOrgStats?.activeMembers || 0} active`,
+          color: "text-blue-600",
+          bg: "bg-blue-100",
+        },
+        {
+          title: "Pending Members",
+          value: ownerOrgStats?.pendingMembers || 0,
+          icon: Clock,
+          description: "Awaiting approval",
+          color: "text-yellow-600",
+          bg: "bg-yellow-100",
+        },
+        {
+          title: "Total Teams",
+          value: ownerOrgStats?.totalTeams || 0,
+          icon: Building2,
+          description: "Active teams",
+          color: "text-green-600",
+          bg: "bg-green-100",
+        },
+        {
+          title: "Trial Days Left",
+          value: ownerOrgStats?.daysLeftInTrial ?? "N/A",
+          icon: Activity,
+          description: "Trial period",
+          color: "text-purple-600",
+          bg: "bg-purple-100",
         },
       ];
     }
@@ -273,7 +322,8 @@ const DashboardPage = () => {
                 <div>
                   <p className="text-sm text-gray-500">Total Revenue</p>
                   <p className="font-medium">
-                    ${orgStats?.totalRevenue?.toLocaleString() || 0}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    ${(orgStats as any)?.totalRevenue?.toLocaleString() || 0}
                   </p>
                 </div>
               </>

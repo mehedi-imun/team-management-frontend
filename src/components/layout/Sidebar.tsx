@@ -113,6 +113,12 @@ const Sidebar = () => {
           icon: Users,
           href: "/dashboard/members",
           roles: ["Member"],
+        },
+        {
+          title: "Org Analytics",
+          icon: BarChart3,
+          href: "/dashboard/org-analytics",
+          roles: ["Member"],
         }
       );
 

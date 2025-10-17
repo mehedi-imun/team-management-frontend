@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/table";
 import {
   useGetOrganizationMembersQuery,
-  useGetOrganizationStatsQuery,
+  useGetMyOrganizationStatsQuery,
   useInviteMemberMutation,
   useRemoveMemberMutation,
   useUpdateMemberStatusMutation,
@@ -92,9 +92,20 @@ export default function MembersPage() {
       }
     );
 
-  const { data: stats, isLoading: isStatsLoading } =
-    useGetOrganizationStatsQuery();
+  const { data: statsResponse, isLoading: isStatsLoading, refetch: refetchStats } =
+    useGetMyOrganizationStatsQuery(undefined, {
+      skip: !organizationId,
+      refetchOnMountOrArgChange: true, // Force fresh data on mount
+    });
 
+  // Backend returns { success: true, data: {...} } format
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const stats = (statsResponse as any)?.data || statsResponse;
+
+  console.log("📊 Full Stats Response:", statsResponse);
+  console.log("📊 Extracted Stats:", stats);
+  console.log("📊 Has totalMembers?", 'totalMembers' in (stats || {}));
+  console.log("📊 Has totalOrganizations?", 'totalOrganizations' in (stats || {}));
   // Mutations
   const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
   const [updateStatus, { isLoading: isUpdatingStatus }] =
@@ -249,6 +260,26 @@ export default function MembersPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Trial Info Alert */}
+          {!isStatsLoading &&
+            stats?.daysLeftInTrial !== undefined &&
+            stats.daysLeftInTrial > 0 && (
+              <Alert className="mb-6 bg-blue-50 border-blue-200">
+                <Clock className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800">
+                  <strong>Trial Period:</strong> You have{" "}
+                  {stats.daysLeftInTrial} day
+                  {stats.daysLeftInTrial !== 1 ? "s" : ""} remaining in your
+                  trial period.
+                  {stats.daysLeftInTrial <= 7 && (
+                    <span className="ml-2 text-blue-600 font-semibold">
+                      Upgrade now to continue using premium features!
+                    </span>
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
+
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card>

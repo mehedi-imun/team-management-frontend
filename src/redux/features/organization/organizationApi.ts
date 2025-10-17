@@ -177,8 +177,8 @@ const organizationApi = baseApi.injectEndpoints({
       transformResponse: (response: any) => response || { data: [], meta: {} },
     }),
 
-    // Get organization stats
-    getOrganizationStats: builder.query<OrganizationStats, void>({
+    // Get organization stats for current user's organization
+    getMyOrganizationStats: builder.query<OrganizationStats, void>({
       query: () => ({
         url: "/organizations/stats",
         method: "GET",
@@ -241,7 +241,7 @@ export const {
   useCreateOrganizationWithSetupMutation,
   useGetAllOrganizationsQuery,
   useGetOrganizationMembersQuery,
-  useGetOrganizationStatsQuery,
+  useGetMyOrganizationStatsQuery,
   useInviteMemberMutation,
   useUpdateMemberStatusMutation,
   useRemoveMemberMutation,

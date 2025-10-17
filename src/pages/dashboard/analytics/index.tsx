@@ -1,6 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useGetPlatformAnalyticsQuery } from "@/redux/features/platform/platformApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import {
   Building2,
   CreditCard,
@@ -10,10 +15,52 @@ import {
   UserCheck,
   UserPlus,
   Users,
+  AlertCircle,
 } from "lucide-react";
 
 const PlatformAnalyticsPage = () => {
-  const { data, isLoading } = useGetPlatformAnalyticsQuery();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const navigate = useNavigate();
+  const isAdmin = user?.role === "SuperAdmin" || user?.role === "Admin";
+
+  // Redirect organization owners to their own analytics page
+  useEffect(() => {
+    if (user && !isAdmin && user.isOrganizationOwner) {
+      navigate("/dashboard/org-analytics", { replace: true });
+    }
+  }, [user, isAdmin, navigate]);
+
+  const { data, isLoading, error } = useGetPlatformAnalyticsQuery(undefined, {
+    skip: !isAdmin, // Skip query if not admin
+  });
+
+  // Show access denied for non-admins
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Platform Analytics
+          </h1>
+          <p className="text-muted-foreground">
+            Overview of platform performance and statistics
+          </p>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            You don't have permission to view platform analytics. 
+            This page is only accessible to Super Admins and Admins.
+            {user?.isOrganizationOwner && (
+              <span className="block mt-2">
+                Redirecting to your organization analytics...
+              </span>
+            )}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

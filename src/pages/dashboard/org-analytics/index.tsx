@@ -1,13 +1,17 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetMyOrganizationAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/redux/store";
 import {
   AlertCircle,
   Building2,
   Database,
   HardDrive,
+  Info,
   Package,
   ShieldCheck,
   TrendingUp,
@@ -17,6 +21,7 @@ import {
 } from "lucide-react";
 
 const OrganizationAnalyticsPage = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
   const { data, isLoading, error } = useGetMyOrganizationAnalyticsQuery();
 
   if (isLoading) {
