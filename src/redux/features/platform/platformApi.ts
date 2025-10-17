@@ -69,7 +69,13 @@ const platformApi = baseApi.injectEndpoints({
     // Organization endpoints
     getAllOrganizations: builder.query<
       { success: boolean; data: Organization[]; meta: PaginationMeta },
-      { page?: number; limit?: number; search?: string; status?: string; plan?: string }
+      {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: string;
+        plan?: string;
+      }
     >({
       query: (params) => ({
         url: "/organizations",
@@ -169,16 +175,15 @@ const platformApi = baseApi.injectEndpoints({
       invalidatesTags: ["User", "Analytics"],
     }),
 
-    deleteUser: builder.mutation<
-      { success: boolean; message: string },
-      string
-    >({
-      query: (id) => ({
-        url: `/users/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["User", "Analytics"],
-    }),
+    deleteUser: builder.mutation<{ success: boolean; message: string }, string>(
+      {
+        query: (id) => ({
+          url: `/users/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["User", "Analytics"],
+      }
+    ),
 
     // Platform Analytics
     getPlatformAnalytics: builder.query<

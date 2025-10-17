@@ -1,16 +1,11 @@
-import { useGetAllOrganizationsQuery } from "@/redux/features/platform/platformApi";
 import { useState } from "react";
+import { useGetAllOrganizationsQuery } from "@/redux/features/platform/platformApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, Search, Loader2 } from "lucide-react";
-import { OrganizationsDataTable } from "./data-table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Search } from "lucide-react";
+import { DataTable } from "@/components/data-table";
+import { columns } from "./columns";
 
 const OrganizationsPage = () => {
   const [page, setPage] = useState(1);
@@ -18,7 +13,7 @@ const OrganizationsPage = () => {
   const [status, setStatus] = useState<string>("");
   const [plan, setPlan] = useState<string>("");
 
-  const { data, isLoading, isFetching } = useGetAllOrganizationsQuery({
+  const { data, isLoading } = useGetAllOrganizationsQuery({
     page,
     limit: 10,
     search,
@@ -27,17 +22,19 @@ const OrganizationsPage = () => {
   });
 
   const organizations = data?.data || [];
-  const meta = data?.meta || { page: 1, limit: 10, total: 0 };
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setStatus("");
+    setPlan("");
+  };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
-          <p className="text-muted-foreground">
-            Manage all organizations on the platform
-          </p>
+          <p className="text-muted-foreground">Manage all organizations on the platform</p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
@@ -45,16 +42,10 @@ const OrganizationsPage = () => {
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search organizations..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
+          <Input placeholder="Search organizations..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
         </div>
 
         <Select value={status} onValueChange={setStatus}>
@@ -63,9 +54,10 @@ const OrganizationsPage = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="trial">Trial</SelectItem>
             <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="pending_setup">Pending Setup</SelectItem>
             <SelectItem value="suspended">Suspended</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
           </SelectContent>
         </Select>
 
@@ -83,32 +75,11 @@ const OrganizationsPage = () => {
         </Select>
 
         {(search || status || plan) && (
-          <Button
-            variant="outline"
-            onClick={() => {
-              setSearch("");
-              setStatus("");
-              setPlan("");
-            }}
-          >
-            Clear Filters
-          </Button>
+          <Button variant="outline" onClick={handleClearFilters}>Clear Filters</Button>
         )}
       </div>
 
-      {/* Data Table */}
-      {isLoading ? (
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      ) : (
-        <OrganizationsDataTable
-          data={organizations}
-          meta={meta}
-          onPageChange={setPage}
-          isLoading={isFetching}
-        />
-      )}
+      <DataTable columns={columns} data={organizations} meta={data?.meta} onPageChange={setPage} isLoading={isLoading} />
     </div>
   );
 };

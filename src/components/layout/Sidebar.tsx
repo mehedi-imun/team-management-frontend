@@ -1,28 +1,26 @@
-import { useAppSelector } from "@/redux/hook";
+import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
+import { useLogoutMutation } from "@/redux/features/auth/authApi";
+import { clearUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import {
-  Building2,
-  Users,
-  LayoutDashboard,
-  Settings,
   BarChart3,
-  FileText,
-  UserCog,
-  CreditCard,
   Bell,
-  LogOut,
+  Building2,
   ChevronLeft,
   ChevronRight,
-  Shield,
+  CreditCard,
+  FileText,
   FolderKanban,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Shield,
+  UserCog,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useLogoutMutation } from "@/redux/features/auth/authApi";
-import { useNavigate } from "react-router-dom";
-import { clearUser } from "@/redux/features/auth/authSlice";
-import { useAppDispatch } from "@/redux/hook";
-import { ModeToggle } from "@/components/mode-toggle";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -258,11 +256,16 @@ const Sidebar = () => {
       {/* Logout */}
       <div className="p-4 border-t border-gray-800 space-y-2">
         {/* Theme Toggle */}
-        <div className={cn("flex items-center", collapsed ? "justify-center" : "justify-between px-3")}>
+        <div
+          className={cn(
+            "flex items-center",
+            collapsed ? "justify-center" : "justify-between px-3"
+          )}
+        >
           {!collapsed && <span className="text-sm text-gray-400">Theme</span>}
           <ModeToggle />
         </div>
-        
+
         <button
           onClick={handleLogout}
           className={cn(

@@ -1,17 +1,17 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PublicLayout from "@/components/layout/PublicLayout";
+import { ThemeProvider } from "@/components/theme-provider";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
+import OrganizationsPage from "@/pages/dashboard/organizations";
 import FeaturesPage from "@/pages/FeaturesPage";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import PricingPage from "@/pages/PricingPage";
 import RegisterPage from "@/pages/RegisterPage";
-import OrganizationsPage from "@/pages/dashboard/organizations";
 import { useAppSelector } from "@/redux/hook";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { ThemeProvider } from "@/components/theme-provider";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -71,7 +71,7 @@ function App() {
             }
           >
             <Route index element={<DashboardPage />} />
-            
+
             {/* SuperAdmin & Admin Only Routes */}
             <Route
               path="organizations"

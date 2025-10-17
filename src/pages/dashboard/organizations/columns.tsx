@@ -1,18 +1,4 @@
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { type ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,21 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal, Eye, Ban, CheckCircle, Trash2 } from "lucide-react";
 import type { Organization } from "@/redux/features/platform/platformApi";
 import { format } from "date-fns";
-
-interface DataTableProps {
-  data: Organization[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-  onPageChange: (page: number) => void;
-  isLoading?: boolean;
-}
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
@@ -48,7 +24,6 @@ const getStatusBadge = (status: string) => {
   };
 
   const config = variants[status] || variants.active;
-
   return <Badge variant={config.variant}>{config.label}</Badge>;
 };
 
@@ -61,11 +36,10 @@ const getPlanBadge = (plan: string) => {
   };
 
   const config = variants[plan] || variants.free;
-
   return <Badge variant={config.variant}>{config.label}</Badge>;
 };
 
-const columns: ColumnDef<Organization>[] = [
+export const columns: ColumnDef<Organization>[] = [
   {
     accessorKey: "name",
     header: "Organization",
@@ -175,116 +149,3 @@ const columns: ColumnDef<Organization>[] = [
     },
   },
 ];
-
-export function OrganizationsDataTable({
-  data,
-  meta,
-  onPageChange,
-  isLoading,
-}: DataTableProps) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    pageCount: Math.ceil(meta.total / meta.limit),
-  });
-
-  const totalPages = Math.ceil(meta.total / meta.limit);
-
-  return (
-    <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  {isLoading ? "Loading..." : "No organizations found."}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between px-2">
-        <div className="text-sm text-muted-foreground">
-          Showing {(meta.page - 1) * meta.limit + 1} to{" "}
-          {Math.min(meta.page * meta.limit, meta.total)} of {meta.total}{" "}
-          organizations
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(meta.page - 1)}
-            disabled={meta.page === 1 || isLoading}
-          >
-            Previous
-          </Button>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-              const pageNum = i + 1;
-              return (
-                <Button
-                  key={pageNum}
-                  variant={meta.page === pageNum ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => onPageChange(pageNum)}
-                  disabled={isLoading}
-                >
-                  {pageNum}
-                </Button>
-              );
-            })}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(meta.page + 1)}
-            disabled={meta.page === totalPages || isLoading}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
