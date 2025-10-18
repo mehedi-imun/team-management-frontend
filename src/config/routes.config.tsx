@@ -11,11 +11,11 @@ import {
 import type { ReactNode } from "react";
 
 export type UserRole =
-  | "SuperAdmin"  // Platform super admin (no organization)
-  | "Admin"       // Platform admin (no organization)
-  | "OrgOwner"    // Member with isOrganizationOwner = true
-  | "OrgAdmin"    // Member with isOrganizationAdmin = true
-  | "Member";     // Regular organization member
+  | "SuperAdmin" // Platform super admin (no organization)
+  | "Admin" // Platform admin (no organization)
+  | "OrgOwner" // Member with isOrganizationOwner = true
+  | "OrgAdmin" // Member with isOrganizationAdmin = true
+  | "Member"; // Regular organization member
 
 export interface RouteConfig {
   path: string;
@@ -29,10 +29,10 @@ export interface RouteConfig {
 /**
  * Dynamic route configuration based on user roles
  * Routes are automatically filtered based on the logged-in user's role
- * 
+ *
  * Backend Role System:
  * - SuperAdmin: Platform admin, no organizationId
- * - Admin: Platform admin, no organizationId  
+ * - Admin: Platform admin, no organizationId
  * - Member: Organization user (default role)
  *   - isOrganizationOwner: true = Can manage billing, settings
  *   - isOrganizationAdmin: true = Can manage users, teams
@@ -45,49 +45,49 @@ export const dashboardRoutes: RouteConfig[] = [
     allowedRoles: ["SuperAdmin", "Admin", "OrgOwner", "OrgAdmin", "Member"],
   },
   {
-    path: "/teams",
+    path: "/dashboard/org/teams",
     label: "Teams",
     icon: Users,
     allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
   },
   {
-    path: "/users",
+    path: "/dashboard/platform/users",
     label: "Users",
     icon: Users,
     allowedRoles: ["SuperAdmin", "Admin"], // Platform admins only
   },
   {
-    path: "/invitations",
+    path: "/dashboard/invitations",
     label: "Invitations",
     icon: UserPlus,
     allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
   },
   {
-    path: "/billing",
+    path: "/dashboard/org/billing",
     label: "Billing",
     icon: CreditCard,
     allowedRoles: ["SuperAdmin", "OrgOwner"], // Only org owners can manage billing
   },
   {
-    path: "/organization",
+    path: "/dashboard/org/settings",
     label: "Organization",
     icon: Building2,
     allowedRoles: ["SuperAdmin", "OrgOwner"], // Organization settings
   },
   {
-    path: "/analytics",
+    path: "/dashboard/org/analytics",
     label: "Analytics",
     icon: BarChart3,
     allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
   },
   {
-    path: "/reports",
+    path: "/dashboard/platform/reports",
     label: "Reports",
     icon: FileText,
     allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
   },
   {
-    path: "/settings",
+    path: "/dashboard/settings",
     label: "Settings",
     icon: Settings,
     allowedRoles: ["SuperAdmin", "Admin", "OrgOwner", "OrgAdmin", "Member"],
@@ -100,19 +100,19 @@ export const dashboardRoutes: RouteConfig[] = [
  */
 export const platformAdminRoutes: RouteConfig[] = [
   {
-    path: "/platform/organizations",
+    path: "/dashboard/platform/organizations",
     label: "All Organizations",
     icon: Building2,
     allowedRoles: ["SuperAdmin", "Admin"],
   },
   {
-    path: "/platform/users",
+    path: "/dashboard/platform/users",
     label: "All Platform Users",
     icon: Users,
     allowedRoles: ["SuperAdmin", "Admin"],
   },
   {
-    path: "/platform/analytics",
+    path: "/dashboard/platform/analytics",
     label: "Platform Analytics",
     icon: BarChart3,
     allowedRoles: ["SuperAdmin", "Admin"],

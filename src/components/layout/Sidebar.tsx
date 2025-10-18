@@ -76,7 +76,9 @@ const Sidebar = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{user?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user?.email}
+                </p>
               </div>
             </div>
             <div className="mt-2">
@@ -145,7 +147,9 @@ const Sidebar = () => {
             collapsed ? "justify-center" : "justify-between px-3"
           )}
         >
-          {!collapsed && <span className="text-sm text-muted-foreground">Theme</span>}
+          {!collapsed && (
+            <span className="text-sm text-muted-foreground">Theme</span>
+          )}
           <ModeToggle />
         </div>
 

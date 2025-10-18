@@ -1,8 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Palette, Check, X, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AlertTriangle, Check, Palette, X } from "lucide-react";
 
 const ThemePreview = () => {
   const colorGroups = [
@@ -12,21 +18,25 @@ const ThemePreview = () => {
         { name: "Primary", class: "bg-primary text-primary-foreground" },
         { name: "Secondary", class: "bg-secondary text-secondary-foreground" },
         { name: "Accent", class: "bg-accent text-accent-foreground" },
-      ]
+      ],
     },
     {
       title: "Surface Colors",
       colors: [
-        { name: "Background", class: "bg-background text-foreground border border-border" },
-        { name: "Card", class: "bg-card text-card-foreground border border-border" },
+        {
+          name: "Background",
+          class: "bg-background text-foreground border border-border",
+        },
+        {
+          name: "Card",
+          class: "bg-card text-card-foreground border border-border",
+        },
         { name: "Muted", class: "bg-muted text-muted-foreground" },
-      ]
+      ],
     },
     {
       title: "Semantic Colors",
-      colors: [
-        { name: "Destructive", class: "bg-destructive text-white" },
-      ]
+      colors: [{ name: "Destructive", class: "bg-destructive text-white" }],
     },
     {
       title: "Chart Colors",
@@ -36,8 +46,8 @@ const ThemePreview = () => {
         { name: "Chart 3", class: "bg-chart-3 text-white" },
         { name: "Chart 4", class: "bg-chart-4 text-white" },
         { name: "Chart 5", class: "bg-chart-5 text-white" },
-      ]
-    }
+      ],
+    },
   ];
 
   return (
@@ -61,7 +71,9 @@ const ThemePreview = () => {
         <Card key={group.title}>
           <CardHeader>
             <CardTitle>{group.title}</CardTitle>
-            <CardDescription>Visual representation of {group.title.toLowerCase()}</CardDescription>
+            <CardDescription>
+              Visual representation of {group.title.toLowerCase()}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -93,7 +105,7 @@ const ThemePreview = () => {
             <Button variant="ghost">Ghost Button</Button>
             <Button variant="link">Link Button</Button>
           </div>
-          
+
           <div className="flex flex-wrap gap-3">
             <Button size="sm">Small</Button>
             <Button size="default">Default</Button>
@@ -133,7 +145,9 @@ const ThemePreview = () => {
                 </div>
                 <div>
                   <p className="font-semibold">Success</p>
-                  <p className="text-sm text-muted-foreground">Operation completed</p>
+                  <p className="text-sm text-muted-foreground">
+                    Operation completed
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -145,7 +159,9 @@ const ThemePreview = () => {
                 </div>
                 <div>
                   <p className="font-semibold">Error</p>
-                  <p className="text-sm text-muted-foreground">Something went wrong</p>
+                  <p className="text-sm text-muted-foreground">
+                    Something went wrong
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -157,7 +173,9 @@ const ThemePreview = () => {
                 </div>
                 <div>
                   <p className="font-semibold">Warning</p>
-                  <p className="text-sm text-muted-foreground">Needs attention</p>
+                  <p className="text-sm text-muted-foreground">
+                    Needs attention
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -174,18 +192,25 @@ const ThemePreview = () => {
         <CardContent className="space-y-4">
           <div>
             <h1 className="text-4xl font-bold">Heading 1 - Team Management</h1>
-            <h2 className="text-3xl font-bold mt-4">Heading 2 - Dashboard Overview</h2>
-            <h3 className="text-2xl font-semibold mt-4">Heading 3 - Section Title</h3>
-            <h4 className="text-xl font-semibold mt-4">Heading 4 - Subsection</h4>
+            <h2 className="text-3xl font-bold mt-4">
+              Heading 2 - Dashboard Overview
+            </h2>
+            <h3 className="text-2xl font-semibold mt-4">
+              Heading 3 - Section Title
+            </h3>
+            <h4 className="text-xl font-semibold mt-4">
+              Heading 4 - Subsection
+            </h4>
           </div>
-          
+
           <div className="space-y-2">
             <p className="text-foreground">
-              This is body text with normal foreground color. Lorem ipsum dolor sit amet, 
-              consectetur adipiscing elit.
+              This is body text with normal foreground color. Lorem ipsum dolor
+              sit amet, consectetur adipiscing elit.
             </p>
             <p className="text-muted-foreground">
-              This is muted text used for less important information or descriptions.
+              This is muted text used for less important information or
+              descriptions.
             </p>
             <p className="text-sm text-muted-foreground">
               This is small muted text, often used for helper text or captions.
@@ -203,16 +228,16 @@ const ThemePreview = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Email</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               placeholder="Enter your email"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Message</label>
-            <textarea 
+            <textarea
               placeholder="Enter your message"
               rows={4}
               className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

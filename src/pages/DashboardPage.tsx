@@ -104,7 +104,9 @@ const DashboardPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">{stat.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  {stat.description}
+                </p>
               </CardContent>
             </Card>
           );
