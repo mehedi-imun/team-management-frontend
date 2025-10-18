@@ -128,7 +128,12 @@ export const teamApi = baseApi.injectEndpoints({
         data,
       }: {
         teamId: string;
-        data: { email: string; name?: string; role?: "TeamLead" | "Member"; password?: string };
+        data: {
+          email: string;
+          name?: string;
+          role?: "TeamLead" | "Member";
+          password?: string;
+        };
       }) => ({
         url: `/teams/${teamId}/members`,
         method: "POST",

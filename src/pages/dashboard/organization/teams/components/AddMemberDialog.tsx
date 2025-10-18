@@ -1,3 +1,5 @@
+import PasswordInput from "@/components/password/PasswordInput";
+import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,13 +19,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import PasswordInput from "@/components/password/PasswordInput";
-import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { useToast } from "@/hooks/use-toast";
 import { useAddMemberMutation } from "@/redux/features/team/teamApi";
 import { useGetTrialStatusQuery } from "@/redux/features/trial/trialApi";
 import type { ITeam } from "@/types";
-import { AlertTriangle, Loader2, Mail, User, UserPlus, Lock } from "lucide-react";
+import {
+  AlertTriangle,
+  Loader2,
+  Lock,
+  Mail,
+  User,
+  UserPlus,
+} from "lucide-react";
 import { useState } from "react";
 
 interface AddMemberDialogProps {
@@ -250,7 +257,8 @@ export function AddMemberDialog({
                 <PasswordStrengthIndicator password={formData.password} />
               )}
               <p className="text-xs text-muted-foreground">
-                Password must be at least 8 characters with uppercase, lowercase, and number
+                Password must be at least 8 characters with uppercase,
+                lowercase, and number
               </p>
             </div>
           </div>

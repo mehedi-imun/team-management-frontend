@@ -10,16 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { ITeam } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
-import {
-  CheckCircle2,
-  Clock,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  UserPlus,
-  Users,
-  XCircle,
-} from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, UserPlus, Users } from "lucide-react";
 
 export type TeamActions = {
   onEdit: (team: ITeam) => void;
@@ -60,64 +51,6 @@ export const createTeamColumns = (actions: TeamActions): ColumnDef<ITeam>[] => [
             {count === 1 ? "member" : "members"}
           </span>
         </div>
-      );
-    },
-  },
-  {
-    accessorKey: "managerApproved",
-    header: "Manager",
-    cell: ({ row }) => {
-      const status = row.original.managerApproved;
-      if (status === "1") {
-        return (
-          <Badge className="bg-green-100 text-green-800 border-green-200">
-            <CheckCircle2 className="mr-1 h-3 w-3" />
-            Approved
-          </Badge>
-        );
-      }
-      if (status === "-1") {
-        return (
-          <Badge className="bg-red-100 text-red-800 border-red-200">
-            <XCircle className="mr-1 h-3 w-3" />
-            Rejected
-          </Badge>
-        );
-      }
-      return (
-        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-          <Clock className="mr-1 h-3 w-3" />
-          Pending
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: "directorApproved",
-    header: "Director",
-    cell: ({ row }) => {
-      const status = row.original.directorApproved;
-      if (status === "1") {
-        return (
-          <Badge className="bg-green-100 text-green-800 border-green-200">
-            <CheckCircle2 className="mr-1 h-3 w-3" />
-            Approved
-          </Badge>
-        );
-      }
-      if (status === "-1") {
-        return (
-          <Badge className="bg-red-100 text-red-800 border-red-200">
-            <XCircle className="mr-1 h-3 w-3" />
-            Rejected
-          </Badge>
-        );
-      }
-      return (
-        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-          <Clock className="mr-1 h-3 w-3" />
-          Pending
-        </Badge>
       );
     },
   },

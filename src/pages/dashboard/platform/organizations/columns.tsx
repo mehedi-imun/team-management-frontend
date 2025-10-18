@@ -11,14 +11,7 @@ import {
 import type { Organization } from "@/redux/features/platform/platformApi";
 import { type ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import {
-  Ban,
-  CheckCircle,
-  Eye,
-  MoreHorizontal,
-  Trash2,
-  Users,
-} from "lucide-react";
+import { Ban, CheckCircle, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
@@ -26,10 +19,8 @@ interface ActionHandlers {
   onView: (org: Organization) => void;
   onUpdateStatus: (org: Organization) => void;
   onDelete: (org: Organization) => void;
-  onManageMembers: (org: Organization) => void;
   canUpdateStatus?: boolean;
   canDelete?: boolean;
-  canManageMembers?: boolean;
 }
 
 const getStatusBadge = (status: string) => {
@@ -176,16 +167,6 @@ export const createColumns = (
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
-
-            {handlers.canManageMembers && (
-              <DropdownMenuItem
-                onClick={() => handlers.onManageMembers(org)}
-                className="text-base py-2.5"
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Manage Members
-              </DropdownMenuItem>
-            )}
 
             {handlers.canUpdateStatus && (
               <>

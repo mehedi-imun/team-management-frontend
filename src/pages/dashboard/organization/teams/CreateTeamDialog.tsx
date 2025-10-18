@@ -1,3 +1,5 @@
+import PasswordInput from "@/components/password/PasswordInput";
+import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,11 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import PasswordInput from "@/components/password/PasswordInput";
-import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateTeamMutation } from "@/redux/features/team/teamApi";
-import { Plus, Trash2, Lock } from "lucide-react";
+import { Lock, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface CreateTeamDialogProps {
@@ -48,7 +48,10 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const { toast } = useToast();
 
   const handleAddMember = () => {
-    setMembers([...members, { email: "", name: "", role: "Member", password: "" }]);
+    setMembers([
+      ...members,
+      { email: "", name: "", role: "Member", password: "" },
+    ]);
   };
 
   const handleRemoveMember = (index: number) => {
@@ -88,14 +91,16 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
       if (!member.password.trim()) {
         newErrors[`member_${index}_password`] = "Password is required";
       } else if (member.password.length < 8) {
-        newErrors[`member_${index}_password`] = "Password must be at least 8 characters";
+        newErrors[`member_${index}_password`] =
+          "Password must be at least 8 characters";
       } else {
         const hasUpperCase = /[A-Z]/.test(member.password);
         const hasLowerCase = /[a-z]/.test(member.password);
         const hasNumber = /\d/.test(member.password);
 
         if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-          newErrors[`member_${index}_password`] = "Password must contain uppercase, lowercase, and number";
+          newErrors[`member_${index}_password`] =
+            "Password must contain uppercase, lowercase, and number";
         }
       }
     });
@@ -259,7 +264,9 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <Lock className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">Password *</span>
+                        <span className="text-xs text-muted-foreground">
+                          Password *
+                        </span>
                       </div>
                       <PasswordInput
                         id={`member_${index}_password`}

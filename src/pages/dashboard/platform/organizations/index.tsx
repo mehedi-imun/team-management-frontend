@@ -23,12 +23,11 @@ import { toast } from "sonner";
 import { createColumns } from "./columns";
 import { CreateOrganizationDialog } from "./CreateOrganizationDialog";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
-import { ManageMembersDialog } from "./ManageMembersDialog";
 import { UpdateStatusDialog } from "./UpdateStatusDialog";
 import { ViewOrganizationDialog } from "./ViewOrganizationDialog";
 
 const OrganizationsPage = () => {
-  const { can, isPlatformAdmin } = usePermission();
+  const { can } = usePermission();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string>("");
@@ -38,7 +37,6 @@ const OrganizationsPage = () => {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isManageMembersOpen, setIsManageMembersOpen] = useState(false);
 
   const [updateStatus, { isLoading: isUpdatingStatus }] =
     useUpdateOrganizationStatusMutation();
@@ -103,16 +101,6 @@ const OrganizationsPage = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleManageMembers = (org: Organization) => {
-    // Platform admins can manage members of any organization
-    if (!isPlatformAdmin()) {
-      toast.error("You don't have permission to manage organization members");
-      return;
-    }
-    setSelectedOrg(org);
-    setIsManageMembersOpen(true);
-  };
-
   const handleStatusUpdate = async (newStatus: string) => {
     if (!selectedOrg) return;
 
@@ -148,10 +136,8 @@ const OrganizationsPage = () => {
     onView: handleView,
     onUpdateStatus: handleUpdateStatus,
     onDelete: handleDelete,
-    onManageMembers: handleManageMembers,
     canUpdateStatus: can(Permission.PLATFORM_SUSPEND_ORGANIZATION),
     canDelete: can(Permission.PLATFORM_DELETE_ORGANIZATION),
-    canManageMembers: isPlatformAdmin(),
   });
 
   // Show loading state
@@ -295,12 +281,6 @@ const OrganizationsPage = () => {
         onConfirm={handleDeleteConfirm}
         organizationName={selectedOrg?.name || ""}
         isLoading={isDeleting}
-      />
-
-      <ManageMembersDialog
-        organization={selectedOrg}
-        open={isManageMembersOpen}
-        onOpenChange={setIsManageMembersOpen}
       />
     </div>
   );
