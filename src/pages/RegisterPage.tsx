@@ -18,25 +18,32 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 // Zod validation schema
-const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-  confirmPassword: z.string(),
-  organizationName: z.string().min(2, "Organization name must be at least 2 characters"),
-  organizationSlug: z
-    .string()
-    .min(2, "Slug must be at least 2 characters")
-    .regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
+    confirmPassword: z.string(),
+    organizationName: z
+      .string()
+      .min(2, "Organization name must be at least 2 characters"),
+    organizationSlug: z
+      .string()
+      .min(2, "Slug must be at least 2 characters")
+      .regex(
+        /^[a-z0-9-]+$/,
+        "Slug must contain only lowercase letters, numbers, and hyphens"
+      ),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -81,7 +88,8 @@ const RegisterPage = () => {
     } catch (err: unknown) {
       const error = err as { data?: { message?: string } };
       setFormError("root", {
-        message: error?.data?.message || "Registration failed. Please try again.",
+        message:
+          error?.data?.message || "Registration failed. Please try again.",
       });
     }
   };
@@ -105,13 +113,15 @@ const RegisterPage = () => {
               <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-6">
                 <Mail className="h-20 w-20 text-blue-600 dark:text-blue-400" />
               </div>
-              
+
               <div className="space-y-3">
                 <h2 className="text-3xl font-bold">Check Your Email</h2>
                 <p className="text-muted-foreground text-base">
                   We've sent a verification link to:
                 </p>
-                <p className="text-xl font-semibold text-primary break-all">{userEmail}</p>
+                <p className="text-xl font-semibold text-primary break-all">
+                  {userEmail}
+                </p>
               </div>
 
               <Alert className="text-left w-full">
@@ -133,7 +143,7 @@ const RegisterPage = () => {
               <div className="flex flex-col sm:flex-row gap-3 w-full pt-2">
                 <Button
                   variant="default"
-                  onClick={() => window.location.href = "mailto:"}
+                  onClick={() => (window.location.href = "mailto:")}
                   className="flex-1 h-11"
                 >
                   <Mail className="mr-2 h-4 w-4" />
@@ -204,7 +214,9 @@ const RegisterPage = () => {
                     className="h-11"
                   />
                   {errors.organizationName && (
-                    <p className="text-sm text-destructive">{errors.organizationName.message}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.organizationName.message}
+                    </p>
                   )}
                 </div>
 
@@ -225,7 +237,9 @@ const RegisterPage = () => {
                     Only lowercase letters, numbers, and hyphens
                   </p>
                   {errors.organizationSlug && (
-                    <p className="text-sm text-destructive">{errors.organizationSlug.message}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.organizationSlug.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -251,7 +265,9 @@ const RegisterPage = () => {
                     className="h-11"
                   />
                   {errors.name && (
-                    <p className="text-sm text-destructive">{errors.name.message}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.name.message}
+                    </p>
                   )}
                 </div>
 
@@ -269,7 +285,9 @@ const RegisterPage = () => {
                     className="h-11"
                   />
                   {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email.message}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -312,7 +330,9 @@ const RegisterPage = () => {
                     Min 6 chars with uppercase, lowercase & number
                   </p>
                   {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.password.message}
+                    </p>
                   )}
                 </div>
 
@@ -332,7 +352,9 @@ const RegisterPage = () => {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                       disabled={isLoading}
                     >
@@ -347,13 +369,19 @@ const RegisterPage = () => {
                     Re-enter your password to confirm
                   </p>
                   {errors.confirmPassword && (
-                    <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                    <p className="text-sm text-destructive">
+                      {errors.confirmPassword.message}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11 text-base" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full h-11 text-base"
+              disabled={isLoading}
+            >
               {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
               Create Account
             </Button>
@@ -362,7 +390,10 @@ const RegisterPage = () => {
         <div className="px-8 pb-6">
           <div className="text-center text-sm">
             Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:underline font-medium">
+            <Link
+              to="/login"
+              className="text-primary hover:underline font-medium"
+            >
               Sign in
             </Link>
           </div>

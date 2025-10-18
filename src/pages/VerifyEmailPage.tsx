@@ -14,7 +14,9 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading"
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -41,7 +43,7 @@ const VerifyEmailPage = () => {
         if (response.ok) {
           setStatus("success");
           setMessage(data.message || "Email verified successfully!");
-          
+
           // Redirect to dashboard after 2 seconds
           setTimeout(() => {
             navigate("/dashboard");
@@ -84,7 +86,8 @@ const VerifyEmailPage = () => {
             {status === "error" && "Verification Failed"}
           </CardTitle>
           <CardDescription>
-            {status === "loading" && "Please wait while we verify your email address."}
+            {status === "loading" &&
+              "Please wait while we verify your email address."}
             {status === "success" && "Your account is now active."}
             {status === "error" && "We couldn't verify your email."}
           </CardDescription>

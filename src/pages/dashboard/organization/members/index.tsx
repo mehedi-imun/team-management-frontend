@@ -65,7 +65,9 @@ import { toast } from "sonner";
 export default function MembersPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "active" | "inactive">("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "pending" | "active" | "inactive"
+  >("all");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
@@ -92,7 +94,7 @@ export default function MembersPage() {
         skip: !organizationId, // Skip query if no organization ID
       }
     );
-    console.log(membersData)
+  console.log(membersData);
 
   const { data: statsResponse, isLoading: isStatsLoading } =
     useGetMyOrganizationStatsQuery(undefined, {
@@ -104,7 +106,6 @@ export default function MembersPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const stats = (statsResponse as any)?.data || statsResponse;
 
-  
   // Mutations
   const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
   const [updateStatus, { isLoading: isUpdatingStatus }] =
@@ -115,7 +116,9 @@ export default function MembersPage() {
   const meta = membersData?.meta;
 
   // Helper function to get member status (with fallback to isActive)
-  const getMemberStatus = (member: OrganizationMember): "active" | "inactive" | "pending" => {
+  const getMemberStatus = (
+    member: OrganizationMember
+  ): "active" | "inactive" | "pending" => {
     if (member.status) {
       return member.status as "active" | "inactive" | "pending";
     }
@@ -124,24 +127,28 @@ export default function MembersPage() {
   };
 
   // Filter members based on status
-  const filteredMembers = statusFilter === "all" 
-    ? members 
-    : members.filter((member: OrganizationMember) => getMemberStatus(member) === statusFilter);
+  const filteredMembers =
+    statusFilter === "all"
+      ? members
+      : members.filter(
+          (member: OrganizationMember) =>
+            getMemberStatus(member) === statusFilter
+        );
 
   console.log("📊 Members Data Debug:", {
     membersData,
     members,
-    membersWithStatus: members.map(m => ({ 
-      name: m.name, 
-      status: m.status, 
+    membersWithStatus: members.map((m) => ({
+      name: m.name,
+      status: m.status,
       isActive: m.isActive,
-      calculatedStatus: getMemberStatus(m)
+      calculatedStatus: getMemberStatus(m),
     })),
     filteredMembers,
     filteredCount: filteredMembers.length,
     statusFilter,
     stats,
-    organizationId
+    organizationId,
   });
 
   // Handlers
@@ -426,7 +433,7 @@ export default function MembersPage() {
               <AlertDescription>
                 {searchTerm
                   ? "No members found matching your search."
-                  : statusFilter !== "all" 
+                  : statusFilter !== "all"
                   ? `No ${statusFilter} members found.`
                   : "No members yet. Invite your first member to get started!"}
               </AlertDescription>
@@ -624,14 +631,19 @@ export default function MembersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedMember && getMemberStatus(selectedMember) === "active" ? "Deactivate" : "Activate"}{" "}
+              {selectedMember && getMemberStatus(selectedMember) === "active"
+                ? "Deactivate"
+                : "Activate"}{" "}
               Member
             </DialogTitle>
             <DialogDescription>
               Are you sure you want to{" "}
-              {selectedMember && getMemberStatus(selectedMember) === "active" ? "deactivate" : "activate"}{" "}
+              {selectedMember && getMemberStatus(selectedMember) === "active"
+                ? "deactivate"
+                : "activate"}{" "}
               <span className="font-semibold">{selectedMember?.name}</span>?
-              {selectedMember && getMemberStatus(selectedMember) === "active" &&
+              {selectedMember &&
+                getMemberStatus(selectedMember) === "active" &&
                 " They will lose access to the organization immediately."}
             </DialogDescription>
           </DialogHeader>
@@ -645,7 +657,9 @@ export default function MembersPage() {
             </Button>
             <Button
               variant={
-                selectedMember && getMemberStatus(selectedMember) === "active" ? "destructive" : "default"
+                selectedMember && getMemberStatus(selectedMember) === "active"
+                  ? "destructive"
+                  : "default"
               }
               onClick={handleToggleStatus}
               disabled={isUpdatingStatus}
@@ -653,7 +667,9 @@ export default function MembersPage() {
               {isUpdatingStatus && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {selectedMember && getMemberStatus(selectedMember) === "active" ? "Deactivate" : "Activate"}
+              {selectedMember && getMemberStatus(selectedMember) === "active"
+                ? "Deactivate"
+                : "Activate"}
             </Button>
           </DialogFooter>
         </DialogContent>
