@@ -35,7 +35,12 @@ interface ActionHandlers {
 const getRoleBadge = (role: string) => {
   const variants: Record<
     string,
-    { variant: BadgeVariant; label: string; icon: React.ReactElement; className?: string }
+    {
+      variant: BadgeVariant;
+      label: string;
+      icon: React.ReactElement;
+      className?: string;
+    }
   > = {
     SuperAdmin: {
       variant: "destructive",
@@ -70,7 +75,9 @@ const getRoleBadge = (role: string) => {
   return (
     <Badge
       variant={config.variant}
-      className={`text-sm px-3 py-1 flex items-center gap-1.5 w-fit ${config.className || ""}`}
+      className={`text-sm px-3 py-1 flex items-center gap-1.5 w-fit ${
+        config.className || ""
+      }`}
     >
       {config.icon}
       {config.label}
@@ -115,7 +122,7 @@ export const createColumns = (handlers: ActionHandlers): ColumnDef<User>[] => [
     header: "Organization",
     cell: ({ row }) => {
       const user = row.original;
-      
+
       // Platform admins (SuperAdmin, Admin) don't belong to organizations
       if (user.role === "SuperAdmin" || user.role === "Admin") {
         return (
@@ -154,7 +161,10 @@ export const createColumns = (handlers: ActionHandlers): ColumnDef<User>[] => [
       return (
         <div className="text-base">
           <span className="font-medium">{count}</span>
-          <span className="text-muted-foreground"> team{count !== 1 ? 's' : ''}</span>
+          <span className="text-muted-foreground">
+            {" "}
+            team{count !== 1 ? "s" : ""}
+          </span>
         </div>
       );
     },

@@ -61,7 +61,7 @@ const DashboardPage = () => {
 
   const getUserRole = () => {
     if (!user) return "Member";
-    
+
     const roleMap: Record<string, string> = {
       SuperAdmin: "Platform Super Administrator",
       Admin: "Platform Administrator",
@@ -69,7 +69,7 @@ const DashboardPage = () => {
       OrgAdmin: "Organization Administrator",
       OrgMember: "Organization Member",
     };
-    
+
     return roleMap[user.role] || user.role;
   };
 

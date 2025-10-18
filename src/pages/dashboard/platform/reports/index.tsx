@@ -16,9 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  useGetOrganizationStatsQuery,
   useGetUserStatsQuery,
   useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
-  useGetOrganizationStatsQuery,
 } from "@/redux/features/platform/platformApi";
 import { useAppSelector } from "@/redux/hook";
 import {

@@ -217,28 +217,34 @@ export function ManageMembersDialog({
   };
 
   const getRoleBadge = (user: User) => {
-    const roleConfig: Record<string, { variant: string; label: string; className?: string }> = {
-      OrgOwner: { 
-        variant: "default", 
-        label: "Owner", 
-        className: "bg-yellow-500 hover:bg-yellow-600 text-white" 
+    const roleConfig: Record<
+      string,
+      { variant: string; label: string; className?: string }
+    > = {
+      OrgOwner: {
+        variant: "default",
+        label: "Owner",
+        className: "bg-yellow-500 hover:bg-yellow-600 text-white",
       },
-      OrgAdmin: { 
-        variant: "default", 
-        label: "Administrator", 
-        className: "bg-blue-500 hover:bg-blue-600 text-white" 
+      OrgAdmin: {
+        variant: "default",
+        label: "Administrator",
+        className: "bg-blue-500 hover:bg-blue-600 text-white",
       },
-      OrgMember: { 
-        variant: "outline", 
-        label: "Member" 
+      OrgMember: {
+        variant: "outline",
+        label: "Member",
       },
     };
 
-    const config = roleConfig[user.role] || { variant: "outline", label: user.role };
-    
+    const config = roleConfig[user.role] || {
+      variant: "outline",
+      label: user.role,
+    };
+
     return (
-      <Badge 
-        variant={config.variant as "default" | "outline"} 
+      <Badge
+        variant={config.variant as "default" | "outline"}
         className={config.className}
       >
         {config.label}
@@ -256,7 +262,8 @@ export function ManageMembersDialog({
               Manage Members - {organization?.name}
             </DialogTitle>
             <DialogDescription className="text-base">
-              Add, edit, or remove members from this organization. You can assign roles and manage permissions.
+              Add, edit, or remove members from this organization. You can
+              assign roles and manage permissions.
             </DialogDescription>
           </DialogHeader>
 
@@ -377,7 +384,9 @@ export function ManageMembersDialog({
                                   <div className="flex items-center gap-2">
                                     <ShieldCheck className="h-4 w-4 text-blue-500" />
                                     <div>
-                                      <div className="font-medium">Administrator</div>
+                                      <div className="font-medium">
+                                        Administrator
+                                      </div>
                                       <div className="text-xs text-muted-foreground">
                                         Manage users & teams
                                       </div>
@@ -431,14 +440,18 @@ export function ManageMembersDialog({
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-16">
                 <Loader2 className="h-10 w-10 animate-spin text-blue-500 mb-3" />
-                <p className="text-base text-muted-foreground">Loading members...</p>
+                <p className="text-base text-muted-foreground">
+                  Loading members...
+                </p>
               </div>
             ) : data?.data?.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 border-2 rounded-lg bg-gray-50">
                 <UserPlus className="h-16 w-16 text-gray-400 mb-4" />
                 <h3 className="font-semibold text-xl mb-2">No members found</h3>
                 <p className="text-base text-muted-foreground mb-5">
-                  {search ? "Try adjusting your search query" : "Get started by adding your first member"}
+                  {search
+                    ? "Try adjusting your search query"
+                    : "Get started by adding your first member"}
                 </p>
                 {!search && (
                   <Button onClick={() => setShowAddForm(true)} size="lg">
@@ -452,11 +465,21 @@ export function ManageMembersDialog({
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="text-base font-semibold">Name</TableHead>
-                      <TableHead className="text-base font-semibold">Email</TableHead>
-                      <TableHead className="text-base font-semibold">Role</TableHead>
-                      <TableHead className="text-base font-semibold">Status</TableHead>
-                      <TableHead className="text-right text-base font-semibold">Actions</TableHead>
+                      <TableHead className="text-base font-semibold">
+                        Name
+                      </TableHead>
+                      <TableHead className="text-base font-semibold">
+                        Email
+                      </TableHead>
+                      <TableHead className="text-base font-semibold">
+                        Role
+                      </TableHead>
+                      <TableHead className="text-base font-semibold">
+                        Status
+                      </TableHead>
+                      <TableHead className="text-right text-base font-semibold">
+                        Actions
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -465,20 +488,26 @@ export function ManageMembersDialog({
                         <TableCell className="py-4">
                           <div className="flex items-center gap-3">
                             {getRoleIcon(member)}
-                            <span className="font-medium text-base">{member.name}</span>
+                            <span className="font-medium text-base">
+                              {member.name}
+                            </span>
                           </div>
                         </TableCell>
-                        <TableCell className="py-4 text-base">{member.email}</TableCell>
-                        <TableCell className="py-4">{getRoleBadge(member)}</TableCell>
+                        <TableCell className="py-4 text-base">
+                          {member.email}
+                        </TableCell>
+                        <TableCell className="py-4">
+                          {getRoleBadge(member)}
+                        </TableCell>
                         <TableCell className="py-4">
                           <div className="flex items-center gap-2">
-                            <div 
+                            <div
                               className={`h-2.5 w-2.5 rounded-full ${
-                                member.isActive ? 'bg-green-500' : 'bg-gray-400'
-                              }`} 
+                                member.isActive ? "bg-green-500" : "bg-gray-400"
+                              }`}
                             />
                             <span className="text-base">
-                              {member.isActive ? 'Active' : 'Inactive'}
+                              {member.isActive ? "Active" : "Inactive"}
                             </span>
                           </div>
                         </TableCell>
@@ -554,7 +583,9 @@ export function ManageMembersDialog({
         >
           <AlertDialogContent className="max-w-2xl">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-xl">Edit Member</AlertDialogTitle>
+              <AlertDialogTitle className="text-xl">
+                Edit Member
+              </AlertDialogTitle>
               <AlertDialogDescription className="text-base">
                 Update role and permissions for {editingMember.name}
               </AlertDialogDescription>
@@ -610,11 +641,14 @@ export function ManageMembersDialog({
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <p className="text-xs text-muted-foreground mt-2">
-                  {editingMember.role === "OrgOwner" && "⚠️ Owner has full access including billing management"}
-                  {editingMember.role === "OrgAdmin" && "Admins can manage users and teams (no billing access)"}
-                  {editingMember.role === "OrgMember" && "Members have read-only access"}
+                  {editingMember.role === "OrgOwner" &&
+                    "⚠️ Owner has full access including billing management"}
+                  {editingMember.role === "OrgAdmin" &&
+                    "Admins can manage users and teams (no billing access)"}
+                  {editingMember.role === "OrgMember" &&
+                    "Members have read-only access"}
                 </p>
               </div>
 
@@ -625,8 +659,8 @@ export function ManageMembersDialog({
                 <Select
                   defaultValue={editingMember.isActive ? "active" : "inactive"}
                   onValueChange={(value) => {
-                    handleUpdateMember(editingMember._id, { 
-                      isActive: value === "active" 
+                    handleUpdateMember(editingMember._id, {
+                      isActive: value === "active",
                     });
                   }}
                 >
@@ -666,14 +700,21 @@ export function ManageMembersDialog({
         >
           <AlertDialogContent className="max-w-xl">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-xl">Remove Member</AlertDialogTitle>
+              <AlertDialogTitle className="text-xl">
+                Remove Member
+              </AlertDialogTitle>
               <AlertDialogDescription className="text-base">
-                Are you sure you want to remove <span className="font-semibold text-foreground">{memberToDelete.name}</span> from this
-                organization? This action cannot be undone.
+                Are you sure you want to remove{" "}
+                <span className="font-semibold text-foreground">
+                  {memberToDelete.name}
+                </span>{" "}
+                from this organization? This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="gap-3">
-              <AlertDialogCancel className="text-base">Cancel</AlertDialogCancel>
+              <AlertDialogCancel className="text-base">
+                Cancel
+              </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleRemoveMember}
                 className="bg-red-600 hover:bg-red-700 text-base"

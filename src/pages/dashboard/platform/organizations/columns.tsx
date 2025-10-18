@@ -166,17 +166,19 @@ export const createColumns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel className="text-base font-semibold">Actions</DropdownMenuLabel>
-            <DropdownMenuItem 
+            <DropdownMenuLabel className="text-base font-semibold">
+              Actions
+            </DropdownMenuLabel>
+            <DropdownMenuItem
               onClick={() => handlers.onView(org)}
               className="text-base py-2.5"
             >
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
-            
+
             {handlers.canManageMembers && (
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => handlers.onManageMembers(org)}
                 className="text-base py-2.5"
               >
@@ -184,14 +186,16 @@ export const createColumns = (
                 Manage Members
               </DropdownMenuItem>
             )}
-            
+
             {handlers.canUpdateStatus && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => handlers.onUpdateStatus(org)}
                   className={`text-base py-2.5 ${
-                    org.status === "active" ? "text-orange-600" : "text-green-600"
+                    org.status === "active"
+                      ? "text-orange-600"
+                      : "text-green-600"
                   }`}
                 >
                   {org.status === "active" ? (
@@ -208,7 +212,7 @@ export const createColumns = (
                 </DropdownMenuItem>
               </>
             )}
-            
+
             {handlers.canDelete && (
               <>
                 <DropdownMenuSeparator />

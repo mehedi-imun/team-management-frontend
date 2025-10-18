@@ -146,11 +146,16 @@ export function ViewUserDialog({
               <div className="flex-1">
                 <p className="text-base font-medium">System Role</p>
                 <p className="text-sm text-muted-foreground">
-                  {user.role === "SuperAdmin" && "Super Administrator - Full platform access"}
-                  {user.role === "Admin" && "Platform Administrator - Manage organizations"}
-                  {user.role === "OrgOwner" && "Organization Owner - Full control + billing"}
-                  {user.role === "OrgAdmin" && "Organization Administrator - Manage users & teams"}
-                  {user.role === "OrgMember" && "Organization Member - View-only access"}
+                  {user.role === "SuperAdmin" &&
+                    "Super Administrator - Full platform access"}
+                  {user.role === "Admin" &&
+                    "Platform Administrator - Manage organizations"}
+                  {user.role === "OrgOwner" &&
+                    "Organization Owner - Full control + billing"}
+                  {user.role === "OrgAdmin" &&
+                    "Organization Administrator - Manage users & teams"}
+                  {user.role === "OrgMember" &&
+                    "Organization Member - View-only access"}
                 </p>
               </div>
             </div>
@@ -171,7 +176,8 @@ export function ViewUserDialog({
                       (No organization affiliation)
                     </span>
                   </div>
-                ) : user.organizationId && typeof user.organizationId === "object" ? (
+                ) : user.organizationId &&
+                  typeof user.organizationId === "object" ? (
                   <>
                     <p className="text-base text-muted-foreground mt-1">
                       {user.organizationId.name}
@@ -201,7 +207,9 @@ export function ViewUserDialog({
                 <p className="text-base text-muted-foreground mt-1">
                   {user.teamCount ? (
                     <>
-                      Member of <span className="font-semibold">{user.teamCount}</span> team{user.teamCount !== 1 ? 's' : ''}
+                      Member of{" "}
+                      <span className="font-semibold">{user.teamCount}</span>{" "}
+                      team{user.teamCount !== 1 ? "s" : ""}
                     </>
                   ) : (
                     "Not a member of any teams yet"
@@ -209,7 +217,8 @@ export function ViewUserDialog({
                 </p>
                 {user.managedTeamIds && user.managedTeamIds.length > 0 && (
                   <Badge variant="outline" className="mt-2 text-xs">
-                    Manages {user.managedTeamIds.length} team{user.managedTeamIds.length !== 1 ? 's' : ''}
+                    Manages {user.managedTeamIds.length} team
+                    {user.managedTeamIds.length !== 1 ? "s" : ""}
                   </Badge>
                 )}
               </div>
@@ -223,10 +232,14 @@ export function ViewUserDialog({
               <div className="flex-1">
                 <p className="text-base font-medium">Member Since</p>
                 <p className="text-base text-muted-foreground mt-1">
-                  {format(new Date(user.createdAt), "MMMM dd, yyyy 'at' hh:mm a")}
+                  {format(
+                    new Date(user.createdAt),
+                    "MMMM dd, yyyy 'at' hh:mm a"
+                  )}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Last updated: {format(new Date(user.updatedAt), "MMM dd, yyyy")}
+                  Last updated:{" "}
+                  {format(new Date(user.updatedAt), "MMM dd, yyyy")}
                 </p>
               </div>
             </div>

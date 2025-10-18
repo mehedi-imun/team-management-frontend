@@ -62,8 +62,9 @@ export function ChangeRoleDialog({
                   Platform Level Roles Only
                 </p>
                 <p className="text-xs text-amber-700 mt-1">
-                  This dialog only manages platform-level roles (SuperAdmin, Admin). 
-                  Organization roles are managed within each organization's member settings.
+                  This dialog only manages platform-level roles (SuperAdmin,
+                  Admin). Organization roles are managed within each
+                  organization's member settings.
                 </p>
               </div>
             </div>
@@ -106,7 +107,7 @@ export function ChangeRoleDialog({
                 </SelectItem>
               </SelectContent>
             </Select>
-            
+
             <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-2">
               <p className="text-sm text-blue-900">
                 <span className="font-medium">Current role:</span>{" "}
@@ -114,18 +115,23 @@ export function ChangeRoleDialog({
               </p>
               {currentRole !== selectedRole && (
                 <p className="text-xs text-blue-700 mt-1">
-                  ⚠️ Platform role changes take effect immediately and grant/revoke system-wide permissions
+                  ⚠️ Platform role changes take effect immediately and
+                  grant/revoke system-wide permissions
                 </p>
               )}
             </div>
 
             {/* Note for org users */}
-            {(currentRole === "OrgOwner" || currentRole === "OrgAdmin" || currentRole === "OrgMember") && (
+            {(currentRole === "OrgOwner" ||
+              currentRole === "OrgAdmin" ||
+              currentRole === "OrgMember") && (
               <div className="bg-orange-50 border border-orange-200 rounded-md p-3">
                 <p className="text-xs text-orange-800">
-                  <span className="font-semibold">Note:</span> This user currently has an organization role ({currentRole}). 
-                  Changing to a platform role will remove their organization affiliation. 
-                  Manage organization roles from the organization's member page instead.
+                  <span className="font-semibold">Note:</span> This user
+                  currently has an organization role ({currentRole}). Changing
+                  to a platform role will remove their organization affiliation.
+                  Manage organization roles from the organization's member page
+                  instead.
                 </p>
               </div>
             )}

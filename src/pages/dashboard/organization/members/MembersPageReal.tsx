@@ -19,8 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  useGetOrganizationMembersQuery,
   useGetMyOrganizationStatsQuery,
+  useGetOrganizationMembersQuery,
 } from "@/redux/features/organization/organizationApi";
 import type { RootState } from "@/redux/store";
 import { CheckCircle2, Clock, Mail, Plus, Search, UserX } from "lucide-react";

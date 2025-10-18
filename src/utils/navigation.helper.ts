@@ -10,10 +10,10 @@ export interface User {
 /**
  * Convert user role to typed UserRole
  * NEW SIMPLIFIED VERSION - Direct role mapping, no complex logic!
- * 
+ *
  * Backend now uses single role field with 5 values:
  * - SuperAdmin: Platform owner
- * - Admin: Platform administrator  
+ * - Admin: Platform administrator
  * - OrgOwner: Organization owner
  * - OrgAdmin: Organization administrator
  * - OrgMember: Regular member

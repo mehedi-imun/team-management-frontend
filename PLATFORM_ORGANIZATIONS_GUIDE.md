@@ -5,6 +5,7 @@
 ### Permission Levels
 
 #### **SuperAdmin**
+
 - ✅ View all organizations
 - ✅ Create new organizations
 - ✅ Update organization status (Suspend/Activate)
@@ -13,6 +14,7 @@
 - ✅ Access to all features
 
 #### **Admin (Platform Admin)**
+
 - ✅ View all organizations
 - ✅ Create new organizations
 - ✅ Update organization status (Suspend/Activate)
@@ -20,6 +22,7 @@
 - ❌ Cannot delete organizations (SuperAdmin only)
 
 #### **OrgOwner/OrgAdmin/OrgMember**
+
 - ❌ No access to platform organizations page
 - Shows "Access Denied" message
 
@@ -28,29 +31,32 @@
 ## 📋 Available Admin Actions
 
 ### 1. **View Details** (All Platform Admins)
+
 - View complete organization information
 - See subscription details
 - Check usage statistics
 - View billing information
 
 ### 2. **Manage Members** (SuperAdmin & Admin)
+
 - Add new members to organization
 - Update member roles
 - Remove members
 - Manage organization administrators
 
 ### 3. **Update Status** (SuperAdmin & Admin)
+
 - **Suspend Organization**: Temporarily disable access
   - Organization status changes to "suspended"
   - Members cannot log in
   - Data preserved
-  
 - **Activate Organization**: Re-enable suspended organizations
   - Organization status changes to "active"
   - Members can log in again
   - All features restored
 
 ### 4. **Delete Organization** (SuperAdmin Only)
+
 - ⚠️ **Permanent deletion**
 - Removes all organization data
 - Requires SuperAdmin role
@@ -65,17 +71,42 @@
 
 ```typescript
 // Main page with permission checks
-/pages/dashboard/platform/organizations/index.tsx
-
-// Permission-based column rendering
-/pages/dashboard/platform/organizations/columns.tsx
-
-// Action dialogs
-/pages/dashboard/platform/organizations/CreateOrganizationDialog.tsx
-/pages/dashboard/platform/organizations/UpdateStatusDialog.tsx
-/pages/dashboard/platform/organizations/DeleteConfirmDialog.tsx
-/pages/dashboard/platform/organizations/ManageMembersDialog.tsx
-/pages/dashboard/platform/organizations/ViewOrganizationDialog.tsx
+/pages/aabddhors /
+  platform /
+  organizations /
+  index.tsx /
+  // Permission-based column rendering
+  pages /
+  dashboard /
+  platform /
+  organizations /
+  columns.tsx /
+  // Action dialogs
+  pages /
+  dashboard /
+  platform /
+  organizations /
+  CreateOrganizationDialog.tsx /
+  pages /
+  dashboard /
+  platform /
+  organizations /
+  UpdateStatusDialog.tsx /
+  pages /
+  dashboard /
+  platform /
+  organizations /
+  DeleteConfirmDialog.tsx /
+  pages /
+  dashboard /
+  platform /
+  organizations /
+  ManageMembersDialog.tsx /
+  pages /
+  dashboard /
+  platform /
+  organizations /
+  ViewOrganizationDialog.tsx;
 ```
 
 ### Backend Endpoints
@@ -111,6 +142,7 @@ DELETE /api/v1/organizations/:id/members/:userId
 ## 🎨 UI/UX Features
 
 ### Action Menu (Dropdown)
+
 ```
 ┌─────────────────────────┐
 │ Actions                 │
@@ -126,6 +158,7 @@ DELETE /api/v1/organizations/:id/members/:userId
 ```
 
 ### Permission-Based Rendering
+
 - Actions not available to user role are **hidden** (not just disabled)
 - Toast notifications show error if user tries unauthorized action
 - Access denied page shows for non-platform admins
@@ -135,7 +168,9 @@ DELETE /api/v1/organizations/:id/members/:userId
 ## 🔒 Security Features
 
 ### Permission Checks
+
 1. **Frontend Level**
+
    - `usePermission` hook checks user role
    - UI elements conditionally rendered
    - Actions validated before execution
@@ -146,6 +181,7 @@ DELETE /api/v1/organizations/:id/members/:userId
    - Database operations protected
 
 ### Error Handling
+
 ```typescript
 // Permission denied
 toast.error("You don't have permission to delete organizations");
@@ -180,6 +216,7 @@ toast.success("Organization status updated successfully");
 ## 🧪 Testing Checklist
 
 ### SuperAdmin Actions
+
 - [ ] Can view all organizations
 - [ ] Can create new organization
 - [ ] Can suspend active organization
@@ -188,6 +225,7 @@ toast.success("Organization status updated successfully");
 - [ ] Can manage members of any organization
 
 ### Admin Actions
+
 - [ ] Can view all organizations
 - [ ] Can create new organization
 - [ ] Can suspend active organization
@@ -196,6 +234,7 @@ toast.success("Organization status updated successfully");
 - [ ] Can manage members of any organization
 
 ### Non-Platform Users
+
 - [ ] See "Access Denied" when trying to access page
 - [ ] Redirected appropriately
 
@@ -204,17 +243,20 @@ toast.success("Organization status updated successfully");
 ## 🚀 Usage Example
 
 ### Login as SuperAdmin
+
 ```bash
 Email: superadmin@teammanagement.com
 Password: superadmin123
 ```
 
 ### Navigate to Organizations
+
 ```
 Dashboard → Platform → Organizations
 ```
 
 ### Perform Actions
+
 1. **View**: Click any organization row → View details
 2. **Manage Members**: Actions menu → Manage Members
 3. **Suspend**: Actions menu → Suspend (if active)

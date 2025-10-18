@@ -3,12 +3,12 @@
  * Matches backend User model exactly
  */
 
-export type UserRole = 
-  | "SuperAdmin"   // Platform owner - complete system access
-  | "Admin"        // Platform administrator - manage organizations
-  | "OrgOwner"     // Organization owner - full org control + billing
-  | "OrgAdmin"     // Organization admin - manage users/teams (no billing)
-  | "OrgMember";   // Regular member - view only
+export type UserRole =
+  | "SuperAdmin" // Platform owner - complete system access
+  | "Admin" // Platform administrator - manage organizations
+  | "OrgOwner" // Organization owner - full org control + billing
+  | "OrgAdmin" // Organization admin - manage users/teams (no billing)
+  | "OrgMember"; // Regular member - view only
 
 export interface User {
   _id: string;
@@ -30,15 +30,20 @@ export interface Organization {
   logo?: string;
   plan: "free" | "professional" | "business" | "enterprise";
   billingCycle: "monthly" | "annual";
-  subscriptionStatus: "active" | "trialing" | "past_due" | "canceled" | "incomplete";
+  subscriptionStatus:
+    | "active"
+    | "trialing"
+    | "past_due"
+    | "canceled"
+    | "incomplete";
   trialEndsAt?: string;
   currentPeriodEnd?: string;
-  
+
   // Stripe
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   stripePriceId?: string;
-  
+
   // Limits
   limits: {
     maxUsers: number;
@@ -46,14 +51,14 @@ export interface Organization {
     maxStorage: string;
     features: string[];
   };
-  
+
   // Usage
   usage: {
     users: number;
     teams: number;
     storage: string;
   };
-  
+
   // Settings
   settings: {
     primaryColor: string;
@@ -62,22 +67,22 @@ export interface Organization {
     requireMFA: boolean;
     sessionTimeout: number;
   };
-  
+
   // Owner
   ownerId: string;
   ownerEmail?: string;
   ownerName?: string;
-  
+
   // Status
   status: "pending_setup" | "active" | "suspended";
   isActive: boolean;
-  
+
   // Virtuals
   isOnTrial?: boolean;
   daysLeftInTrial?: number;
   usersPercentage?: number;
   teamsPercentage?: number;
-  
+
   createdAt?: string;
   updatedAt?: string;
 }

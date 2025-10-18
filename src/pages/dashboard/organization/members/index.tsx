@@ -92,13 +92,11 @@ export default function MembersPage() {
       }
     );
 
-  const {
-    data: statsResponse,
-    isLoading: isStatsLoading,
-  } = useGetMyOrganizationStatsQuery(undefined, {
-    skip: !organizationId,
-    refetchOnMountOrArgChange: true, // Force fresh data on mount
-  });
+  const { data: statsResponse, isLoading: isStatsLoading } =
+    useGetMyOrganizationStatsQuery(undefined, {
+      skip: !organizationId,
+      refetchOnMountOrArgChange: true, // Force fresh data on mount
+    });
 
   // Backend returns { success: true, data: {...} } format
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

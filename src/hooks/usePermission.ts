@@ -59,7 +59,7 @@ export const Permission = {
   UPDATE_PROFILE: "update_profile",
 } as const;
 
-export type PermissionValue = typeof Permission[keyof typeof Permission];
+export type PermissionValue = (typeof Permission)[keyof typeof Permission];
 
 // Role-Permission mapping (matches backend exactly)
 const ROLE_PERMISSIONS: Record<UserRole, PermissionValue[]> = {
