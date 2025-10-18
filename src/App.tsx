@@ -5,6 +5,10 @@ import { Toaster } from "@/components/ui/sonner";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 
+// Auth Pages
+import AcceptInvitationPage from "@/pages/AcceptInvitationPage";
+import ChangePasswordPage from "@/pages/ChangePasswordPage";
+
 // Platform Pages (SuperAdmin/Admin)
 import PlatformAnalyticsPage from "@/pages/dashboard/platform/analytics";
 import OrganizationsPage from "@/pages/dashboard/platform/organizations";
@@ -28,7 +32,13 @@ import PricingPage from "@/pages/PricingPage";
 import RegisterPage from "@/pages/RegisterPage";
 import ThemePreview from "@/pages/ThemePreview";
 import { useAppSelector } from "@/redux/hook";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -36,10 +46,17 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, mustChangePassword } = useAppSelector((state) => state.auth);
+  const location = useLocation();
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // If user must change password, redirect to change password page
+  // But allow access to the change-password page itself
+  if (mustChangePassword && location.pathname !== "/change-password") {
+    return <Navigate to="/change-password" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
@@ -77,6 +94,22 @@ function App() {
           <Route
             path="/register"
             element={user ? <Navigate to="/dashboard" /> : <RegisterPage />}
+          />
+
+          {/* Password Change Route - Requires authentication */}
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePasswordPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Public Invitation Accept Route - No authentication required */}
+          <Route
+            path="/accept-invitation/:token"
+            element={<AcceptInvitationPage />}
           />
 
           {/* Protected Routes */}

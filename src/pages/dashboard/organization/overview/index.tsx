@@ -1,3 +1,4 @@
+import TrialBanner from "@/components/trial/TrialBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetMyOrganizationStatsQuery } from "@/redux/features/organization/organizationApi";
@@ -63,6 +64,9 @@ const OrganizationOverviewPage = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Trial Banner - Only for organization users */}
+      <TrialBanner />
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">

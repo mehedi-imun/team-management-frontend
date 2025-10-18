@@ -10,7 +10,9 @@ interface PasswordRequirementsProps {
   password: string;
 }
 
-export default function PasswordRequirements({ password }: PasswordRequirementsProps) {
+export default function PasswordRequirements({
+  password,
+}: PasswordRequirementsProps) {
   const requirements = DEFAULT_PASSWORD_REQUIREMENTS;
 
   const checks = [
@@ -32,7 +34,12 @@ export default function PasswordRequirements({ password }: PasswordRequirementsP
     },
     {
       label: `One special character (${requirements.specialChars})`,
-      met: new RegExp(`[${requirements.specialChars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}]`).test(password),
+      met: new RegExp(
+        `[${requirements.specialChars.replace(
+          /[-[\]{}()*+?.,\\^$|#\s]/g,
+          "\\$&"
+        )}]`
+      ).test(password),
     },
   ];
 

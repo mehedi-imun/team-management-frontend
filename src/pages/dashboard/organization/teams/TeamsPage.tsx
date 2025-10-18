@@ -1,3 +1,5 @@
+import TrialBanner from "@/components/trial/TrialBanner";
+import TrialExpiredModal from "@/components/trial/TrialExpiredModal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +13,9 @@ import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useGetTeamsQuery } from "@/redux/features/team/teamApi";
+import { useGetTrialStatusQuery } from "@/redux/features/trial/trialApi";
 import type { ITeam } from "@/types";
-import { AlertCircle, Plus, Search } from "lucide-react";
+import { AlertCircle, Lock, Plus, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CreateTeamDialog } from "../teams/CreateTeamDialog";
 import { AddMemberDialog } from "./components/AddMemberDialog";
@@ -25,6 +28,14 @@ export default function TeamsPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Trial status
+  const { data: trialResponse } = useGetTrialStatusQuery();
+  const trialStatus = trialResponse?.data;
+  const canCreateTeam = trialStatus?.canAccessFeatures ?? true;
+
+  // Trial expired modal state
+  const [trialExpiredModalOpen, setTrialExpiredModalOpen] = useState(false);
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -122,8 +133,20 @@ export default function TeamsPage() {
   console.log("Teams array:", teams);
   console.log("Meta:", meta);
 
+  // Handle create team button click
+  const handleCreateTeamClick = () => {
+    if (!canCreateTeam) {
+      setTrialExpiredModalOpen(true);
+    } else {
+      setCreateDialogOpen(true);
+    }
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
+      {/* Trial Banner */}
+      <TrialBanner />
+
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -133,7 +156,8 @@ export default function TeamsPage() {
                 Manage your organization's teams and members
               </CardDescription>
             </div>
-            <Button onClick={() => setCreateDialogOpen(true)}>
+            <Button onClick={handleCreateTeamClick} disabled={!canCreateTeam}>
+              {!canCreateTeam && <Lock className="mr-2 h-4 w-4" />}
               <Plus className="mr-2 h-4 w-4" />
               Create Team
             </Button>
@@ -220,6 +244,13 @@ export default function TeamsPage() {
         team={addMemberDialog.team}
         open={addMemberDialog.open}
         onOpenChange={(open) => setAddMemberDialog({ open, team: null })}
+      />
+
+      {/* Trial Expired Modal */}
+      <TrialExpiredModal
+        isOpen={trialExpiredModalOpen}
+        onClose={() => setTrialExpiredModalOpen(false)}
+        feature="create new teams"
       />
     </div>
   );

@@ -35,7 +35,16 @@ const LoginPage = () => {
     try {
       const response = await login(formData).unwrap();
       dispatch(setUser(response.data.user));
-      navigate("/dashboard");
+
+      // Check if password change is required
+      if (
+        response.data.mustChangePassword ||
+        response.data.user.mustChangePassword
+      ) {
+        navigate("/change-password");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err: unknown) {
       const error = err as { data?: { message?: string } };
       setError(error?.data?.message || "Login failed. Please try again.");
