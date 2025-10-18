@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
@@ -9,8 +10,10 @@ import { store } from "./redux/store";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ReduxProvider store={store}>
-      <App />
-      <Toaster />
+      <ThemeProvider defaultTheme="light" storageKey="team-hub-theme">
+        <App />
+        <Toaster />
+      </ThemeProvider>
     </ReduxProvider>
   </StrictMode>
 );

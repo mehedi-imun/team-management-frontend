@@ -3,24 +3,24 @@ import PublicNavbar from "./PublicNavbar";
 
 const PublicLayout = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <PublicNavbar />
       <main>
         <Outlet />
       </main>
       {/* Footer */}
-      <footer className="border-t bg-gray-50 mt-20">
+      <footer className="border-t bg-muted mt-20">
         <div className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-bold text-lg mb-4">TeamManager</h3>
-              <p className="text-gray-600 text-sm">
+              <h3 className="font-bold text-lg mb-4">TeamHub</h3>
+              <p className="text-muted-foreground text-sm">
                 The ultimate team management platform for modern organizations.
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="/features" className="hover:text-primary">
                     Features
@@ -45,7 +45,7 @@ const PublicLayout = () => {
             </div>
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="/about" className="hover:text-primary">
                     About
@@ -70,7 +70,7 @@ const PublicLayout = () => {
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
+              <ul className="space-y-2 text-sm text-muted-foreground">
                 <li>
                   <a href="#" className="hover:text-primary">
                     Privacy
@@ -89,8 +89,8 @@ const PublicLayout = () => {
               </ul>
             </div>
           </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600">
-            <p>&copy; 2025 TeamManager. All rights reserved.</p>
+          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
+            <p>&copy; 2025 TeamHub. All rights reserved.</p>
           </div>
         </div>
       </footer>

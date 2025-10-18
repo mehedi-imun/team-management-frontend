@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ModeToggle } from "@/components/mode-toggle";
 import { useLogoutMutation } from "@/redux/features/auth/authApi";
 import { clearUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
@@ -110,17 +111,20 @@ const Navbar = () => {
 
   if (!user) {
     return (
-      <nav className="border-b bg-white shadow-sm">
+      <nav className="border-b bg-card shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="flex items-center space-x-2">
               <Building2 className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold">TeamManager</span>
+              <span className="text-xl font-bold text-foreground">TeamHub</span>
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/login">
-                <Button variant="ghost">Login</Button>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  Login
+                </Button>
               </Link>
+              <ModeToggle />
               <Link to="/register">
                 <Button>Get Started</Button>
               </Link>
@@ -132,13 +136,13 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="border-b bg-white shadow-sm sticky top-0 z-50">
+    <nav className="border-b bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center space-x-2">
             <Building2 className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">TeamManager</span>
+            <span className="text-xl font-bold text-foreground">TeamHub</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -161,6 +165,7 @@ const Navbar = () => {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
+            <ModeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -168,7 +173,7 @@ const Navbar = () => {
                   className="relative h-10 w-10 rounded-full"
                 >
                   <Avatar>
-                    <AvatarFallback className="bg-primary text-white">
+                    <AvatarFallback className="bg-primary text-primary-foreground">
                       {getInitials(user.name)}
                     </AvatarFallback>
                   </Avatar>

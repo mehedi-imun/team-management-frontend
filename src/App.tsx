@@ -8,24 +8,25 @@ import ContactPage from "@/pages/ContactPage";
 // Platform Pages (SuperAdmin/Admin)
 import PlatformAnalyticsPage from "@/pages/dashboard/platform/analytics";
 import OrganizationsPage from "@/pages/dashboard/platform/organizations";
-import UsersPage from "@/pages/dashboard/platform/users";
 import ReportsPage from "@/pages/dashboard/platform/reports";
 import PlatformSettingsPage from "@/pages/dashboard/platform/settings";
+import UsersPage from "@/pages/dashboard/platform/users";
 
 // Organization Pages (Org Owner/Member)
 import DashboardPage from "@/pages/dashboard/DashboardPage";
-import OrganizationOverviewPage from "@/pages/dashboard/organization/overview";
-import MembersPage from "@/pages/dashboard/organization/members";
-import TeamsPage from "@/pages/dashboard/organization/teams/TeamsPage";
-import BillingPage from "@/pages/dashboard/organization/billing";
 import OrganizationAnalyticsPage from "@/pages/dashboard/organization/analytics";
+import BillingPage from "@/pages/dashboard/organization/billing";
+import MembersPage from "@/pages/dashboard/organization/members";
+import OrganizationOverviewPage from "@/pages/dashboard/organization/overview";
 import OrgSettingsPage from "@/pages/dashboard/organization/settings";
+import TeamsPage from "@/pages/dashboard/organization/teams/TeamsPage";
 
 import FeaturesPage from "@/pages/FeaturesPage";
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import PricingPage from "@/pages/PricingPage";
 import RegisterPage from "@/pages/RegisterPage";
+import ThemePreview from "@/pages/ThemePreview";
 import { useAppSelector } from "@/redux/hook";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
@@ -65,6 +66,7 @@ function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/theme-preview" element={<ThemePreview />} />
           </Route>
 
           {/* Auth Routes (no layout) */}
@@ -144,16 +146,48 @@ function App() {
             </Route>
 
             {/* Backward Compatibility - Old Routes (Optional - can remove after migration) */}
-            <Route path="teams" element={<Navigate to="/dashboard/org/teams" replace />} />
-            <Route path="members" element={<Navigate to="/dashboard/org/members" replace />} />
-            <Route path="billing" element={<Navigate to="/dashboard/org/billing" replace />} />
-            <Route path="org-settings" element={<Navigate to="/dashboard/org/settings" replace />} />
-            <Route path="org-analytics" element={<Navigate to="/dashboard/org/analytics" replace />} />
-            <Route path="organizations" element={<Navigate to="/dashboard/platform/organizations" replace />} />
-            <Route path="users" element={<Navigate to="/dashboard/platform/users" replace />} />
-            <Route path="platform-analytics" element={<Navigate to="/dashboard/platform/analytics" replace />} />
-            <Route path="settings" element={<Navigate to="/dashboard/platform/settings" replace />} />
-            <Route path="reports" element={<Navigate to="/dashboard/platform/reports" replace />} />
+            <Route
+              path="teams"
+              element={<Navigate to="/dashboard/org/teams" replace />}
+            />
+            <Route
+              path="members"
+              element={<Navigate to="/dashboard/org/members" replace />}
+            />
+            <Route
+              path="billing"
+              element={<Navigate to="/dashboard/org/billing" replace />}
+            />
+            <Route
+              path="org-settings"
+              element={<Navigate to="/dashboard/org/settings" replace />}
+            />
+            <Route
+              path="org-analytics"
+              element={<Navigate to="/dashboard/org/analytics" replace />}
+            />
+            <Route
+              path="organizations"
+              element={
+                <Navigate to="/dashboard/platform/organizations" replace />
+              }
+            />
+            <Route
+              path="users"
+              element={<Navigate to="/dashboard/platform/users" replace />}
+            />
+            <Route
+              path="platform-analytics"
+              element={<Navigate to="/dashboard/platform/analytics" replace />}
+            />
+            <Route
+              path="settings"
+              element={<Navigate to="/dashboard/platform/settings" replace />}
+            />
+            <Route
+              path="reports"
+              element={<Navigate to="/dashboard/platform/reports" replace />}
+            />
           </Route>
 
           {/* Fallback */}

@@ -83,7 +83,7 @@ const DashboardPage = () => {
         <h1 className="text-4xl font-bold mb-2">
           {getGreeting()}, {user?.name}!
         </h1>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Here's what's happening with your teams today.
         </p>
       </div>
@@ -95,7 +95,7 @@ const DashboardPage = () => {
           return (
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   {stat.title}
                 </CardTitle>
                 <div className={`p-2 rounded-full ${stat.bg}`}>
@@ -104,7 +104,7 @@ const DashboardPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                <p className="text-xs text-gray-500">{stat.description}</p>
+                <p className="text-xs text-muted-foreground">{stat.description}</p>
               </CardContent>
             </Card>
           );
@@ -129,7 +129,7 @@ const DashboardPage = () => {
                     <Building2 className="h-5 w-5 text-primary mr-3" />
                     <div>
                       <p className="font-medium">Manage Teams</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         Create and organize teams
                       </p>
                     </div>
@@ -143,7 +143,7 @@ const DashboardPage = () => {
                     <Users className="h-5 w-5 text-primary mr-3" />
                     <div>
                       <p className="font-medium">Manage Users</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         Add or update user accounts
                       </p>
                     </div>
@@ -159,7 +159,7 @@ const DashboardPage = () => {
                 <TrendingUp className="h-5 w-5 text-primary mr-3" />
                 <div>
                   <p className="font-medium">View Analytics</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Check performance metrics
                   </p>
                 </div>
@@ -175,7 +175,7 @@ const DashboardPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm text-gray-500">Your Role</p>
+              <p className="text-sm text-muted-foreground">Your Role</p>
               <p className="text-lg font-semibold">
                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                   {getUserRole()}
@@ -183,11 +183,11 @@ const DashboardPage = () => {
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Email</p>
+              <p className="text-sm text-muted-foreground">Email</p>
               <p className="font-medium">{user?.email}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Member Since</p>
+              <p className="text-sm text-muted-foreground">Member Since</p>
               <p className="font-medium">
                 {new Date().toLocaleDateString("en-US", {
                   year: "numeric",

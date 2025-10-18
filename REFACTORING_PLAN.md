@@ -3,6 +3,7 @@
 ## Current Problem
 
 Dashboard pages are mixed together without clear separation:
+
 - Platform admin pages mixed with organization pages
 - No clear folder structure
 - Difficult to maintain and scale
@@ -47,30 +48,38 @@ src/pages/dashboard/
 ### Phase 1: Move Platform Pages ✅
 
 1. **Move Platform Analytics**
+
    ```bash
    mv src/pages/dashboard/analytics → src/pages/dashboard/platform/analytics
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/platform-analytics`
 
 2. **Move Organizations Management**
+
    ```bash
    mv src/pages/dashboard/organizations → src/pages/dashboard/platform/organizations
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/platform/organizations`
 
 3. **Move Users Management**
+
    ```bash
    mv src/pages/dashboard/users → src/pages/dashboard/platform/users
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/platform/users`
 
 4. **Move Platform Reports**
+
    ```bash
    mv src/pages/dashboard/reports → src/pages/dashboard/platform/reports
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/platform/reports`
 
@@ -84,32 +93,40 @@ src/pages/dashboard/
 ### Phase 2: Move Organization Pages ✅
 
 1. **Move Members Management**
+
    ```bash
    mv src/pages/dashboard/members → src/pages/dashboard/organization/members
    ```
+
    - Keep index.tsx and MembersPageReal.tsx
    - Move components folder if exists
    - Update imports in App.tsx
    - Update route path: `/dashboard/org/members`
 
 2. **Move Teams Management**
+
    ```bash
    mv src/pages/dashboard/teams → src/pages/dashboard/organization/teams
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/org/teams`
 
 3. **Move Billing**
+
    ```bash
    mv src/pages/dashboard/billing → src/pages/dashboard/organization/billing
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/org/billing`
 
 4. **Move Organization Analytics**
+
    ```bash
    mv src/pages/dashboard/org-analytics → src/pages/dashboard/organization/analytics
    ```
+
    - Update imports in App.tsx
    - Update route path: `/dashboard/org/analytics`
 
@@ -123,36 +140,122 @@ src/pages/dashboard/
 ### Phase 3: Update Routing in App.tsx
 
 **Before:**
+
 ```typescript
-<Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout />
+    </ProtectedRoute>
+  }
+>
   <Route index element={<DashboardPage />} />
   <Route path="teams" element={<TeamsPage />} />
   <Route path="members" element={<MembersPage />} />
   <Route path="billing" element={<BillingPage />} />
-  <Route path="organizations" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><OrganizationsPage /></ProtectedRoute>} />
-  <Route path="users" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><UsersPage /></ProtectedRoute>} />
-  <Route path="platform-analytics" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><PlatformAnalyticsPage /></ProtectedRoute>} />
-  <Route path="settings" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><SettingsPage /></ProtectedRoute>} />
-  <Route path="reports" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><ReportsPage /></ProtectedRoute>} />
+  <Route
+    path="organizations"
+    element={
+      <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+        <OrganizationsPage />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="users"
+    element={
+      <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+        <UsersPage />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="platform-analytics"
+    element={
+      <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+        <PlatformAnalyticsPage />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="settings"
+    element={
+      <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+        <SettingsPage />
+      </ProtectedRoute>
+    }
+  />
+  <Route
+    path="reports"
+    element={
+      <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+        <ReportsPage />
+      </ProtectedRoute>
+    }
+  />
   <Route path="org-analytics" element={<OrganizationAnalyticsPage />} />
   <Route path="org-settings" element={<OrgSettingsPage />} />
 </Route>
 ```
 
 **After:**
+
 ```typescript
-<Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <DashboardLayout />
+    </ProtectedRoute>
+  }
+>
   <Route index element={<DashboardPage />} />
-  
+
   {/* Platform Admin Routes - Grouped under /platform prefix */}
   <Route path="platform">
-    <Route path="analytics" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><PlatformAnalyticsPage /></ProtectedRoute>} />
-    <Route path="organizations" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><OrganizationsPage /></ProtectedRoute>} />
-    <Route path="users" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><UsersPage /></ProtectedRoute>} />
-    <Route path="reports" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><ReportsPage /></ProtectedRoute>} />
-    <Route path="settings" element={<ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}><SettingsPage /></ProtectedRoute>} />
+    <Route
+      path="analytics"
+      element={
+        <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+          <PlatformAnalyticsPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="organizations"
+      element={
+        <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+          <OrganizationsPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="users"
+      element={
+        <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+          <UsersPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="reports"
+      element={
+        <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+          <ReportsPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="settings"
+      element={
+        <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
+          <SettingsPage />
+        </ProtectedRoute>
+      }
+    />
   </Route>
-  
+
   {/* Organization Routes - Grouped under /org prefix */}
   <Route path="org">
     <Route path="overview" element={<OrgOverviewPage />} />
@@ -168,26 +271,66 @@ src/pages/dashboard/
 ### Phase 4: Update Sidebar Navigation
 
 **Before:**
+
 ```typescript
 const navigationItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { title: "Teams", href: "/dashboard/teams", icon: Users },
   { title: "Members", href: "/dashboard/members", icon: UserCog },
-  { title: "Organizations", href: "/dashboard/organizations", icon: Building2, roles: ["SuperAdmin", "Admin"] },
-  { title: "Users", href: "/dashboard/users", icon: Users, roles: ["SuperAdmin", "Admin"] },
-  { title: "Analytics", href: "/dashboard/platform-analytics", icon: BarChart3, roles: ["SuperAdmin", "Admin"] },
-  { title: "Reports", href: "/dashboard/reports", icon: FileText, roles: ["SuperAdmin", "Admin"] },
-  { title: "Org Analytics", href: "/dashboard/org-analytics", icon: BarChart3, roles: ["Member"] },
+  {
+    title: "Organizations",
+    href: "/dashboard/organizations",
+    icon: Building2,
+    roles: ["SuperAdmin", "Admin"],
+  },
+  {
+    title: "Users",
+    href: "/dashboard/users",
+    icon: Users,
+    roles: ["SuperAdmin", "Admin"],
+  },
+  {
+    title: "Analytics",
+    href: "/dashboard/platform-analytics",
+    icon: BarChart3,
+    roles: ["SuperAdmin", "Admin"],
+  },
+  {
+    title: "Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
+    roles: ["SuperAdmin", "Admin"],
+  },
+  {
+    title: "Org Analytics",
+    href: "/dashboard/org-analytics",
+    icon: BarChart3,
+    roles: ["Member"],
+  },
   { title: "Billing", href: "/dashboard/billing", icon: CreditCard },
-  { title: "Settings", href: "/dashboard/settings", icon: Settings, roles: ["SuperAdmin", "Admin"] },
+  {
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+    roles: ["SuperAdmin", "Admin"],
+  },
 ];
 ```
 
 **After:**
+
 ```typescript
 const platformNavItems = [
-  { title: "Platform Analytics", href: "/dashboard/platform/analytics", icon: BarChart3 },
-  { title: "Organizations", href: "/dashboard/platform/organizations", icon: Building2 },
+  {
+    title: "Platform Analytics",
+    href: "/dashboard/platform/analytics",
+    icon: BarChart3,
+  },
+  {
+    title: "Organizations",
+    href: "/dashboard/platform/organizations",
+    icon: Building2,
+  },
   { title: "All Users", href: "/dashboard/platform/users", icon: Users },
   { title: "Reports", href: "/dashboard/platform/reports", icon: FileText },
   { title: "Settings", href: "/dashboard/platform/settings", icon: Settings },
@@ -203,47 +346,60 @@ const orgNavItems = [
 ];
 
 // In Sidebar component
-{isAdmin && (
-  <>
-    <div className="px-3 py-2">
-      <h2 className="mb-2 px-4 text-lg font-semibold">Platform</h2>
-      {platformNavItems.map(item => <NavItem key={item.href} {...item} />)}
-    </div>
-    <Separator />
-  </>
-)}
+{
+  isAdmin && (
+    <>
+      <div className="px-3 py-2">
+        <h2 className="mb-2 px-4 text-lg font-semibold">Platform</h2>
+        {platformNavItems.map((item) => (
+          <NavItem key={item.href} {...item} />
+        ))}
+      </div>
+      <Separator />
+    </>
+  );
+}
 
-{hasOrganization && (
-  <div className="px-3 py-2">
-    <h2 className="mb-2 px-4 text-lg font-semibold">Organization</h2>
-    {orgNavItems.map(item => <NavItem key={item.href} {...item} />)}
-  </div>
-)}
+{
+  hasOrganization && (
+    <div className="px-3 py-2">
+      <h2 className="mb-2 px-4 text-lg font-semibold">Organization</h2>
+      {orgNavItems.map((item) => (
+        <NavItem key={item.href} {...item} />
+      ))}
+    </div>
+  );
+}
 ```
 
 ## Benefits of New Structure
 
 ### 1. Clear Separation of Concerns ✅
+
 - Platform admin features isolated in `platform/` folder
 - Organization features isolated in `organization/` folder
 - No confusion about which page belongs where
 
 ### 2. Better Access Control ✅
+
 - Route groups automatically apply role restrictions
 - Easier to add new protected routes
 - Clear visual hierarchy in routing
 
 ### 3. Scalability ✅
+
 - Easy to add new platform features under `platform/`
 - Easy to add new org features under `organization/`
 - No need to modify App.tsx routing structure
 
 ### 4. Maintainability ✅
+
 - Related pages grouped together
 - Component sharing within each domain
 - Easier to refactor individual sections
 
 ### 5. Team Collaboration ✅
+
 - Platform team works in `platform/` folder
 - Organization team works in `organization/` folder
 - Less merge conflicts
@@ -251,11 +407,13 @@ const orgNavItems = [
 ## Migration Checklist
 
 ### Pre-Migration
+
 - [ ] Backup current codebase
 - [ ] Create new folder structure
 - [ ] Document current routes and imports
 
 ### Platform Pages Migration
+
 - [ ] Move analytics page
 - [ ] Move organizations page
 - [ ] Move users page
@@ -264,6 +422,7 @@ const orgNavItems = [
 - [ ] Update all imports
 
 ### Organization Pages Migration
+
 - [ ] Move members page
 - [ ] Move teams page
 - [ ] Move billing page
@@ -272,18 +431,21 @@ const orgNavItems = [
 - [ ] Update all imports
 
 ### Routing Updates
+
 - [ ] Update App.tsx routes
 - [ ] Add route prefixes (`/platform`, `/org`)
 - [ ] Test all routes work
 - [ ] Update redirect logic in DashboardPage
 
 ### Navigation Updates
+
 - [ ] Update Sidebar.tsx
 - [ ] Add section headers (Platform, Organization)
 - [ ] Test navigation links
 - [ ] Update active link highlighting
 
 ### Final Testing
+
 - [ ] Test as SuperAdmin - can access all platform pages
 - [ ] Test as Admin - can access all platform pages
 - [ ] Test as Org Owner - can access org pages only
@@ -294,6 +456,7 @@ const orgNavItems = [
 ## Rollback Plan
 
 If issues occur:
+
 1. Keep old pages in place initially
 2. Test new structure thoroughly
 3. Only delete old pages after 100% verification

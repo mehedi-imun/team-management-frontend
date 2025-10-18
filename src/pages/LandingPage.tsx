@@ -106,7 +106,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted">
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-20 pb-32">
         <div className="text-center max-w-4xl mx-auto">
@@ -116,7 +116,7 @@ const LandingPage = () => {
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
             Manage Your Teams Like Never Before
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Streamline team collaboration, track progress, and boost
             productivity with our comprehensive team management platform.
           </p>
@@ -133,7 +133,7 @@ const LandingPage = () => {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-muted-foreground">
             No credit card required • 14-day free trial
           </p>
         </div>
@@ -148,7 +148,7 @@ const LandingPage = () => {
                 <p className="text-3xl font-bold text-primary mb-2">
                   {stat.value}
                 </p>
-                <p className="text-gray-600">{stat.label}</p>
+                <p className="text-muted-foreground">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
@@ -159,7 +159,7 @@ const LandingPage = () => {
       <section className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Everything you need to manage and grow your teams effectively
           </p>
         </div>
@@ -178,7 +178,7 @@ const LandingPage = () => {
                   <CardTitle className="text-xl">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <p className="text-muted-foreground">{feature.description}</p>
                 </CardContent>
               </Card>
             );
@@ -192,7 +192,7 @@ const LandingPage = () => {
           <h2 className="text-4xl font-bold mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Choose the perfect plan for your team's needs
           </p>
         </div>
@@ -208,7 +208,7 @@ const LandingPage = () => {
             >
               {plan.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium flex items-center">
+                  <span className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium flex items-center">
                     <Star className="h-4 w-4 mr-1" />
                     Most Popular
                   </span>
@@ -218,7 +218,9 @@ const LandingPage = () => {
                 <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
                 <div className="mb-4">
                   <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-gray-600 text-sm">{plan.period}</span>
+                  <span className="text-muted-foreground text-sm">
+                    {plan.period}
+                  </span>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col">
@@ -226,7 +228,9 @@ const LandingPage = () => {
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-start">
                       <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-600 text-sm">{feature}</span>
+                      <span className="text-muted-foreground text-sm">
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -254,7 +258,7 @@ const LandingPage = () => {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20">
-        <Card className="bg-primary text-white shadow-2xl">
+        <Card className="bg-primary text-primary-foreground shadow-2xl">
           <CardContent className="text-center py-16">
             <h2 className="text-4xl font-bold mb-4">
               Ready to Transform Your Team Management?

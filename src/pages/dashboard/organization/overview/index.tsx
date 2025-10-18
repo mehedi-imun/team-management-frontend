@@ -1,8 +1,8 @@
-import { useAppSelector } from "@/redux/hook";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetMyOrganizationStatsQuery } from "@/redux/features/organization/organizationApi";
-import { Users, UserCheck, UserX, Clock, UsersRound } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useGetMyOrganizationStatsQuery } from "@/redux/features/organization/organizationApi";
+import { useAppSelector } from "@/redux/hook";
+import { Clock, UserCheck, Users, UsersRound, UserX } from "lucide-react";
 
 interface OrganizationStats {
   totalMembers: number;
@@ -27,7 +27,9 @@ const OrganizationOverviewPage = () => {
   });
 
   // Handle nested response structure
-  const stats = ((statsResponse as { data?: OrganizationStats })?.data || statsResponse || {}) as OrganizationStats;
+  const stats = ((statsResponse as { data?: OrganizationStats })?.data ||
+    statsResponse ||
+    {}) as OrganizationStats;
 
   if (isStatsLoading) {
     return (
@@ -50,7 +52,9 @@ const OrganizationOverviewPage = () => {
       <div className="container mx-auto p-6">
         <Card className="border-destructive">
           <CardContent className="pt-6">
-            <p className="text-destructive">Failed to load organization overview</p>
+            <p className="text-destructive">
+              Failed to load organization overview
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -61,7 +65,9 @@ const OrganizationOverviewPage = () => {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Organization Overview</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Organization Overview
+        </h1>
         <p className="text-muted-foreground">
           Dashboard overview of your organization's key metrics
         </p>
@@ -77,14 +83,18 @@ const OrganizationOverviewPage = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalMembers || 0}</div>
-            <p className="text-xs text-muted-foreground">All organization members</p>
+            <p className="text-xs text-muted-foreground">
+              All organization members
+            </p>
           </CardContent>
         </Card>
 
         {/* Active Members */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Members</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Members
+            </CardTitle>
             <UserCheck className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
@@ -98,7 +108,9 @@ const OrganizationOverviewPage = () => {
         {/* Pending Members */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Members</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Pending Members
+            </CardTitle>
             <Clock className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
@@ -112,14 +124,18 @@ const OrganizationOverviewPage = () => {
         {/* Inactive Members */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inactive Members</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Inactive Members
+            </CardTitle>
             <UserX className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
               {stats?.inactiveMembers || 0}
             </div>
-            <p className="text-xs text-muted-foreground">Not currently active</p>
+            <p className="text-xs text-muted-foreground">
+              Not currently active
+            </p>
           </CardContent>
         </Card>
 
@@ -139,14 +155,18 @@ const OrganizationOverviewPage = () => {
         {stats?.daysLeftInTrial !== undefined && (
           <Card className="border-primary">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Trial Status</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Trial Status
+              </CardTitle>
               <Clock className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
                 {stats.daysLeftInTrial} days
               </div>
-              <p className="text-xs text-muted-foreground">Remaining in trial</p>
+              <p className="text-xs text-muted-foreground">
+                Remaining in trial
+              </p>
             </CardContent>
           </Card>
         )}
@@ -159,7 +179,8 @@ const OrganizationOverviewPage = () => {
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            Navigate to different sections using the sidebar to manage your organization.
+            Navigate to different sections using the sidebar to manage your
+            organization.
           </p>
           <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3 mt-4">
             <a

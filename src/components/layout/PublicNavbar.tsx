@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Building2, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -15,13 +16,13 @@ const PublicNavbar = () => {
   ];
 
   return (
-    <nav className="border-b bg-white shadow-sm sticky top-0 z-50">
+    <nav className="border-b bg-card shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <Building2 className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">TeamManager</span>
+            <span className="text-xl font-bold text-foreground">TeamHub</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -38,6 +39,7 @@ const PublicNavbar = () => {
             <Link to="/login">
               <Button variant="ghost">Login</Button>
             </Link>
+            <ModeToggle />
             <Link to="/register">
               <Button>Get Started</Button>
             </Link>
@@ -77,6 +79,9 @@ const PublicNavbar = () => {
                   Login
                 </Button>
               </Link>
+              <div className="flex items-center justify-center py-2">
+                <ModeToggle />
+              </div>
               <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full">Get Started</Button>
               </Link>
