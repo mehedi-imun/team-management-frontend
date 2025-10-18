@@ -16,10 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useAddMemberMutation } from "@/redux/features/team/teamApi";
+import { useGetTrialStatusQuery } from "@/redux/features/trial/trialApi";
 import type { ITeam } from "@/types";
-import { Loader2, Mail, User, UserPlus } from "lucide-react";
+import { Loader2, Mail, User, UserPlus, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 
 interface AddMemberDialogProps {
@@ -35,6 +37,11 @@ export function AddMemberDialog({
 }: AddMemberDialogProps) {
   const [addMember, { isLoading }] = useAddMemberMutation();
   const { toast } = useToast();
+
+  // Trial status check
+  const { data: trialResponse } = useGetTrialStatusQuery();
+  const trialStatus = trialResponse?.data;
+  const canInviteMembers = trialStatus?.canAccessFeatures ?? true;
 
   const [formData, setFormData] = useState({
     email: "",
@@ -120,6 +127,16 @@ export function AddMemberDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Trial Warning */}
+        {!canInviteMembers && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Your trial has expired. Please upgrade to invite new members.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -189,7 +206,7 @@ export function AddMemberDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || !canInviteMembers}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Add Member
             </Button>
