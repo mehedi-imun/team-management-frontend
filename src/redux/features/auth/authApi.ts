@@ -1,4 +1,9 @@
 import { baseApi } from "../../baseApi";
+import type {
+  ChangePasswordRequest,
+  ChangePasswordResponse,
+  ForceChangePasswordRequest,
+} from "../../../types/password";
 
 export interface LoginRequest {
   email: string;
@@ -15,8 +20,15 @@ export interface LoginResponse {
       email: string;
       role: "SuperAdmin" | "Admin" | "OrgOwner" | "OrgAdmin" | "OrgMember";
       organizationId?: string;
+      organizationIds?: string[];
+      mustChangePassword?: boolean;
       isActive: boolean;
+      firstLogin?: string;
+      lastLoginAt?: string;
     };
+    accessToken: string;
+    refreshToken: string;
+    mustChangePassword?: boolean; // Top-level flag for easy access
   };
 }
 
@@ -111,6 +123,29 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
       }),
     }),
+
+    // Password change endpoints
+    changePassword: builder.mutation<
+      ChangePasswordResponse,
+      ChangePasswordRequest
+    >({
+      query: (data) => ({
+        url: "/auth/change-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    forceChangePassword: builder.mutation<
+      ChangePasswordResponse,
+      ForceChangePasswordRequest
+    >({
+      query: (data) => ({
+        url: "/auth/force-change-password",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -122,6 +157,8 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useRefreshTokenMutation,
+  useChangePasswordMutation,
+  useForceChangePasswordMutation,
 } = authApi;
 
 export default authApi;

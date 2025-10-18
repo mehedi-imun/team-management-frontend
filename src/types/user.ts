@@ -15,11 +15,14 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
-  organizationId?: string; // Optional for platform admins
+  organizationId?: string; // DEPRECATED - use organizationIds
+  organizationIds?: string[]; // Multi-organization support
+  mustChangePassword?: boolean; // Force password change on first login
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
   lastLoginAt?: string;
+  firstLogin?: string;
 }
 
 export interface Organization {

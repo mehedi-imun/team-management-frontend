@@ -1,4 +1,9 @@
 import { baseApi } from "../../baseApi";
+import type {
+  InvitationValidateResponse,
+  InvitationAcceptRequest,
+  InvitationAcceptResponse,
+} from "../../../types/invitation";
 
 export interface Invitation {
   _id: string;
@@ -31,11 +36,8 @@ export interface CreateInvitationDto {
   role: string;
 }
 
-export interface AcceptInvitationDto {
-  token: string;
-  name: string;
-  password: string;
-}
+// Use the new invitation types from types/invitation.ts
+export type { InvitationValidateResponse, InvitationAcceptRequest, InvitationAcceptResponse };
 
 const invitationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -54,15 +56,8 @@ const invitationApi = baseApi.injectEndpoints({
 
     // Accept invitation (public endpoint)
     acceptInvitation: builder.mutation<
-      {
-        success: boolean;
-        data: {
-          user: { _id: string; name: string; email: string };
-          accessToken: string;
-        };
-        message: string;
-      },
-      AcceptInvitationDto
+      InvitationAcceptResponse,
+      InvitationAcceptRequest
     >({
       query: (data) => ({
         url: "/invitations/accept",
@@ -73,17 +68,7 @@ const invitationApi = baseApi.injectEndpoints({
     }),
 
     // Validate invitation token (public endpoint)
-    validateInvitation: builder.query<
-      {
-        success: boolean;
-        data: {
-          invitation: Invitation;
-          organization: { _id: string; name: string; slug: string };
-          team: { _id: string; name: string };
-        };
-      },
-      string
-    >({
+    validateInvitation: builder.query<InvitationValidateResponse, string>({
       query: (token) => `/invitations/validate?token=${token}`,
     }),
 
