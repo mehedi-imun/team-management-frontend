@@ -50,7 +50,8 @@ export interface ChangePasswordResponse {
 }
 
 // Regex pattern matching backend validation
-export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+export const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
 
 /**
  * Validate password against requirements
@@ -62,7 +63,9 @@ export const validatePassword = (
   const errors: string[] = [];
 
   if (password.length < requirements.minLength) {
-    errors.push(`Password must be at least ${requirements.minLength} characters long`);
+    errors.push(
+      `Password must be at least ${requirements.minLength} characters long`
+    );
   }
 
   if (requirements.requireUppercase && !/[A-Z]/.test(password)) {
@@ -78,23 +81,33 @@ export const validatePassword = (
   }
 
   if (requirements.requireSpecial) {
-    const specialCharsRegex = new RegExp(`[${requirements.specialChars.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')}]`);
+    const specialCharsRegex = new RegExp(
+      `[${requirements.specialChars.replace(
+        /[-[\]{}()*+?.,\\^$|#\s]/g,
+        "\\$&"
+      )}]`
+    );
     if (!specialCharsRegex.test(password)) {
-      errors.push(`Password must contain at least one special character (${requirements.specialChars})`);
+      errors.push(
+        `Password must contain at least one special character (${requirements.specialChars})`
+      );
     }
   }
 
   return {
     isValid: errors.length === 0,
     errors,
-    strength: errors.length === 0 ? calculatePasswordStrength(password) : undefined,
+    strength:
+      errors.length === 0 ? calculatePasswordStrength(password) : undefined,
   };
 };
 
 /**
  * Calculate password strength score
  */
-export const calculatePasswordStrength = (password: string): PasswordStrength => {
+export const calculatePasswordStrength = (
+  password: string
+): PasswordStrength => {
   let score = 0;
   const feedback: string[] = [];
 
@@ -135,7 +148,10 @@ export const calculatePasswordStrength = (password: string): PasswordStrength =>
   // Cap score at 4
   score = Math.min(4, score) as 0 | 1 | 2 | 3 | 4;
 
-  const strengthMap: Record<number, { label: PasswordStrength["label"]; color: PasswordStrength["color"] }> = {
+  const strengthMap: Record<
+    number,
+    { label: PasswordStrength["label"]; color: PasswordStrength["color"] }
+  > = {
     0: { label: "Very Weak", color: "red" },
     1: { label: "Weak", color: "orange" },
     2: { label: "Fair", color: "yellow" },

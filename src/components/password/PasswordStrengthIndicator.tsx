@@ -57,8 +57,12 @@ export default function PasswordStrengthIndicator({
       {/* Strength meter */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Password Strength:</span>
-          <span className={`font-medium ${getTextColorClass()}`}>{strength.label}</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            Password Strength:
+          </span>
+          <span className={`font-medium ${getTextColorClass()}`}>
+            {strength.label}
+          </span>
         </div>
         <div className="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
           <div

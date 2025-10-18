@@ -1,9 +1,9 @@
-import { baseApi } from "../../baseApi";
 import type {
-  InvitationValidateResponse,
   InvitationAcceptRequest,
   InvitationAcceptResponse,
+  InvitationValidateResponse,
 } from "../../../types/invitation";
+import { baseApi } from "../../baseApi";
 
 export interface Invitation {
   _id: string;
@@ -37,7 +37,11 @@ export interface CreateInvitationDto {
 }
 
 // Use the new invitation types from types/invitation.ts
-export type { InvitationValidateResponse, InvitationAcceptRequest, InvitationAcceptResponse };
+export type {
+  InvitationAcceptRequest,
+  InvitationAcceptResponse,
+  InvitationValidateResponse,
+};
 
 const invitationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({

@@ -31,15 +31,14 @@ export interface TrialWarningLevel {
 }
 
 // Helper function to get warning level
-export const getTrialWarningLevel = (
-  daysLeft: number
-): TrialWarningLevel => {
+export const getTrialWarningLevel = (daysLeft: number): TrialWarningLevel => {
   if (daysLeft <= 0) {
     return {
       daysLeft: 0,
       severity: "expired",
       color: "gray",
-      message: "Your trial has expired. Upgrade now to continue using all features.",
+      message:
+        "Your trial has expired. Upgrade now to continue using all features.",
       showUpgradeButton: true,
     };
   } else if (daysLeft === 1) {
@@ -47,7 +46,8 @@ export const getTrialWarningLevel = (
       daysLeft: 1,
       severity: "danger",
       color: "red",
-      message: "Only 1 day left in your trial! Upgrade to avoid feature restrictions.",
+      message:
+        "Only 1 day left in your trial! Upgrade to avoid feature restrictions.",
       showUpgradeButton: true,
     };
   } else if (daysLeft <= 3) {
@@ -78,7 +78,11 @@ export const getTrialWarningLevel = (
 };
 
 export interface TrialBlockedFeature {
-  feature: "create_team" | "invite_member" | "advanced_analytics" | "custom_branding";
+  feature:
+    | "create_team"
+    | "invite_member"
+    | "advanced_analytics"
+    | "custom_branding";
   message: string;
   upgradeRequired: boolean;
 }
@@ -101,7 +105,8 @@ export const TRIAL_BLOCKED_FEATURES: Record<string, TrialBlockedFeature> = {
   },
   custom_branding: {
     feature: "custom_branding",
-    message: "Custom branding is only available on Business and Enterprise plans.",
+    message:
+      "Custom branding is only available on Business and Enterprise plans.",
     upgradeRequired: true,
   },
 };

@@ -1,9 +1,9 @@
-import { baseApi } from "../../baseApi";
 import type {
   ChangePasswordRequest,
   ChangePasswordResponse,
   ForceChangePasswordRequest,
 } from "../../../types/password";
+import { baseApi } from "../../baseApi";
 
 export interface LoginRequest {
   email: string;

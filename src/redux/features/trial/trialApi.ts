@@ -3,8 +3,8 @@
  * Endpoints for trial status and feature access checks
  */
 
+import type { FeatureAccessResponse, TrialStatus } from "../../../types/trial";
 import { baseApi } from "../../baseApi";
-import type { TrialStatus, FeatureAccessResponse } from "../../../types/trial";
 
 const trialApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
