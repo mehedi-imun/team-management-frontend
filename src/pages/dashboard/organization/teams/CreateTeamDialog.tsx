@@ -17,9 +17,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import PasswordInput from "@/components/password/PasswordInput";
+import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateTeamMutation } from "@/redux/features/team/teamApi";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Lock } from "lucide-react";
 import { useState } from "react";
 
 interface CreateTeamDialogProps {
@@ -31,13 +33,14 @@ interface Member {
   email: string;
   name: string;
   role: "TeamLead" | "Member";
+  password: string;
 }
 
 export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<Member[]>([
-    { email: "", name: "", role: "Member" },
+    { email: "", name: "", role: "Member", password: "" },
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -45,7 +48,7 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const { toast } = useToast();
 
   const handleAddMember = () => {
-    setMembers([...members, { email: "", name: "", role: "Member" }]);
+    setMembers([...members, { email: "", name: "", role: "Member", password: "" }]);
   };
 
   const handleRemoveMember = (index: number) => {
@@ -80,6 +83,20 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
         newErrors[`member_${index}_email`] = "Email is required";
       } else if (!/\S+@\S+\.\S+/.test(member.email)) {
         newErrors[`member_${index}_email`] = "Invalid email format";
+      }
+
+      if (!member.password.trim()) {
+        newErrors[`member_${index}_password`] = "Password is required";
+      } else if (member.password.length < 8) {
+        newErrors[`member_${index}_password`] = "Password must be at least 8 characters";
+      } else {
+        const hasUpperCase = /[A-Z]/.test(member.password);
+        const hasLowerCase = /[a-z]/.test(member.password);
+        const hasNumber = /\d/.test(member.password);
+
+        if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+          newErrors[`member_${index}_password`] = "Password must contain uppercase, lowercase, and number";
+        }
       }
     });
 
@@ -123,7 +140,7 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const handleClose = () => {
     setName("");
     setDescription("");
-    setMembers([{ email: "", name: "", role: "Member" }]);
+    setMembers([{ email: "", name: "", role: "Member", password: "" }]);
     setErrors({});
     onClose();
   };
@@ -238,6 +255,30 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
                         <SelectItem value="TeamLead">Team Lead</SelectItem>
                       </SelectContent>
                     </Select>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Lock className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">Password *</span>
+                      </div>
+                      <PasswordInput
+                        id={`member_${index}_password`}
+                        value={member.password}
+                        onChange={(value: string) =>
+                          handleMemberChange(index, "password", value)
+                        }
+                        placeholder="Enter password"
+                        required
+                      />
+                      {errors[`member_${index}_password`] && (
+                        <p className="text-sm text-red-500">
+                          {errors[`member_${index}_password`]}
+                        </p>
+                      )}
+                      {member.password && (
+                        <PasswordStrengthIndicator password={member.password} />
+                      )}
+                    </div>
                   </div>
 
                   {members.length > 1 && (

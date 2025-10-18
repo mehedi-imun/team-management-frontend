@@ -1,6 +1,7 @@
 import TrialBanner from "@/components/trial/TrialBanner";
 import TrialExpiredModal from "@/components/trial/TrialExpiredModal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,14 +12,13 @@ import {
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useAppSelector } from "@/redux/hook";
 import { useGetTeamsQuery } from "@/redux/features/team/teamApi";
 import { useGetTrialStatusQuery } from "@/redux/features/trial/trialApi";
+import { useAppSelector } from "@/redux/hook";
 import type { ITeam } from "@/types";
-import { AlertCircle, Lock, Plus, Search, Users, Filter } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { AlertCircle, Filter, Lock, Plus, Search, Users } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { CreateTeamDialog } from "../teams/CreateTeamDialog";
 import { AddMemberDialog } from "./components/AddMemberDialog";
 import { createTeamColumns } from "./components/columns";
@@ -189,8 +189,13 @@ export default function TeamsPage() {
             <div className="flex items-center gap-2">
               {/* Show trial status badge if on trial */}
               {trialStatus?.isOnTrial && (
-                <Badge variant={trialStatus.daysLeft <= 3 ? "destructive" : "secondary"}>
-                  {trialStatus.daysLeft} {trialStatus.daysLeft === 1 ? "day" : "days"} left
+                <Badge
+                  variant={
+                    trialStatus.daysLeft <= 3 ? "destructive" : "secondary"
+                  }
+                >
+                  {trialStatus.daysLeft}{" "}
+                  {trialStatus.daysLeft === 1 ? "day" : "days"} left
                 </Badge>
               )}
               <Button onClick={handleCreateTeamClick} disabled={!canCreateTeam}>
@@ -209,7 +214,8 @@ export default function TeamsPage() {
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  {filteredTeams.length} {filteredTeams.length === 1 ? "team" : "teams"}
+                  {filteredTeams.length}{" "}
+                  {filteredTeams.length === 1 ? "team" : "teams"}
                 </span>
               </div>
               {isOrgMember && (
@@ -286,7 +292,11 @@ export default function TeamsPage() {
           {/* Teams table */}
           {filteredTeams.length > 0 && (
             <>
-              <DataTable columns={columns} data={filteredTeams} isLoading={isLoading} />
+              <DataTable
+                columns={columns}
+                data={filteredTeams}
+                isLoading={isLoading}
+              />
 
               {/* Pagination */}
               {!isLoading && (

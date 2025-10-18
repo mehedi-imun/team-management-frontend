@@ -1,3 +1,4 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,12 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import PasswordInput from "@/components/password/PasswordInput";
+import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { useToast } from "@/hooks/use-toast";
 import { useAddMemberMutation } from "@/redux/features/team/teamApi";
 import { useGetTrialStatusQuery } from "@/redux/features/trial/trialApi";
 import type { ITeam } from "@/types";
-import { Loader2, Mail, User, UserPlus, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2, Mail, User, UserPlus, Lock } from "lucide-react";
 import { useState } from "react";
 
 interface AddMemberDialogProps {
@@ -47,6 +49,7 @@ export function AddMemberDialog({
     email: "",
     name: "",
     role: "Member",
+    password: "",
   });
 
   const resetForm = () => {
@@ -54,6 +57,7 @@ export function AddMemberDialog({
       email: "",
       name: "",
       role: "Member",
+      password: "",
     });
   };
 
@@ -81,6 +85,39 @@ export function AddMemberDialog({
       return;
     }
 
+    // Password validation
+    if (!formData.password.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Password is required",
+      });
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Password must be at least 8 characters",
+      });
+      return;
+    }
+
+    // Password strength validation
+    const hasUpperCase = /[A-Z]/.test(formData.password);
+    const hasLowerCase = /[a-z]/.test(formData.password);
+    const hasNumber = /\d/.test(formData.password);
+
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Password must contain uppercase, lowercase, and number",
+      });
+      return;
+    }
+
     try {
       await addMember({
         teamId: team._id,
@@ -88,6 +125,7 @@ export function AddMemberDialog({
           email: formData.email,
           name: formData.name || undefined,
           role: formData.role as "TeamLead" | "Member",
+          password: formData.password,
         },
       }).unwrap();
 
@@ -191,6 +229,29 @@ export function AddMemberDialog({
                   <SelectItem value="TeamLead">Team Lead</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="password" className="flex items-center gap-2">
+                <Lock className="h-4 w-4" />
+                Password *
+              </Label>
+              <PasswordInput
+                id="password"
+                value={formData.password}
+                onChange={(value: string) =>
+                  setFormData({ ...formData, password: value })
+                }
+                placeholder="Enter password"
+                disabled={isLoading}
+                required
+              />
+              {formData.password && (
+                <PasswordStrengthIndicator password={formData.password} />
+              )}
+              <p className="text-xs text-muted-foreground">
+                Password must be at least 8 characters with uppercase, lowercase, and number
+              </p>
             </div>
           </div>
 
