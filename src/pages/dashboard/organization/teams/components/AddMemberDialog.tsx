@@ -1,5 +1,3 @@
-import PasswordInput from "@/components/password/PasswordInput";
-import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +23,8 @@ import { useGetTrialStatusQuery } from "@/redux/features/trial/trialApi";
 import type { ITeam } from "@/types";
 import {
   AlertTriangle,
+  Info,
   Loader2,
-  Lock,
   Mail,
   User,
   UserPlus,
@@ -56,7 +54,6 @@ export function AddMemberDialog({
     email: "",
     name: "",
     role: "Member",
-    password: "",
   });
 
   const resetForm = () => {
@@ -64,7 +61,6 @@ export function AddMemberDialog({
       email: "",
       name: "",
       role: "Member",
-      password: "",
     });
   };
 
@@ -92,39 +88,6 @@ export function AddMemberDialog({
       return;
     }
 
-    // Password validation
-    if (!formData.password.trim()) {
-      toast({
-        variant: "destructive",
-        title: "Validation Error",
-        description: "Password is required",
-      });
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      toast({
-        variant: "destructive",
-        title: "Validation Error",
-        description: "Password must be at least 8 characters",
-      });
-      return;
-    }
-
-    // Password strength validation
-    const hasUpperCase = /[A-Z]/.test(formData.password);
-    const hasLowerCase = /[a-z]/.test(formData.password);
-    const hasNumber = /\d/.test(formData.password);
-
-    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-      toast({
-        variant: "destructive",
-        title: "Validation Error",
-        description: "Password must contain uppercase, lowercase, and number",
-      });
-      return;
-    }
-
     try {
       await addMember({
         teamId: team._id,
@@ -132,13 +95,12 @@ export function AddMemberDialog({
           email: formData.email,
           name: formData.name || undefined,
           role: formData.role as "TeamLead" | "Member",
-          password: formData.password,
         },
       }).unwrap();
 
       toast({
-        title: "Success",
-        description: `Member added to ${team.name}`,
+        title: "Invitation Sent! 📧",
+        description: `${formData.email} will receive an email to set up their account`,
       });
       resetForm();
       onOpenChange(false);
@@ -167,10 +129,25 @@ export function AddMemberDialog({
             Add Team Member
           </DialogTitle>
           <DialogDescription>
-            Add a new member to <strong>{team?.name}</strong>. They will receive
-            an invitation email.
+            Invite a new member to <strong>{team?.name}</strong>. They will
+            receive an email to set up their account and create their own
+            password.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Invitation Info */}
+        <Alert className="border-blue-200 bg-blue-50">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertDescription className="text-sm text-blue-800">
+            <strong>Member Invitation Process:</strong>
+            <ol className="mt-2 ml-4 list-decimal space-y-1">
+              <li>Member receives an invitation email</li>
+              <li>They click the setup link (valid for 7 days)</li>
+              <li>They create their own secure password</li>
+              <li>Their account is automatically activated</li>
+            </ol>
+          </AlertDescription>
+        </Alert>
 
         {/* Trial Warning */}
         {!canInviteMembers && (
@@ -200,6 +177,9 @@ export function AddMemberDialog({
                 disabled={isLoading}
                 required
               />
+              <p className="text-xs text-muted-foreground">
+                📧 Setup link will be sent to this email
+              </p>
             </div>
 
             <div className="grid gap-2">
@@ -217,6 +197,9 @@ export function AddMemberDialog({
                 placeholder="John Doe"
                 disabled={isLoading}
               />
+              <p className="text-xs text-muted-foreground">
+                Optional: Member can update later
+              </p>
             </div>
 
             <div className="grid gap-2">
@@ -236,29 +219,8 @@ export function AddMemberDialog({
                   <SelectItem value="TeamLead">Team Lead</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="password" className="flex items-center gap-2">
-                <Lock className="h-4 w-4" />
-                Password *
-              </Label>
-              <PasswordInput
-                id="password"
-                value={formData.password}
-                onChange={(value: string) =>
-                  setFormData({ ...formData, password: value })
-                }
-                placeholder="Enter password"
-                disabled={isLoading}
-                required
-              />
-              {formData.password && (
-                <PasswordStrengthIndicator password={formData.password} />
-              )}
               <p className="text-xs text-muted-foreground">
-                Password must be at least 8 characters with uppercase,
-                lowercase, and number
+                Defines member permissions in the team
               </p>
             </div>
           </div>

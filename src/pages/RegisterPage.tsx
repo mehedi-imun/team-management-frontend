@@ -53,6 +53,8 @@ const RegisterPage = () => {
   const [userEmail, setUserEmail] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   const {
     register: formRegister,
@@ -102,6 +104,40 @@ const RegisterPage = () => {
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
     setValue("organizationSlug", slug);
+  };
+
+  // Handle resend verification email
+  const handleResendEmail = async () => {
+    setIsResending(true);
+    setResendMessage("");
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/auth/resend-verification`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: userEmail }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResendMessage("✅ Verification email sent! Check your inbox.");
+      } else {
+        setResendMessage(
+          data.message || "❌ Failed to send email. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error("Resend error:", error);
+      setResendMessage("❌ Something went wrong. Please try again later.");
+    } finally {
+      setIsResending(false);
+    }
   };
 
   if (success) {
@@ -156,15 +192,37 @@ const RegisterPage = () => {
                 </Link>
               </div>
 
-              <p className="text-sm text-muted-foreground pt-2">
-                Didn't receive the email? Check your spam folder or{" "}
-                <button
-                  onClick={() => setSuccess(false)}
-                  className="text-primary hover:underline font-medium"
+              {resendMessage && (
+                <Alert
+                  variant={
+                    resendMessage.includes("✅") ? "default" : "destructive"
+                  }
                 >
-                  try again
-                </button>
-              </p>
+                  <AlertDescription>{resendMessage}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="text-sm text-muted-foreground pt-2 space-y-2">
+                <p>
+                  Didn't receive the email? Check your spam folder or{" "}
+                  <button
+                    onClick={handleResendEmail}
+                    disabled={isResending}
+                    className="text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isResending ? "Sending..." : "resend verification email"}
+                  </button>
+                </p>
+                <p>
+                  Or{" "}
+                  <Link
+                    to="/resend-verification"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    click here to resend
+                  </Link>
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

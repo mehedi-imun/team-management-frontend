@@ -26,7 +26,7 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | React.ReactNode>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +57,15 @@ const LoginPage = () => {
         errorMessage.toLowerCase().includes("pending")
       ) {
         setError(
-          "Please verify your email address before logging in. Check your inbox for the verification link."
+          <>
+            Please verify your email address before logging in.{" "}
+            <Link
+              to="/resend-verification"
+              className="text-primary hover:underline font-medium"
+            >
+              Resend verification email
+            </Link>
+          </>
         );
       } else {
         setError(errorMessage);

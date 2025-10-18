@@ -577,7 +577,9 @@ export default function MembersPage() {
           <DialogHeader>
             <DialogTitle>Invite Member</DialogTitle>
             <DialogDescription>
-              Send an invitation to a new member to join your organization.
+              Send an invitation to join your organization. They will receive an
+              email with a link to set up their account and create their own
+              password.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -589,16 +591,23 @@ export default function MembersPage() {
                 value={inviteName}
                 onChange={(e) => setInviteName(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                Optional: Member can update this later
+              </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="john@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
+                required
               />
+              <p className="text-xs text-muted-foreground">
+                We'll send a setup link to this email
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
@@ -608,7 +617,24 @@ export default function MembersPage() {
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                Optional: Default is "Member"
+              </p>
             </div>
+
+            {/* Info Alert */}
+            <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30">
+              <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>How it works:</strong>
+                <ol className="mt-2 space-y-1 list-decimal list-inside">
+                  <li>Member receives an invitation email</li>
+                  <li>They click the setup link (valid for 7 days)</li>
+                  <li>They create their own secure password</li>
+                  <li>Their account is automatically activated</li>
+                </ol>
+              </AlertDescription>
+            </Alert>
           </div>
           <DialogFooter>
             <Button
@@ -618,7 +644,10 @@ export default function MembersPage() {
             >
               Cancel
             </Button>
-            <Button onClick={handleInvite} disabled={isInviting}>
+            <Button
+              onClick={handleInvite}
+              disabled={isInviting || !inviteEmail}
+            >
               {isInviting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Send Invitation
             </Button>

@@ -1,5 +1,4 @@
-import PasswordInput from "@/components/password/PasswordInput";
-import PasswordStrengthIndicator from "@/components/password/PasswordStrengthIndicator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,7 +20,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateTeamMutation } from "@/redux/features/team/teamApi";
-import { Lock, Plus, Trash2 } from "lucide-react";
+import { Mail, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface CreateTeamDialogProps {
@@ -33,14 +32,13 @@ interface Member {
   email: string;
   name: string;
   role: "TeamLead" | "Member";
-  password: string;
 }
 
 export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<Member[]>([
-    { email: "", name: "", role: "Member", password: "" },
+    { email: "", name: "", role: "Member" },
   ]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -48,10 +46,7 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const { toast } = useToast();
 
   const handleAddMember = () => {
-    setMembers([
-      ...members,
-      { email: "", name: "", role: "Member", password: "" },
-    ]);
+    setMembers([...members, { email: "", name: "", role: "Member" }]);
   };
 
   const handleRemoveMember = (index: number) => {
@@ -86,22 +81,6 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
         newErrors[`member_${index}_email`] = "Email is required";
       } else if (!/\S+@\S+\.\S+/.test(member.email)) {
         newErrors[`member_${index}_email`] = "Invalid email format";
-      }
-
-      if (!member.password.trim()) {
-        newErrors[`member_${index}_password`] = "Password is required";
-      } else if (member.password.length < 8) {
-        newErrors[`member_${index}_password`] =
-          "Password must be at least 8 characters";
-      } else {
-        const hasUpperCase = /[A-Z]/.test(member.password);
-        const hasLowerCase = /[a-z]/.test(member.password);
-        const hasNumber = /\d/.test(member.password);
-
-        if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-          newErrors[`member_${index}_password`] =
-            "Password must contain uppercase, lowercase, and number";
-        }
       }
     });
 
@@ -145,7 +124,7 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
   const handleClose = () => {
     setName("");
     setDescription("");
-    setMembers([{ email: "", name: "", role: "Member", password: "" }]);
+    setMembers([{ email: "", name: "", role: "Member" }]);
     setErrors({});
     onClose();
   };
@@ -156,7 +135,8 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
         <DialogHeader>
           <DialogTitle>Create New Team</DialogTitle>
           <DialogDescription>
-            Add a new team to your organization
+            Create a team and invite members. Members will receive an email to
+            set up their account and create their own password.
           </DialogDescription>
         </DialogHeader>
 
@@ -233,6 +213,10 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
                         {errors[`member_${index}_email`]}
                       </p>
                     )}
+                    <p className="text-xs text-muted-foreground">
+                      <Mail className="inline h-3 w-3 mr-1" />
+                      Setup link will be sent to this email
+                    </p>
 
                     <Input
                       value={member.name}
@@ -241,6 +225,9 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
                       }
                       placeholder="Name (optional)"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Optional: Member can update later
+                    </p>
 
                     <Select
                       value={member.role}
@@ -260,32 +247,6 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
                         <SelectItem value="TeamLead">Team Lead</SelectItem>
                       </SelectContent>
                     </Select>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Lock className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">
-                          Password *
-                        </span>
-                      </div>
-                      <PasswordInput
-                        id={`member_${index}_password`}
-                        value={member.password}
-                        onChange={(value: string) =>
-                          handleMemberChange(index, "password", value)
-                        }
-                        placeholder="Enter password"
-                        required
-                      />
-                      {errors[`member_${index}_password`] && (
-                        <p className="text-sm text-red-500">
-                          {errors[`member_${index}_password`]}
-                        </p>
-                      )}
-                      {member.password && (
-                        <PasswordStrengthIndicator password={member.password} />
-                      )}
-                    </div>
                   </div>
 
                   {members.length > 1 && (
@@ -302,6 +263,20 @@ export function CreateTeamDialog({ open, onClose }: CreateTeamDialogProps) {
                 </div>
               ))}
             </div>
+
+            {/* Info Alert */}
+            <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30">
+              <Mail className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
+                <strong>Member Invitation Process:</strong>
+                <ol className="mt-2 space-y-1 list-decimal list-inside text-xs">
+                  <li>Each member receives an invitation email</li>
+                  <li>They click the setup link (valid for 7 days)</li>
+                  <li>They create their own secure password</li>
+                  <li>Their account is automatically activated</li>
+                </ol>
+              </AlertDescription>
+            </Alert>
           </div>
         </div>
 

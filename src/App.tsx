@@ -30,6 +30,8 @@ import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import PricingPage from "@/pages/PricingPage";
 import RegisterPage from "@/pages/RegisterPage";
+import ResendVerificationPage from "@/pages/ResendVerificationPage";
+import SetupAccountPage from "@/pages/SetupAccountPage";
 import ThemePreview from "@/pages/ThemePreview";
 import VerifyEmailPage from "@/pages/VerifyEmailPage";
 import { useAppSelector } from "@/redux/hook";
@@ -97,6 +99,11 @@ function App() {
             element={user ? <Navigate to="/dashboard" /> : <RegisterPage />}
           />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/setup-account" element={<SetupAccountPage />} />
+          <Route
+            path="/resend-verification"
+            element={<ResendVerificationPage />}
+          />
 
           {/* Password Change Route - Requires authentication */}
           <Route

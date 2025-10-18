@@ -7,6 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hook";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -14,6 +16,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
@@ -34,7 +37,7 @@ const VerifyEmailPage = () => {
           `${import.meta.env.VITE_BASE_URL}/auth/verify-email?token=${token}`,
           {
             method: "GET",
-            credentials: "include", // Include cookies
+            credentials: "include", // Include cookies for auto-login
           }
         );
 
@@ -44,6 +47,11 @@ const VerifyEmailPage = () => {
           setStatus("success");
           setMessage(data.message || "Email verified successfully!");
 
+          // Store user data in Redux for auto-login
+          if (data.data) {
+            dispatch(setUser(data.data));
+          }
+
           // Redirect to dashboard after 2 seconds
           setTimeout(() => {
             navigate("/dashboard");
@@ -52,14 +60,15 @@ const VerifyEmailPage = () => {
           setStatus("error");
           setMessage(data.message || "Verification failed. Please try again.");
         }
-      } catch {
+      } catch (error) {
+        console.error("Verification error:", error);
         setStatus("error");
         setMessage("Something went wrong. Please try again later.");
       }
     };
 
     verifyEmail();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10 p-4">
@@ -108,11 +117,20 @@ const VerifyEmailPage = () => {
           {status === "error" && (
             <div className="space-y-2">
               <Button asChild className="w-full">
-                <Link to="/register">Try Registering Again</Link>
+                <Link to="/resend-verification">Resend Verification Email</Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/login">Back to Login</Link>
               </Button>
+              <div className="text-center text-sm text-muted-foreground pt-2">
+                Or{" "}
+                <Link
+                  to="/register"
+                  className="text-primary hover:underline font-medium"
+                >
+                  try registering again
+                </Link>
+              </div>
             </div>
           )}
         </CardContent>
