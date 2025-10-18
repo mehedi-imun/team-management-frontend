@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGetMyOrganizationAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
-import type { RootState } from "@/redux/store";
 import {
   AlertCircle,
   Building2,
@@ -16,10 +15,8 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
-import { useSelector } from "react-redux";
 
 const OrganizationAnalyticsPage = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
   const { data, isLoading, error } = useGetMyOrganizationAnalyticsQuery();
 
   if (isLoading) {

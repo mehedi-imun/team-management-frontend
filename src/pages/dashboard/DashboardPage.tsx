@@ -25,7 +25,7 @@ const DashboardPage = () => {
 
   // Fetch stats based on user role
   const isAdmin = user?.role === "SuperAdmin" || user?.role === "Admin";
-  const isOrgOwner = user?.isOrganizationOwner;
+  const isOrgOwner = user?.role === "OrgOwner";
 
   // Platform admins see platform stats
   const { data: userStatsData, isLoading: isLoadingUserStats } =
@@ -173,18 +173,16 @@ const DashboardPage = () => {
   const getUserRole = () => {
     if (!user) return "Member";
 
-    // Show Organization Owner if user owns the organization
-    if (user.isOrganizationOwner) {
-      return "Organization Owner";
-    }
+    // Map roles to display names
+    const roleMap: Record<string, string> = {
+      SuperAdmin: "Platform Super Administrator",
+      Admin: "Platform Administrator",
+      OrgOwner: "Organization Owner",
+      OrgAdmin: "Organization Administrator",
+      OrgMember: "Organization Member",
+    };
 
-    // Show Organization Admin if user is org admin
-    if (user.isOrganizationAdmin) {
-      return "Organization Admin";
-    }
-
-    // Otherwise show their platform role
-    return user.role;
+    return roleMap[user.role] || user.role;
   };
 
   return (

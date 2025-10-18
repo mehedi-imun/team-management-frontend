@@ -25,12 +25,12 @@ const PlatformAnalyticsPage = () => {
 
   // Redirect organization owners to their own analytics page
   useEffect(() => {
-    if (user && !isAdmin && user.isOrganizationOwner) {
+    if (user && !isAdmin && user.role === "OrgOwner") {
       navigate("/dashboard/org-analytics", { replace: true });
     }
   }, [user, isAdmin, navigate]);
 
-  const { data, isLoading, error } = useGetPlatformAnalyticsQuery(undefined, {
+  const { data, isLoading } = useGetPlatformAnalyticsQuery(undefined, {
     skip: !isAdmin, // Skip query if not admin
   });
 
@@ -51,7 +51,7 @@ const PlatformAnalyticsPage = () => {
           <AlertDescription>
             You don't have permission to view platform analytics. This page is
             only accessible to Super Admins and Admins.
-            {user?.isOrganizationOwner && (
+            {user?.role === "OrgOwner" && (
               <span className="block mt-2">
                 Redirecting to your organization analytics...
               </span>

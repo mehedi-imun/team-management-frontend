@@ -95,7 +95,6 @@ export default function MembersPage() {
   const {
     data: statsResponse,
     isLoading: isStatsLoading,
-    refetch: refetchStats,
   } = useGetMyOrganizationStatsQuery(undefined, {
     skip: !organizationId,
     refetchOnMountOrArgChange: true, // Force fresh data on mount

@@ -39,15 +39,14 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  role: "SuperAdmin" | "Admin" | "Member" | "Manager" | "Director";
+  role: "SuperAdmin" | "Admin" | "OrgOwner" | "OrgAdmin" | "OrgMember";
   organizationId?:
     | string
     | {
         _id: string;
         name: string;
       };
-  isOrganizationOwner: boolean;
-  isOrganizationAdmin: boolean;
+  isActive: boolean;
   managedTeamIds: string[];
   teamCount?: number;
   status: "active" | "inactive" | "suspended";

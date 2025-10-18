@@ -18,6 +18,7 @@ import {
 import {
   useGetUserStatsQuery,
   useGetOrganizationStatsQuery as usePlatformOrgStatsQuery,
+  useGetOrganizationStatsQuery,
 } from "@/redux/features/platform/platformApi";
 import { useAppSelector } from "@/redux/hook";
 import {
@@ -41,7 +42,7 @@ const ReportsPage = () => {
   // Get current user
   const { user } = useAppSelector((state) => state.auth);
   const isAdmin = user?.role === "SuperAdmin" || user?.role === "Admin";
-  const isOrgOwner = user?.isOrganizationOwner;
+  const isOrgOwner = user?.role === "OrgOwner";
 
   // Fetch stats based on role
   const { data: userStats } = useGetUserStatsQuery(undefined, {

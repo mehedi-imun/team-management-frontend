@@ -13,10 +13,9 @@ export interface LoginResponse {
       _id: string;
       name: string;
       email: string;
-      role: string;
+      role: "SuperAdmin" | "Admin" | "OrgOwner" | "OrgAdmin" | "OrgMember";
       organizationId?: string;
-      isOrganizationOwner: boolean;
-      isOrganizationAdmin: boolean;
+      isActive: boolean;
     };
   };
 }

@@ -212,7 +212,7 @@ export default function BillingPage() {
   const analytics = analyticsData?.data;
   const currentPlan = subscription?.plan || "free";
   const planDetails = PLANS[currentPlan as keyof typeof PLANS];
-  const isOwner = user?.isOrganizationOwner;
+  const isOwner = user?.role === "OrgOwner";
 
   // Debug: Log subscription data
   console.log("=== SUBSCRIPTION DATA ===");

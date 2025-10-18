@@ -61,19 +61,16 @@ const DashboardPage = () => {
 
   const getUserRole = () => {
     if (!user) return "Member";
-
-    // Show Organization Owner if user owns the organization
-    if (user.isOrganizationOwner) {
-      return "Organization Owner";
-    }
-
-    // Show Organization Admin if user is org admin
-    if (user.isOrganizationAdmin) {
-      return "Organization Admin";
-    }
-
-    // Otherwise show their platform role
-    return user.role;
+    
+    const roleMap: Record<string, string> = {
+      SuperAdmin: "Platform Super Administrator",
+      Admin: "Platform Administrator",
+      OrgOwner: "Organization Owner",
+      OrgAdmin: "Organization Administrator",
+      OrgMember: "Organization Member",
+    };
+    
+    return roleMap[user.role] || user.role;
   };
 
   return (

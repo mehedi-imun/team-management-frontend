@@ -66,7 +66,7 @@ const UsersPage = () => {
   };
 
   const handleUpdateStatus = async (user: User) => {
-    const newStatus = user.status === "active" ? "suspended" : "active";
+    const newStatus = user.isActive ? "suspended" : "active";
 
     try {
       await updateStatus({
@@ -150,16 +150,16 @@ const UsersPage = () => {
         </div>
 
         <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Roles" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Roles</SelectItem>
             <SelectItem value="SuperAdmin">Super Admin</SelectItem>
             <SelectItem value="Admin">Admin</SelectItem>
-            <SelectItem value="Manager">Manager</SelectItem>
-            <SelectItem value="Director">Director</SelectItem>
-            <SelectItem value="Member">Member</SelectItem>
+            <SelectItem value="OrgOwner">Org Owner</SelectItem>
+            <SelectItem value="OrgAdmin">Org Admin</SelectItem>
+            <SelectItem value="OrgMember">Org Member</SelectItem>
           </SelectContent>
         </Select>
 

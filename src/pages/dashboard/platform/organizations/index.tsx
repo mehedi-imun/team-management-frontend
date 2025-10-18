@@ -10,13 +10,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Permission, usePermission } from "@/hooks/usePermission";
 import {
   useDeleteOrganizationMutation,
   useGetAllOrganizationsQuery,
   useUpdateOrganizationStatusMutation,
   type Organization,
 } from "@/redux/features/platform/platformApi";
-import { AlertCircle, Plus, Search } from "lucide-react";
+import { AlertCircle, Plus, Search, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createColumns } from "./columns";
@@ -27,6 +28,7 @@ import { UpdateStatusDialog } from "./UpdateStatusDialog";
 import { ViewOrganizationDialog } from "./ViewOrganizationDialog";
 
 const OrganizationsPage = () => {
+  const { can, isPlatformAdmin } = usePermission();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string>("");
@@ -51,10 +53,29 @@ const OrganizationsPage = () => {
     plan: plan === "all" ? undefined : plan,
   });
 
-  console.log("Organizations API Response:", { data, isLoading, error });
+  // Check permissions
+  if (!can(Permission.PLATFORM_VIEW_ALL_ORGANIZATIONS)) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
+          <p className="text-muted-foreground">
+            Manage all organizations on the platform
+          </p>
+        </div>
+        <Alert variant="destructive">
+          <ShieldAlert className="h-4 w-4" />
+          <AlertTitle>Access Denied</AlertTitle>
+          <AlertDescription>
+            You don't have permission to view organizations. This page is only
+            accessible to platform administrators (SuperAdmin/Admin).
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const organizations = data?.data || [];
-  console.log("Organizations List:", organizations);
 
   const handleClearFilters = () => {
     setSearch("");
@@ -73,11 +94,21 @@ const OrganizationsPage = () => {
   };
 
   const handleDelete = (org: Organization) => {
+    // Only SuperAdmin can delete organizations
+    if (!can(Permission.PLATFORM_DELETE_ORGANIZATION)) {
+      toast.error("You don't have permission to delete organizations");
+      return;
+    }
     setSelectedOrg(org);
     setIsDeleteDialogOpen(true);
   };
 
   const handleManageMembers = (org: Organization) => {
+    // Platform admins can manage members of any organization
+    if (!isPlatformAdmin()) {
+      toast.error("You don't have permission to manage organization members");
+      return;
+    }
     setSelectedOrg(org);
     setIsManageMembersOpen(true);
   };
@@ -118,6 +149,9 @@ const OrganizationsPage = () => {
     onUpdateStatus: handleUpdateStatus,
     onDelete: handleDelete,
     onManageMembers: handleManageMembers,
+    canUpdateStatus: can(Permission.PLATFORM_SUSPEND_ORGANIZATION),
+    canDelete: can(Permission.PLATFORM_DELETE_ORGANIZATION),
+    canManageMembers: isPlatformAdmin(),
   });
 
   // Show loading state
@@ -175,10 +209,12 @@ const OrganizationsPage = () => {
             Manage all organizations on the platform
           </p>
         </div>
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Organization
-        </Button>
+        {can(Permission.PLATFORM_CREATE_ORGANIZATION) && (
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Organization
+          </Button>
+        )}
       </div>
 
       <div className="flex items-center gap-4">

@@ -27,6 +27,9 @@ interface ActionHandlers {
   onUpdateStatus: (org: Organization) => void;
   onDelete: (org: Organization) => void;
   onManageMembers: (org: Organization) => void;
+  canUpdateStatus?: boolean;
+  canDelete?: boolean;
+  canManageMembers?: boolean;
 }
 
 const getStatusBadge = (status: string) => {
@@ -38,7 +41,11 @@ const getStatusBadge = (status: string) => {
   };
 
   const config = variants[status] || variants.active;
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return (
+    <Badge variant={config.variant} className="text-sm px-3 py-1">
+      {config.label}
+    </Badge>
+  );
 };
 
 const getPlanBadge = (plan: string) => {
@@ -50,7 +57,11 @@ const getPlanBadge = (plan: string) => {
   };
 
   const config = variants[plan] || variants.free;
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return (
+    <Badge variant={config.variant} className="text-sm px-3 py-1">
+      {config.label}
+    </Badge>
+  );
 };
 
 export const createColumns = (
@@ -63,7 +74,7 @@ export const createColumns = (
       const org = row.original;
       return (
         <div>
-          <div className="font-medium">{org.name}</div>
+          <div className="font-medium text-base">{org.name}</div>
           <div className="text-sm text-muted-foreground">{org.slug}</div>
         </div>
       );
@@ -76,7 +87,7 @@ export const createColumns = (
       const org = row.original;
       return (
         <div>
-          <div className="font-medium">{org.ownerName || "N/A"}</div>
+          <div className="font-medium text-base">{org.ownerName || "N/A"}</div>
           <div className="text-sm text-muted-foreground">{org.ownerEmail}</div>
         </div>
       );
@@ -97,7 +108,11 @@ export const createColumns = (
     header: "Subscription",
     cell: ({ row }) => {
       const endDate = row.original.currentPeriodEnd;
-      return endDate ? format(new Date(endDate), "MMM dd, yyyy") : "N/A";
+      return (
+        <div className="text-base">
+          {endDate ? format(new Date(endDate), "MMM dd, yyyy") : "N/A"}
+        </div>
+      );
     },
   },
   {
@@ -105,7 +120,12 @@ export const createColumns = (
     header: "Teams",
     cell: ({ row }) => {
       const org = row.original;
-      return `${org.currentTeamCount} / ${org.teamLimit}`;
+      return (
+        <div className="text-base">
+          <span className="font-medium">{org.currentTeamCount}</span>
+          <span className="text-muted-foreground"> / {org.teamLimit}</span>
+        </div>
+      );
     },
   },
   {
@@ -113,14 +133,23 @@ export const createColumns = (
     header: "Members",
     cell: ({ row }) => {
       const org = row.original;
-      return `${org.currentMemberCount} / ${org.memberLimit}`;
+      return (
+        <div className="text-base">
+          <span className="font-medium">{org.currentMemberCount}</span>
+          <span className="text-muted-foreground"> / {org.memberLimit}</span>
+        </div>
+      );
     },
   },
   {
     accessorKey: "createdAt",
     header: "Created",
     cell: ({ row }) => {
-      return format(new Date(row.original.createdAt), "MMM dd, yyyy");
+      return (
+        <div className="text-base">
+          {format(new Date(row.original.createdAt), "MMM dd, yyyy")}
+        </div>
+      );
     },
   },
   {
@@ -131,48 +160,67 @@ export const createColumns = (
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-9 w-9 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => handlers.onView(org)}>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="text-base font-semibold">Actions</DropdownMenuLabel>
+            <DropdownMenuItem 
+              onClick={() => handlers.onView(org)}
+              className="text-base py-2.5"
+            >
               <Eye className="mr-2 h-4 w-4" />
               View Details
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handlers.onManageMembers(org)}>
-              <Users className="mr-2 h-4 w-4" />
-              Manage Members
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handlers.onUpdateStatus(org)}
-              className={
-                org.status === "active" ? "text-orange-600" : "text-green-600"
-              }
-            >
-              {org.status === "active" ? (
-                <>
-                  <Ban className="mr-2 h-4 w-4" />
-                  Suspend
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Activate
-                </>
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handlers.onDelete(org)}
-              className="text-red-600"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
+            
+            {handlers.canManageMembers && (
+              <DropdownMenuItem 
+                onClick={() => handlers.onManageMembers(org)}
+                className="text-base py-2.5"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Manage Members
+              </DropdownMenuItem>
+            )}
+            
+            {handlers.canUpdateStatus && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handlers.onUpdateStatus(org)}
+                  className={`text-base py-2.5 ${
+                    org.status === "active" ? "text-orange-600" : "text-green-600"
+                  }`}
+                >
+                  {org.status === "active" ? (
+                    <>
+                      <Ban className="mr-2 h-4 w-4" />
+                      Suspend
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Activate
+                    </>
+                  )}
+                </DropdownMenuItem>
+              </>
+            )}
+            
+            {handlers.canDelete && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handlers.onDelete(org)}
+                  className="text-red-600 text-base py-2.5"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

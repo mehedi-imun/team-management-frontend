@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import {
   useGetOrganizationMembersQuery,
-  useGetOrganizationStatsQuery,
+  useGetMyOrganizationStatsQuery,
 } from "@/redux/features/organization/organizationApi";
 import type { RootState } from "@/redux/store";
 import { CheckCircle2, Clock, Mail, Plus, Search, UserX } from "lucide-react";
@@ -40,8 +40,6 @@ export default function MembersPage() {
       name: user?.name,
       role: user?.role,
       organizationId: user?.organizationId,
-      isOrganizationOwner: user?.isOrganizationOwner,
-      isOrganizationAdmin: user?.isOrganizationAdmin,
     },
     organizationId,
     organizationIdType: typeof organizationId,
@@ -50,7 +48,7 @@ export default function MembersPage() {
 
   // Don't fetch if no organizationId
   const { data: statsData, isLoading: statsLoading } =
-    useGetOrganizationStatsQuery(undefined, {
+    useGetMyOrganizationStatsQuery(undefined, {
       skip: !organizationId,
     });
   const {

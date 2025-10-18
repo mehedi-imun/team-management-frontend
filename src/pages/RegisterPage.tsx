@@ -143,14 +143,22 @@ const RegisterPage = () => {
                 type="text"
                 placeholder="acme-inc"
                 value={formData.organizationSlug}
-                onChange={(e) =>
-                  setFormData({ ...formData, organizationSlug: e.target.value })
-                }
+                onChange={(e) => {
+                  // Sanitize: only lowercase, numbers, and hyphens
+                  const sanitized = e.target.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9-]/g, "")
+                    .replace(/--+/g, "-") // Remove consecutive hyphens
+                    .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+                  setFormData({ ...formData, organizationSlug: sanitized });
+                }}
                 required
                 disabled={isLoading}
+                pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
+                title="Only lowercase letters, numbers, and hyphens allowed"
               />
-              <p className="text-xs text-gray-500">
-                This will be used in your URL
+              <p className="text-xs text-muted-foreground">
+                Only lowercase letters, numbers, and hyphens (e.g., acme-inc)
               </p>
             </div>
 

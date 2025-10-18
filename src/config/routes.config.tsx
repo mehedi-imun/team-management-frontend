@@ -2,7 +2,6 @@ import {
   BarChart3,
   Building2,
   CreditCard,
-  FileText,
   LayoutDashboard,
   Settings,
   UserPlus,
@@ -13,9 +12,9 @@ import type { ReactNode } from "react";
 export type UserRole =
   | "SuperAdmin" // Platform super admin (no organization)
   | "Admin" // Platform admin (no organization)
-  | "OrgOwner" // Member with isOrganizationOwner = true
-  | "OrgAdmin" // Member with isOrganizationAdmin = true
-  | "Member"; // Regular organization member
+  | "OrgOwner" // Organization owner (has organizationId)
+  | "OrgAdmin" // Organization admin (has organizationId)
+  | "OrgMember"; // Regular organization member (has organizationId)
 
 export interface RouteConfig {
   path: string;
@@ -31,66 +30,60 @@ export interface RouteConfig {
  * Routes are automatically filtered based on the logged-in user's role
  *
  * Backend Role System:
- * - SuperAdmin: Platform admin, no organizationId
- * - Admin: Platform admin, no organizationId
- * - Member: Organization user (default role)
- *   - isOrganizationOwner: true = Can manage billing, settings
- *   - isOrganizationAdmin: true = Can manage users, teams
+ * - SuperAdmin: Platform owner - complete system access
+ * - Admin: Platform administrator - manage organizations
+ * - OrgOwner: Organization owner - full org control + billing
+ * - OrgAdmin: Organization admin - manage users/teams (no billing)
+ * - OrgMember: Regular member - view only
  */
 export const dashboardRoutes: RouteConfig[] = [
   {
     path: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    allowedRoles: ["SuperAdmin", "Admin", "OrgOwner", "OrgAdmin", "Member"],
+    allowedRoles: ["SuperAdmin", "Admin", "OrgOwner", "OrgAdmin", "OrgMember"],
   },
   {
     path: "/dashboard/org/teams",
     label: "Teams",
     icon: Users,
-    allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
+    allowedRoles: ["OrgOwner", "OrgAdmin"], // Organization teams only, not for platform admins
   },
   {
-    path: "/dashboard/platform/users",
-    label: "Users",
+    path: "/dashboard/org/members",
+    label: "Members",
     icon: Users,
-    allowedRoles: ["SuperAdmin", "Admin"], // Platform admins only
+    allowedRoles: ["OrgOwner", "OrgAdmin"], // Organization members
   },
   {
     path: "/dashboard/invitations",
     label: "Invitations",
     icon: UserPlus,
-    allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
+    allowedRoles: ["OrgOwner", "OrgAdmin"], // Organization invitations only
   },
   {
     path: "/dashboard/org/billing",
     label: "Billing",
     icon: CreditCard,
-    allowedRoles: ["SuperAdmin", "OrgOwner"], // Only org owners can manage billing
+    allowedRoles: ["OrgOwner"], // Only org owners can manage billing
   },
   {
-    path: "/dashboard/org/settings",
+    path: "/dashboard/org/overview",
     label: "Organization",
     icon: Building2,
-    allowedRoles: ["SuperAdmin", "OrgOwner"], // Organization settings
+    allowedRoles: ["OrgOwner", "OrgAdmin"], // Organization overview
   },
   {
     path: "/dashboard/org/analytics",
     label: "Analytics",
     icon: BarChart3,
-    allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
-  },
-  {
-    path: "/dashboard/platform/reports",
-    label: "Reports",
-    icon: FileText,
-    allowedRoles: ["SuperAdmin", "OrgOwner", "OrgAdmin"],
+    allowedRoles: ["OrgOwner", "OrgAdmin"], // Organization analytics
   },
   {
     path: "/dashboard/settings",
     label: "Settings",
     icon: Settings,
-    allowedRoles: ["SuperAdmin", "Admin", "OrgOwner", "OrgAdmin", "Member"],
+    allowedRoles: ["SuperAdmin", "Admin", "OrgOwner", "OrgAdmin", "OrgMember"],
   },
 ];
 
