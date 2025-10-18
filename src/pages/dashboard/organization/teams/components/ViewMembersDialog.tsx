@@ -135,9 +135,19 @@ export function ViewMembersDialog({
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={member.isActive ? "default" : "destructive"}
+                          variant={
+                            member.status === "active"
+                              ? "default"
+                              : member.status === "pending"
+                              ? "secondary"
+                              : "destructive"
+                          }
                         >
-                          {member.isActive ? "Active" : "Inactive"}
+                          {member.status === "active"
+                            ? "Active"
+                            : member.status === "pending"
+                            ? "Pending"
+                            : "Inactive"}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">

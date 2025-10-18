@@ -65,6 +65,7 @@ import { toast } from "sonner";
 export default function MembersPage() {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "active" | "inactive">("all");
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
@@ -91,6 +92,7 @@ export default function MembersPage() {
         skip: !organizationId, // Skip query if no organization ID
       }
     );
+    console.log(membersData)
 
   const { data: statsResponse, isLoading: isStatsLoading } =
     useGetMyOrganizationStatsQuery(undefined, {
@@ -102,13 +104,7 @@ export default function MembersPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const stats = (statsResponse as any)?.data || statsResponse;
 
-  console.log("📊 Full Stats Response:", statsResponse);
-  console.log("📊 Extracted Stats:", stats);
-  console.log("📊 Has totalMembers?", "totalMembers" in (stats || {}));
-  console.log(
-    "📊 Has totalOrganizations?",
-    "totalOrganizations" in (stats || {})
-  );
+  
   // Mutations
   const [inviteMember, { isLoading: isInviting }] = useInviteMemberMutation();
   const [updateStatus, { isLoading: isUpdatingStatus }] =
@@ -117,6 +113,36 @@ export default function MembersPage() {
 
   const members = membersData?.data || [];
   const meta = membersData?.meta;
+
+  // Helper function to get member status (with fallback to isActive)
+  const getMemberStatus = (member: OrganizationMember): "active" | "inactive" | "pending" => {
+    if (member.status) {
+      return member.status as "active" | "inactive" | "pending";
+    }
+    // Fallback to isActive if status field doesn't exist
+    return member.isActive ? "active" : "inactive";
+  };
+
+  // Filter members based on status
+  const filteredMembers = statusFilter === "all" 
+    ? members 
+    : members.filter((member: OrganizationMember) => getMemberStatus(member) === statusFilter);
+
+  console.log("📊 Members Data Debug:", {
+    membersData,
+    members,
+    membersWithStatus: members.map(m => ({ 
+      name: m.name, 
+      status: m.status, 
+      isActive: m.isActive,
+      calculatedStatus: getMemberStatus(m)
+    })),
+    filteredMembers,
+    filteredCount: filteredMembers.length,
+    statusFilter,
+    stats,
+    organizationId
+  });
 
   // Handlers
   const handleInvite = async () => {
@@ -148,14 +174,16 @@ export default function MembersPage() {
       return;
     }
 
+    const currentStatus = getMemberStatus(selectedMember);
+
     try {
       await updateStatus({
         userId: selectedMember.userId,
-        isActive: !selectedMember.isActive,
+        isActive: currentStatus === "active" ? false : true,
       }).unwrap();
       toast.success(
         `Member ${
-          selectedMember.isActive ? "deactivated" : "activated"
+          currentStatus === "active" ? "deactivated" : "activated"
         } successfully`
       );
       setIsStatusDialogOpen(false);
@@ -341,6 +369,43 @@ export default function MembersPage() {
             </Card>
           </div>
 
+          {/* Status Filter Tabs */}
+          <div className="mb-6">
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={statusFilter === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("all")}
+              >
+                All Members ({members.length})
+              </Button>
+              <Button
+                variant={statusFilter === "pending" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("pending")}
+              >
+                <Clock className="mr-2 h-4 w-4" />
+                Pending ({stats?.pendingMembers || 0})
+              </Button>
+              <Button
+                variant={statusFilter === "active" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("active")}
+              >
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                Active ({stats?.activeMembers || 0})
+              </Button>
+              <Button
+                variant={statusFilter === "inactive" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter("inactive")}
+              >
+                <UserX className="mr-2 h-4 w-4" />
+                Inactive ({stats?.inactiveMembers || 0})
+              </Button>
+            </div>
+          </div>
+
           {/* Search */}
           <div className="mb-6">
             <div className="relative max-w-sm">
@@ -355,12 +420,14 @@ export default function MembersPage() {
           </div>
 
           {/* Empty state */}
-          {members.length === 0 ? (
+          {filteredMembers.length === 0 ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 {searchTerm
                   ? "No members found matching your search."
+                  : statusFilter !== "all" 
+                  ? `No ${statusFilter} members found.`
                   : "No members yet. Invite your first member to get started!"}
               </AlertDescription>
             </Alert>
@@ -379,7 +446,7 @@ export default function MembersPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {members.map((member) => (
+                    {filteredMembers.map((member) => (
                       <TableRow key={member._id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
@@ -403,14 +470,14 @@ export default function MembersPage() {
                         <TableCell>
                           <Badge
                             variant={
-                              member.status === "active"
+                              getMemberStatus(member) === "active"
                                 ? "default"
-                                : member.status === "pending"
+                                : getMemberStatus(member) === "pending"
                                 ? "secondary"
                                 : "destructive"
                             }
                           >
-                            {member.status || "active"}
+                            {getMemberStatus(member)}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -431,7 +498,7 @@ export default function MembersPage() {
                               <DropdownMenuItem
                                 onClick={() => openStatusDialog(member)}
                               >
-                                {member.isActive ? (
+                                {getMemberStatus(member) === "active" ? (
                                   <>
                                     <UserMinus className="mr-2 h-4 w-4" />
                                     Deactivate
@@ -557,13 +624,14 @@ export default function MembersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedMember?.isActive ? "Deactivate" : "Activate"} Member
+              {selectedMember && getMemberStatus(selectedMember) === "active" ? "Deactivate" : "Activate"}{" "}
+              Member
             </DialogTitle>
             <DialogDescription>
               Are you sure you want to{" "}
-              {selectedMember?.isActive ? "deactivate" : "activate"}{" "}
+              {selectedMember && getMemberStatus(selectedMember) === "active" ? "deactivate" : "activate"}{" "}
               <span className="font-semibold">{selectedMember?.name}</span>?
-              {selectedMember?.isActive &&
+              {selectedMember && getMemberStatus(selectedMember) === "active" &&
                 " They will lose access to the organization immediately."}
             </DialogDescription>
           </DialogHeader>
@@ -576,14 +644,16 @@ export default function MembersPage() {
               Cancel
             </Button>
             <Button
-              variant={selectedMember?.isActive ? "destructive" : "default"}
+              variant={
+                selectedMember && getMemberStatus(selectedMember) === "active" ? "destructive" : "default"
+              }
               onClick={handleToggleStatus}
               disabled={isUpdatingStatus}
             >
               {isUpdatingStatus && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {selectedMember?.isActive ? "Deactivate" : "Activate"}
+              {selectedMember && getMemberStatus(selectedMember) === "active" ? "Deactivate" : "Activate"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -46,8 +46,19 @@ const LoginPage = () => {
         navigate("/dashboard");
       }
     } catch (err: unknown) {
-      const error = err as { data?: { message?: string } };
-      setError(error?.data?.message || "Login failed. Please try again.");
+      const error = err as { data?: { message?: string; statusCode?: number } };
+      const errorMessage = error?.data?.message || "Login failed. Please try again.";
+      
+      // Check if error is due to email verification
+      if (
+        error?.data?.statusCode === 403 &&
+        errorMessage.toLowerCase().includes("verify") ||
+        errorMessage.toLowerCase().includes("pending")
+      ) {
+        setError("Please verify your email address before logging in. Check your inbox for the verification link.");
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 

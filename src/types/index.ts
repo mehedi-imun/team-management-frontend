@@ -4,9 +4,10 @@ export interface IMember {
   name?: string;
   email: string;
   role?: string;
+  status?: "pending" | "active" | "inactive"; // Member invitation/activation status
   joinedAt?: Date | string;
   invitedAt?: Date | string;
-  isActive?: boolean;
+  isActive?: boolean; // Deprecated, use status instead
 }
 
 export interface ITeam {
