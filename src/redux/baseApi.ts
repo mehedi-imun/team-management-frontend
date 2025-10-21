@@ -7,8 +7,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { clearUser } from "./features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_BASE_URL,
-  credentials: "include", // Important for cookies
+  baseUrl: `${import.meta.env.VITE_BASE_URL}/api/v1/`,
+  credentials: "include", 
   prepareHeaders: (headers) => {
     headers.set("Content-Type", "application/json");
     return headers;
