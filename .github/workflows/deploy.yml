@@ -3,22 +3,22 @@ name: Deploy Frontend to AWS
 on:
   push:
     branches: [main, updated]
-  workflow_dispatch:  # Manual trigger option
+  workflow_dispatch: # Manual trigger option
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+
       - name: Build Docker image
         run: |
           docker build \
@@ -29,12 +29,12 @@ jobs:
             --build-arg VITE_BASE_URL=${{ secrets.VITE_BASE_URL }} \
             -t mehediimun/team-management-frontend:${{ github.sha }} \
             -f Dockerfile.prod .
-      
+
       - name: Push to Docker Hub
         run: |
           docker push mehediimun/team-management-frontend:latest
           docker push mehediimun/team-management-frontend:${{ github.sha }}
-      
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -43,28 +43,28 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu
-            
+
             # Pull latest image
             sudo docker pull mehediimun/team-management-frontend:latest
-            
+
             # Restart only frontend service
             sudo docker-compose up -d --no-deps frontend
-            
+
             # Check status
             echo "Frontend deployment complete!"
             sudo docker ps | grep frontend
-            
+
             # Health check (using container name)
             sleep 10
             sudo docker exec team-frontend wget -q -O- http://localhost:3000/health || sudo docker exec team-frontend wget -q -O- http://localhost:3000 || echo "Health check warning (container might be starting)"
-      
+
       - name: Notify on success
         if: success()
         run: |
           echo "✅ Frontend deployed successfully!"
           echo "Image: mehediimun/team-management-frontend:latest"
           echo "Commit: ${{ github.sha }}"
-      
+
       - name: Notify on failure
         if: failure()
         run: |
