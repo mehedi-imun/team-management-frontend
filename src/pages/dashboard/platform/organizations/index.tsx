@@ -1,0 +1,289 @@
+import { DataTable } from "@/components/data-table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Permission, usePermission } from "@/hooks/usePermission";
+import {
+  useDeleteOrganizationMutation,
+  useGetAllOrganizationsQuery,
+  useUpdateOrganizationStatusMutation,
+  type Organization,
+} from "@/redux/features/platform/platformApi";
+import { AlertCircle, Plus, Search, ShieldAlert } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { createColumns } from "./columns";
+import { CreateOrganizationDialog } from "./CreateOrganizationDialog";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { UpdateStatusDialog } from "./UpdateStatusDialog";
+import { ViewOrganizationDialog } from "./ViewOrganizationDialog";
+
+const OrganizationsPage = () => {
+  const { can } = usePermission();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<string>("");
+  const [plan, setPlan] = useState<string>("");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const [updateStatus, { isLoading: isUpdatingStatus }] =
+    useUpdateOrganizationStatusMutation();
+  const [deleteOrg, { isLoading: isDeleting }] =
+    useDeleteOrganizationMutation();
+
+  const { data, isLoading, error } = useGetAllOrganizationsQuery({
+    page,
+    limit: 10,
+    search,
+    status: status === "all" ? undefined : status,
+    plan: plan === "all" ? undefined : plan,
+  });
+
+  // Check permissions
+  if (!can(Permission.PLATFORM_VIEW_ALL_ORGANIZATIONS)) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
+          <p className="text-muted-foreground">
+            Manage all organizations on the platform
+          </p>
+        </div>
+        <Alert variant="destructive">
+          <ShieldAlert className="h-4 w-4" />
+          <AlertTitle>Access Denied</AlertTitle>
+          <AlertDescription>
+            You don't have permission to view organizations. This page is only
+            accessible to platform administrators (SuperAdmin/Admin).
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  const organizations = data?.data || [];
+
+  const handleClearFilters = () => {
+    setSearch("");
+    setStatus("");
+    setPlan("");
+  };
+
+  const handleView = (org: Organization) => {
+    setSelectedOrg(org);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleUpdateStatus = (org: Organization) => {
+    setSelectedOrg(org);
+    setIsStatusDialogOpen(true);
+  };
+
+  const handleDelete = (org: Organization) => {
+    // Only SuperAdmin can delete organizations
+    if (!can(Permission.PLATFORM_DELETE_ORGANIZATION)) {
+      toast.error("You don't have permission to delete organizations");
+      return;
+    }
+    setSelectedOrg(org);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleStatusUpdate = async (newStatus: string) => {
+    if (!selectedOrg) return;
+
+    try {
+      await updateStatus({
+        id: selectedOrg._id,
+        status: newStatus,
+      }).unwrap();
+
+      toast.success("Organization status updated successfully");
+      setIsStatusDialogOpen(false);
+      setSelectedOrg(null);
+    } catch {
+      toast.error("Failed to update organization status");
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedOrg) return;
+
+    try {
+      await deleteOrg(selectedOrg._id).unwrap();
+
+      toast.success("Organization deleted successfully");
+      setIsDeleteDialogOpen(false);
+      setSelectedOrg(null);
+    } catch {
+      toast.error("Failed to delete organization");
+    }
+  };
+
+  const columns = createColumns({
+    onView: handleView,
+    onUpdateStatus: handleUpdateStatus,
+    onDelete: handleDelete,
+    canUpdateStatus: can(Permission.PLATFORM_SUSPEND_ORGANIZATION),
+    canDelete: can(Permission.PLATFORM_DELETE_ORGANIZATION),
+  });
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="h-9 w-64 mb-2" />
+            <Skeleton className="h-5 w-96" />
+          </div>
+          <Skeleton className="h-10 w-48" />
+        </div>
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 flex-1 max-w-sm" />
+          <Skeleton className="h-10 w-[180px]" />
+          <Skeleton className="h-10 w-[180px]" />
+        </div>
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
+            <p className="text-muted-foreground">
+              Manage all organizations on the platform
+            </p>
+          </div>
+        </div>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error Loading Organizations</AlertTitle>
+          <AlertDescription>
+            {error && "data" in error
+              ? JSON.stringify(error.data)
+              : "Failed to load organizations. Please try again."}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Organizations</h1>
+          <p className="text-muted-foreground">
+            Manage all organizations on the platform
+          </p>
+        </div>
+        {can(Permission.PLATFORM_CREATE_ORGANIZATION) && (
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Organization
+          </Button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search organizations..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="trial">Trial</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="suspended">Suspended</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={plan} onValueChange={setPlan}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Plans" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Plans</SelectItem>
+            <SelectItem value="free">Free</SelectItem>
+            <SelectItem value="professional">Professional</SelectItem>
+            <SelectItem value="business">Business</SelectItem>
+            <SelectItem value="enterprise">Enterprise</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {(search || status || plan) && (
+          <Button variant="outline" onClick={handleClearFilters}>
+            Clear Filters
+          </Button>
+        )}
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={organizations}
+        meta={data?.meta}
+        onPageChange={setPage}
+        isLoading={isLoading}
+      />
+
+      <CreateOrganizationDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
+
+      <ViewOrganizationDialog
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+        organization={selectedOrg}
+      />
+
+      <UpdateStatusDialog
+        open={isStatusDialogOpen}
+        onOpenChange={setIsStatusDialogOpen}
+        onConfirm={handleStatusUpdate}
+        organizationName={selectedOrg?.name || ""}
+        currentStatus={selectedOrg?.status || ""}
+        isLoading={isUpdatingStatus}
+      />
+
+      <DeleteConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        organizationName={selectedOrg?.name || ""}
+        isLoading={isDeleting}
+      />
+    </div>
+  );
+};
+
+export default OrganizationsPage;
