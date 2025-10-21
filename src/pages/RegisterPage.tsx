@@ -113,7 +113,7 @@ const RegisterPage = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/auth/resend-verification`,
+        `${import.meta.env.VITE_BASE_URL}/api/v1/auth/resend-verification`,
         {
           method: "POST",
           headers: {
