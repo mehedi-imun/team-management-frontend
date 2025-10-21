@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/redux/hook";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2, Copy, Loader2, Mail, Lock } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -36,7 +36,6 @@ const LoginPage = () => {
       const response = await login(formData).unwrap();
       dispatch(setUser(response.data.user));
 
-      // Check if password change is required
       if (
         response.data.mustChangePassword ||
         response.data.user.mustChangePassword
@@ -50,7 +49,6 @@ const LoginPage = () => {
       const errorMessage =
         error?.data?.message || "Login failed. Please try again.";
 
-      // Check if error is due to email verification
       if (
         (error?.data?.statusCode === 403 &&
           errorMessage.toLowerCase().includes("verify")) ||
@@ -73,8 +71,31 @@ const LoginPage = () => {
     }
   };
 
+  // Demo credentials provided
+  const demoCredentials = [
+    {
+      label: "Super Admin",
+      email: "superadmin@teammanagement.com",
+      password: "superadmin123",
+    },
+    {
+      label: "Organization Owner",
+      email: "mehediimun@gmail.com",
+      password: "Pa$$w0rd!",
+    },
+  ];
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // optionally you can show a toast/snackbar here if you have one
+    } catch {
+      // ignore copy failures silently
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 gap-8 relative overflow-hidden">
       {/* PatternCraft-inspired animated background */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950" />
@@ -84,6 +105,61 @@ const LoginPage = () => {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
       </div>
 
+      {/* Left-side Demo Credentials Card (desktop only) */}
+      <Card className="hidden md:flex flex-col justify-center items-start w-80 shadow-xl bg-card/80 dark:bg-card/60 backdrop-blur-xl border-primary/10 animate-fade-in">
+        <CardHeader>
+          <CardTitle className="text-lg font-bold text-primary">
+            Demo Credentials
+          </CardTitle>
+          <CardDescription>Use these to test the app instantly</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3 w-full">
+          {demoCredentials.map((c) => (
+            <div key={c.label} className="space-y-2 w-full">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-medium">{c.label}</div>
+                <div className="text-xs text-muted-foreground">click to copy</div>
+              </div>
+
+              <div className="flex items-center justify-between bg-muted/40 p-2 rounded-md">
+                <div className="flex items-center gap-2 text-sm truncate">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{c.email}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleCopy(c.email)}
+                    title="Copy email"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between bg-muted/40 p-2 rounded-md">
+                <div className="flex items-center gap-2 text-sm truncate">
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{c.password}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleCopy(c.password)}
+                    title="Copy password"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Main Login Card (unchanged) */}
       <Card className="w-full max-w-md shadow-2xl bg-card/80 dark:bg-card/60 backdrop-blur-xl border-primary/10">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
@@ -97,9 +173,7 @@ const LoginPage = () => {
               Back
             </span>
           </CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
+          <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

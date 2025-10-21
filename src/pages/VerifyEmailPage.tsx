@@ -34,7 +34,7 @@ const VerifyEmailPage = () => {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/api/v1/auth/verify-email?token=${token}`,
+          `${import.meta.env.VITE_BASE_URL}/auth/verify-email?token=${token}`,
           {
             method: "GET",
             credentials: "include", // Include cookies for auto-login

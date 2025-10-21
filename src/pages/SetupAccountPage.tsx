@@ -49,7 +49,7 @@ const SetupAccountPage = () => {
         const response = await fetch(
           `${
             import.meta.env.VITE_BASE_URL
-          }/api/v1/auth/validate-setup-token?token=${token}`,
+          }/auth/validate-setup-token?token=${token}`,
           {
             method: "GET",
             credentials: "include",

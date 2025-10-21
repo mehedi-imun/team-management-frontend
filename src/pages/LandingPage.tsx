@@ -345,24 +345,24 @@ const LandingPage = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto pt-6">
           {pricing.map((plan, index) => (
             <Card
               key={index}
-              className={`relative flex flex-col overflow-hidden backdrop-blur-xl transition-all duration-500 hover:scale-105 ${
+              className={`relative flex flex-col overflow-visible backdrop-blur-xl transition-all duration-500 hover:scale-105 ${
                 plan.highlighted
-                  ? "bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 border-2 border-primary shadow-2xl shadow-primary/20 lg:scale-110 z-10"
-                  : "bg-card/50 dark:bg-card/30 border-primary/10 hover:border-primary/30 hover:shadow-2xl"
+                  ? "bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 dark:from-blue-500/20 dark:via-purple-500/20 dark:to-pink-500/20 border-2 border-primary shadow-2xl shadow-primary/20 lg:scale-110 z-10 mt-0"
+                  : "bg-card/50 dark:bg-card/30 border-primary/10 hover:border-primary/30 hover:shadow-2xl mt-6"
               }`}
             >
               {plan.highlighted && (
                 <>
                   {/* Animated glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 animate-pulse" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 dark:from-blue-500/30 dark:via-purple-500/30 dark:to-pink-500/30 animate-pulse rounded-lg" />
 
                   {/* Popular badge */}
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-20">
+                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 text-white px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg whitespace-nowrap">
                       <Star className="h-4 w-4 fill-current" />
                       Most Popular
                     </div>
@@ -370,10 +370,14 @@ const LandingPage = () => {
                 </>
               )}
 
-              <CardHeader className="relative text-center pb-8 z-10">
+              <CardHeader
+                className={`relative text-center z-10 ${
+                  plan.highlighted ? "pt-10 pb-8" : "pt-6 pb-8"
+                }`}
+              >
                 <CardTitle
                   className={`text-2xl font-bold mb-6 ${
-                    plan.highlighted ? "text-primary" : ""
+                    plan.highlighted ? "text-primary dark:text-primary" : ""
                   }`}
                 >
                   {plan.name}
